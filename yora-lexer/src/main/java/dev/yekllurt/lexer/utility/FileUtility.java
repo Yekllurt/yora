@@ -1,4 +1,4 @@
-package dev.yekllurt.scanner.utility;
+package dev.yekllurt.lexer.utility;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,14 +16,6 @@ public class FileUtility {
             return Files.readString(Path.of(file.getPath()));
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public static String getFileEnding(File file) {
-        if (file.getName().contains(".")) {
-            return file.getName().substring(file.getName().lastIndexOf(".") + 1);
-        } else {
-            return file.getName();
         }
     }
 

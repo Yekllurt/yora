@@ -1,0 +1,22 @@
+DECIMAL_NUMBER      (0)|([1-9][0-9]*(\.[0-9]+)?)|([0-9](\.[0-9]+)?)
+IDENTIFIER          [a-zA-Z]+
+
+###
+
+KEYWORD         "int"       0   INT
+KEYWORD         "float"     0   FLOAT
+KEYWORD         "boolean"   0   BOOLEAN
+KEYWORD         "char"      0   CHAR
+KEYWORD         "void"      0   VOID
+
+PUNCTUATION     "("        0   LEFT_BRACE
+PUNCTUATION     ")"        0   RIGHT_BRACE
+PUNCTUATION     ";"         0   SEMICOLON
+PUNCTUATION     "+"         0   PLUS
+PUNCTUATION     "-"        0   MINUS
+PUNCTUATION     "*"         0   STAR
+PUNCTUATION     "/"         0   DIVIDE
+PUNCTUATION     "="         0   EQUAL
+
+IDENTIFIER      {IDENTIFIER}        1   IDENTIFIER
+NUMBER_DECIMAL  {DECIMAL_NUMBER}    1   NUMBER
