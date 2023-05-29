@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.utility;
+package dev.yekllurt.scanner.utility;
 
 import java.io.File;
 import java.io.IOException;

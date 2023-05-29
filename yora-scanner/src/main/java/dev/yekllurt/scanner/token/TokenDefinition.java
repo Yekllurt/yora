@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.token;
+package dev.yekllurt.scanner.token;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,19 +1,19 @@
-package dev.yekllurt.parser;
+package dev.yekllurt.scanner;
 
-import dev.yekllurt.parser.token.Token;
-import dev.yekllurt.parser.token.TokenDefinition;
+import dev.yekllurt.scanner.token.Token;
+import dev.yekllurt.scanner.token.TokenDefinition;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Lexer {
+public class Scanner {
 
     private final String input;
     private final List<TokenDefinition> tokenDefinitionList;
 
-    public Lexer(String input, List<TokenDefinition> tokenDefinitionList) {
+    public Scanner(String input, List<TokenDefinition> tokenDefinitionList) {
         this.input = input;
         this.tokenDefinitionList = tokenDefinitionList;
     }
@@ -45,7 +45,7 @@ public class Lexer {
             }
 
             if (!tokenMatch) {
-                throw new LexerException(String.format("Invalid character '%s' at position %s", input.charAt(currentPosition), currentPosition));
+                throw new ScannerException(String.format("Invalid character '%s' at position %s", input.charAt(currentPosition), currentPosition));
             }
 
         }
