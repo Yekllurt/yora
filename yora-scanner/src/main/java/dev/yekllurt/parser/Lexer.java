@@ -1,7 +1,7 @@
-package dev.yekllurt.lexer;
+package dev.yekllurt.parser;
 
-import dev.yekllurt.lexer.token.Token;
-import dev.yekllurt.lexer.token.TokenDefinition;
+import dev.yekllurt.parser.token.Token;
+import dev.yekllurt.parser.token.TokenDefinition;
 
 import java.util.LinkedList;
 import java.util.List;

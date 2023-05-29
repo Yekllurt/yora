@@ -1,9 +1,9 @@
-package dev.yekllurt.lexer;
+package dev.yekllurt.parser;
 
-import dev.yekllurt.lexer.token.Token;
-import dev.yekllurt.lexer.token.TokenDefinition;
-import dev.yekllurt.lexer.token.TokenDefinitionLoader;
-import dev.yekllurt.lexer.utility.FileUtility;
+import dev.yekllurt.parser.token.Token;
+import dev.yekllurt.parser.token.TokenDefinition;
+import dev.yekllurt.parser.token.TokenDefinitionLoader;
+import dev.yekllurt.parser.utility.FileUtility;
 
 import java.io.File;
 import java.util.List;

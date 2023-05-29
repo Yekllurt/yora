@@ -1,4 +1,4 @@
-package dev.yekllurt.lexer.token;
+package dev.yekllurt.parser.token;
 
 import java.io.BufferedReader;
 import java.io.File;

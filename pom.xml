@@ -11,6 +11,7 @@
 
     <modules>
         <module>yora-scanner</module>
+        <module>yora-parser</module>
     </modules>
 
     <properties>

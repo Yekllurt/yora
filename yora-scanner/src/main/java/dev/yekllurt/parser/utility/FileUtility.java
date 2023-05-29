@@ -1,4 +1,4 @@
-package dev.yekllurt.lexer.utility;
+package dev.yekllurt.parser.utility;
 
 import java.io.File;
 import java.io.IOException;

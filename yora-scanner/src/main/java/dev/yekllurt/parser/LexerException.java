@@ -1,4 +1,4 @@
-package dev.yekllurt.lexer;
+package dev.yekllurt.parser;
 
 public class LexerException extends RuntimeException {
 
