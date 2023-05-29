@@ -9,11 +9,11 @@ KEYWORD         "boolean"   0   BOOLEAN
 KEYWORD         "char"      0   CHAR
 KEYWORD         "void"      0   VOID
 
-PUNCTUATION     "("        0   LEFT_BRACE
-PUNCTUATION     ")"        0   RIGHT_BRACE
+PUNCTUATION     "("         0   LEFT_BRACE
+PUNCTUATION     ")"         0   RIGHT_BRACE
 PUNCTUATION     ";"         0   SEMICOLON
 PUNCTUATION     "+"         0   PLUS
-PUNCTUATION     "-"        0   MINUS
+PUNCTUATION     "-"         0   MINUS
 PUNCTUATION     "*"         0   STAR
 PUNCTUATION     "/"         0   DIVIDE
 PUNCTUATION     "="         0   EQUAL
