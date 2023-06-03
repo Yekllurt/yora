@@ -13,6 +13,7 @@ KEYWORD         "end"       0   END
 PUNCTUATION     "("         0   LEFT_BRACE
 PUNCTUATION     ")"         0   RIGHT_BRACE
 PUNCTUATION     ";"         0   SEMICOLON
+PUNCTUATION     ","         0   COMMA
 PUNCTUATION     "+"         0   PLUS
 PUNCTUATION     "-"         0   MINUS
 PUNCTUATION     "*"         0   STAR
