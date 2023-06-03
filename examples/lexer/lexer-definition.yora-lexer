@@ -9,6 +9,7 @@ KEYWORD         "boolean"   0   BOOLEAN
 KEYWORD         "char"      0   CHAR
 KEYWORD         "void"      0   VOID
 KEYWORD         "end"       0   END
+KEYWORD         "return"    0   RETURN
 
 PUNCTUATION     "("         0   LEFT_BRACE
 PUNCTUATION     ")"         0   RIGHT_BRACE
