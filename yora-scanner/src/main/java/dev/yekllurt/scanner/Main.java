@@ -16,7 +16,7 @@ public class Main {
         List<TokenDefinition> tokenDefinitionList = tokenDefinitionLoader.load(new File("./examples/scanner/token-definition.yora-scanner"));
         Scanner scanner = new Scanner(FileUtility.readFile(new File("./examples/test-program.yora")), tokenDefinitionList);
         List<Token> tokenList = scanner.tokenize();
-        tokenList.forEach(token -> System.out.println(String.format("%s %s", token.getType(), token.getValue())));
+        tokenList.forEach(token -> System.out.printf("%s %s%n", token.getType(), token.getValue()));
     }
 
 }

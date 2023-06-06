@@ -15,7 +15,7 @@ public class Main {
         List<TokenDefinition> tokenDefinitionList = tokenDefinitionLoader.load(new File("./examples/lexer/lexer-definition.yora-lexer"));
         Lexer lexer = new Lexer(FileUtility.readFile(new File("./examples/scanner/test-program.yora.out")), tokenDefinitionList);
         List<Token> tokenList = lexer.tokenize();
-        tokenList.forEach(token -> System.out.println(String.format("%s%s", token.getType(), token.getValue() != null ? " " + token.getValue() : "")));
+        tokenList.forEach(token -> System.out.printf("%s%s%n", token.getType(), token.getValue() != null ? " " + token.getValue() : ""));
     }
 
 }
