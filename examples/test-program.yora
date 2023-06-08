@@ -1,15 +1,5 @@
-void main()
-
-    int a = 5;
-    int b = 3;
-    int c = a * b;
-    int d = double(a);
-
-    print(c);
-    print(d);
-
-end;
-
-int double(int input)
-    return 2 * input;
+int main()
+    int a = 3;
+    int result = 4 + a;
+    print(result);
 end;
