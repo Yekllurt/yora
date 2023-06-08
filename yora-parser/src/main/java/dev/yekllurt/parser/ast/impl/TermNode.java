@@ -1,7 +1,7 @@
 package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
-import dev.yekllurt.parser.ast.ParserUtility;
+import dev.yekllurt.parser.ast.Utility;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
@@ -23,12 +23,12 @@ public class TermNode implements ASTNode {
         if (Objects.isNull(returnScope)) {
             throw new ExecutionError("Unable to return a value as the return scope is null");
         }
-        if (ParserUtility.isIdentifier(value)) {
+        if (Utility.isIdentifier(value)) {
             String identifier = (String) value;
             returnScope.assignReturnValue(variableScope.lookupVariableType(identifier), variableScope.lookupVariable(identifier));
-        } else if (ParserUtility.isInteger(value)) {
+        } else if (Utility.isInteger(value)) {
             returnScope.assignReturnValue(TokenType.KEYWORD_INT, Integer.valueOf((String) value));
-        } else if (ParserUtility.isFloat(value)) {
+        } else if (Utility.isFloat(value)) {
             returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Integer.valueOf((String) value));
         } else {
             throw new ExecutionError(String.format("Unable to resolve the term '%s'", value));

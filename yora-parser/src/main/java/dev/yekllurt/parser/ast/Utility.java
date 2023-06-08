@@ -2,9 +2,12 @@ package dev.yekllurt.parser.ast;
 
 import dev.yekllurt.parser.ast.throwable.exception.ParseException;
 
-public class ParserUtility {
+/**
+ * A helper class containing functions that are used by the parser and interpreter
+ */
+public class Utility {
 
-    private ParserUtility() {
+    private Utility() {
         // Intentional as a helper class should not be instantiated by other classes
     }
 

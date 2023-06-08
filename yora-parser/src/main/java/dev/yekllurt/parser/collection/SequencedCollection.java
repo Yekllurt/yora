@@ -5,6 +5,9 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * A collection of elements that keep the insertion order
+ */
 public class SequencedCollection<E> implements Iterable<E> {
 
     private static final int INITIAL_CAPACITY = 10;
@@ -16,6 +19,11 @@ public class SequencedCollection<E> implements Iterable<E> {
         this.array = new Object[INITIAL_CAPACITY];
     }
 
+    /**
+     * Adds a non-null element to the collection
+     *
+     * @param e the element
+     */
     public void add(E e) {
         if (Objects.isNull(e)) {
             throw new IllegalArgumentException("Only non null elements can be added");
@@ -26,6 +34,12 @@ public class SequencedCollection<E> implements Iterable<E> {
         array[size++] = e;
     }
 
+    /**
+     * Get an element at a specific index
+     *
+     * @param index the index of the element
+     * @return the element
+     */
     public E get(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
@@ -33,6 +47,11 @@ public class SequencedCollection<E> implements Iterable<E> {
         return (E) array[index];
     }
 
+    /**
+     * The amount of elements in the collection
+     *
+     * @return the element count in the collection
+     */
     public int size() {
         return this.size;
     }

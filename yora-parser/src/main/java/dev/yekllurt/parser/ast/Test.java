@@ -13,11 +13,12 @@ public class Test {
         var tokens = new TokenLoader().load(new File("./examples/lexer/test-program.yora.out"));
         var parser = new Parser(tokens);
         var node = parser.parse();
-        int x = 0;
+        var debugVariable1 = 0;
         VariableScope variableScope = new VariableScopeImplementation();
         variableScope.beginScope();
         node.evaluate(variableScope, null, null);
         variableScope.endScope();
+        var debugVariable2 = 0;
     }
 
 }

@@ -24,8 +24,9 @@ public class FunctionNode implements ASTNode {
 
     @Override
     public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
+        // TODO: handle parameters, amongst others these have to be evaluated
 
-        for (ASTNode statement : statements) {
+        for (var statement : statements) {
             statement.evaluate(variableScope, parameterScope, null);
         }
 

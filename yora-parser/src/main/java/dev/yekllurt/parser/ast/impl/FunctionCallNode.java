@@ -24,18 +24,18 @@ public class FunctionCallNode implements ASTNode {
         if (NativeFunctionDirectory.isNativeFunction(functionIdentifier)) {
             var function = NativeFunctionDirectory.getNativeFunction(functionIdentifier);
             if (arguments instanceof ExpressionListNode expressionList) {
-                var arguments = new ArrayList<>();
+                var argumentsToPass = new ArrayList<>();
                 for (var expression : expressionList.getExpressionList()) {
                     var returnScopeExpression = new ReturnScopeImplementation();
                     expression.evaluate(variableScope, null, returnScopeExpression);
-                    arguments.add(returnScopeExpression.lookupReturnValue());
+                    argumentsToPass.add(returnScopeExpression.lookupReturnValue());
                 }
-                function.execute(arguments.toArray());
+                function.execute(argumentsToPass.toArray());
             } else {
                 throw new ExecutionError(String.format("Unknown node type %s for native function call", arguments.getClass().getSimpleName()));
             }
         } else {
-
+            // TODO: implement user defined functions, a requirement is adding a user function register for easy access
         }
     }
 

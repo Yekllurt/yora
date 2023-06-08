@@ -1,7 +1,7 @@
 package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
-import dev.yekllurt.parser.ast.ParserUtility;
+import dev.yekllurt.parser.ast.Utility;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
@@ -46,11 +46,11 @@ public class ExpressionNode implements ASTNode {
 
     private void performPlus(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.isFloat(nodeValues.x()) || ParserUtility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseFloat(nodeValues.x()) + ParserUtility.parseFloat(nodeValues.y()));
+        if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
+            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) + Utility.parseFloat(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseInteger(nodeValues.x()) + ParserUtility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseInteger(nodeValues.x()) + Utility.parseInteger(nodeValues.y()));
             }
         } else {
             returnScope.assignReturnValue(null, String.valueOf(nodeValues.x()) + String.valueOf(nodeValues.y()));
@@ -59,11 +59,11 @@ public class ExpressionNode implements ASTNode {
 
     private void performMinus(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.isFloat(nodeValues.x()) || ParserUtility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseFloat(nodeValues.x()) - ParserUtility.parseFloat(nodeValues.y()));
+        if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
+            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) - Utility.parseFloat(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseInteger(nodeValues.x()) - ParserUtility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseInteger(nodeValues.x()) - Utility.parseInteger(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to subtract the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -72,11 +72,11 @@ public class ExpressionNode implements ASTNode {
 
     private void performStar(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.isFloat(nodeValues.x()) || ParserUtility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseFloat(nodeValues.x()) * ParserUtility.parseFloat(nodeValues.y()));
+        if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
+            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) * Utility.parseFloat(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseInteger(nodeValues.x()) * ParserUtility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseInteger(nodeValues.x()) * Utility.parseInteger(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to multiply the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -85,14 +85,14 @@ public class ExpressionNode implements ASTNode {
 
     private void performDivide(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.parseFloat(nodeValues.y()) == 0) {
+        if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
+            if (Utility.parseFloat(nodeValues.y()) == 0) {
                 throw new InvalidOperationError("Can't divide by 0");
             }
-            if (ParserUtility.isFloat(nodeValues.x()) || ParserUtility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseFloat(nodeValues.x()) / ParserUtility.parseFloat(nodeValues.y()));
+            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) / Utility.parseFloat(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseInteger(nodeValues.x()) / ParserUtility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseInteger(nodeValues.x()) / Utility.parseInteger(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to divide the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
