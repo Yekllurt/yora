@@ -23,4 +23,8 @@ public class TokenType {
     public static final String IDENTIFIER = "IDENTIFIER";
     public static final String DECIMAL_NUMBER = "NUMBER";
 
+    private TokenType() {
+        // Intentional as a helper class should not be instantiated by other classes
+    }
+
 }

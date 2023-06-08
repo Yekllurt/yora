@@ -43,8 +43,8 @@ public class Parser {
     /**
      * Handle the member grammar production rule
      */
-    private SequencedCollection<ASTNode> parseMemberList() {
-        var members = new SequencedCollection<ASTNode>();
+    private SequencedCollection<FunctionNode> parseMemberList() {
+        var members = new SequencedCollection<FunctionNode>();
         var member = parseMember();
         while (member != null) {
             members.add(member);
@@ -53,7 +53,7 @@ public class Parser {
         return members;
     }
 
-    private ASTNode parseMember() {
+    private FunctionNode parseMember() {
         if (isParseCompleted()) {
             return null;
         }
@@ -91,6 +91,18 @@ public class Parser {
                                             .returnStatement(returnExpr)
                                             .build();
                                 }
+                            }
+                        } else if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.KEYWORD_END)) {
+                            tokenCursor++;
+                            if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
+                                tokenCursor++;
+                                return FunctionNode.builder()
+                                        .identifier(tokenIdentifier.getValue())
+                                        .returnType(token.getType())
+                                        .parameters(parameters)
+                                        .statements(statements)
+                                        .returnStatement(null)
+                                        .build();
                             }
                         }
                     }
@@ -183,7 +195,7 @@ public class Parser {
                 tokenCursor++;
                 if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_EQUAL)) {
                     tokenCursor++;
-                    ASTNode expression = parseExpression();
+                    var expression = parseExpression();
                     if (Objects.nonNull(expression)
                             && isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
                         tokenCursor++;
@@ -192,6 +204,10 @@ public class Parser {
                                 .value(expression)
                                 .build();
                     }
+                } else if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_LEFT_BRACE)) {
+                    tokenCursor++;
+                    var functionCall = parseFunctionCall(token);
+                    return functionCall;
                 }
             }
             default -> {
@@ -299,6 +315,7 @@ public class Parser {
         var expression = parseExpression();
         while (Objects.nonNull(expression)) {
             expressionList.add(expression);
+            expression = null;
             if (isNextToken(TokenType.PUNCTUATION_COMMA)) {
                 tokenCursor++;
                 expression = parseExpression();
@@ -344,9 +361,8 @@ public class Parser {
      * Get the next token and increment the cursor
      */
     private Token getNextToken() {
-        var token = getCurrentToken();
         tokenCursor++;
-        return token;
+        return getCurrentToken();
     }
 
     /**
