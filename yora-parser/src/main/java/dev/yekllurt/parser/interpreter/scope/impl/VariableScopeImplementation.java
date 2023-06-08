@@ -1,5 +1,6 @@
-package dev.yekllurt.parser.interpreter.scope;
+package dev.yekllurt.parser.interpreter.scope.impl;
 
+import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.throwable.error.ScopeError;
 import dev.yekllurt.parser.utility.Tuple;
 
@@ -8,55 +9,53 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ScopeImplementation implements VariableScope {
+public class VariableScopeImplementation implements VariableScope {
 
-    private final Deque<Map<String, Tuple<String, Object>>> scopeVariableStack = new ArrayDeque<>();
+    private final Deque<Map<String, Tuple<String, Object>>> variableScope = new ArrayDeque<>();
 
     @Override
     public void beginScope() {
-        scopeVariableStack.push(new HashMap<>());
+        variableScope.push(new HashMap<>());
     }
 
     @Override
     public void endScope() {
-        if (scopeVariableStack.isEmpty()) {
+        if (variableScope.isEmpty()) {
             throw new ScopeError("Can't end a scope as no scope is active.");
         }
-        scopeVariableStack.pop();
+        variableScope.pop();
     }
 
     @Override
     public void assignVariable(String name, String type, Object value) {
-        if (scopeVariableStack.isEmpty()) {
+        if (variableScope.isEmpty()) {
             throw new ScopeError("Can't assign the variable '%s' as there is not active scope available.".formatted(name));
         }
-        if (exists(name)) {
+        if (existsVariable(name)) {
             throw new ScopeError(String.format("Can't assign the variable '%s' as it already exists in the current scope.", name));
         }
-        scopeVariableStack.peek().put(name, new Tuple<>(type, value));
+        variableScope.peek().put(name, new Tuple<>(type, value));
     }
 
     @Override
     public void updateVariable(String name, Object value) {
-        if (scopeVariableStack.isEmpty()) {
+        if (variableScope.isEmpty()) {
             throw new ScopeError("Can't update the variable '%s' as there is not active scope available.".formatted(name));
         }
-        if (!exists(name)) {
+        if (!existsVariable(name)) {
             throw new ScopeError(String.format("Can't update the variable '%s' as it doesn't exist in the current scope.", name));
         }
-        for (var scope : scopeVariableStack) {
-            if (scope.containsKey(name)) {
-                scope.put(name, new Tuple<>(lookupVariableType(name), value));
-            }
+        for (var scope : variableScope) {
+            scope.computeIfPresent(name, (key, val) -> scope.put(name, new Tuple<>(lookupVariableType(name), value)));
         }
     }
 
     @Override
     public Object lookupVariable(String name) {
-        if (scopeVariableStack.isEmpty()) {
+        if (variableScope.isEmpty()) {
             throw new ScopeError(String.format("Can't lookup the variable '%s' as there is not active scope available.", name));
         }
-        for (var scope : scopeVariableStack) {
+        for (var scope : variableScope) {
             if (scope.containsKey(name)) {
                 return scope.get(name).y();
             }
@@ -66,10 +65,10 @@ public class ScopeImplementation implements VariableScope {
 
     @Override
     public String lookupVariableType(String name) {
-        if (scopeVariableStack.isEmpty()) {
+        if (variableScope.isEmpty()) {
             throw new ScopeError(String.format("Can't lookup the variable '%s' as there is not active scope available.", name));
         }
-        for (var scope : scopeVariableStack) {
+        for (var scope : variableScope) {
             if (scope.containsKey(name)) {
                 return scope.get(name).x();
             }
@@ -83,11 +82,11 @@ public class ScopeImplementation implements VariableScope {
      * @param name the variable name
      * @return if the variable exists in the current scope
      */
-    private boolean exists(String name) {
-        if (scopeVariableStack.isEmpty()) {
+    private boolean existsVariable(String name) {
+        if (variableScope.isEmpty()) {
             throw new ScopeError(String.format("Can't check if the variable '%s' exists as there is not active scope available.", name));
         }
-        for (var scope : scopeVariableStack) {
+        for (var scope : variableScope) {
             if (scope.containsKey(name)) {
                 return true;
             }
