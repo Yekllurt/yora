@@ -1,10 +1,11 @@
 package dev.yekllurt.parser.ast.creator;
 
 import dev.yekllurt.parser.ast.ASTNode;
+import dev.yekllurt.parser.ast.ConditionOperator;
 import dev.yekllurt.parser.ast.impl.*;
 import dev.yekllurt.parser.ast.throwable.exception.GrammarException;
-import dev.yekllurt.parser.ast.throwable.exception.UnsupportedTokenTypeException;
 import dev.yekllurt.parser.ast.throwable.exception.ParserException;
+import dev.yekllurt.parser.ast.throwable.exception.UnsupportedTokenTypeException;
 import dev.yekllurt.parser.collection.SequencedCollection;
 import dev.yekllurt.parser.token.Token;
 import dev.yekllurt.parser.token.TokenType;
@@ -32,7 +33,7 @@ public class Parser {
     // == Parse methods ==
 
     /**
-     * Handle the programm grammar production rule
+     * Handle the program grammar production rule
      */
     private ASTNode parseProgram() {
         return ProgramNode.builder()
@@ -57,7 +58,6 @@ public class Parser {
         if (isParseCompleted()) {
             return null;
         }
-
         var token = getCurrentToken();
         if (List.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_VOID).contains(token.getType())) {
             tokenCursor++;
@@ -153,7 +153,7 @@ public class Parser {
         var statement = parseStatement();
         if (Objects.nonNull(statement)) {
             statements.add(statement);
-            while (isParseNotCompleted() && getCurrentTokenType().matches("IDENTIFIER|INT|FLOAT|BOOLEAN|CHAR|VOID")) {
+            while (isParseNotCompleted() && getCurrentTokenType().matches("IDENTIFIER|INT|FLOAT|BOOLEAN|CHAR|VOID|IF")) {
                 statement = parseStatement();
                 if (Objects.nonNull(statement)) {
                     statements.add(statement);
@@ -206,8 +206,29 @@ public class Parser {
                     }
                 } else if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_LEFT_BRACE)) {
                     tokenCursor++;
-                    var functionCall = parseFunctionCall(token);
-                    return functionCall;
+                    return parseFunctionCall(token);
+                }
+            }
+            case TokenType.KEYWORD_IF -> {
+                tokenCursor++;
+                if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_LEFT_BRACE)) {
+                    tokenCursor++;
+                    var conditions = parseConditionList();
+                    var x = 0;
+                    if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                        tokenCursor++;
+                        var statements = parseStatementList();
+                        if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.KEYWORD_END)) {
+                            tokenCursor++;
+                            if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
+                                tokenCursor++;
+                                return IfBranchNode.builder()
+                                        .condition(conditions)
+                                        .statements(statements)
+                                        .build();
+                            }
+                        }
+                    }
                 }
             }
             default -> {
@@ -233,10 +254,6 @@ public class Parser {
     }
 
     private ASTNode parseTerm() {
-        if (isParseCompleted()) {
-            return null;
-        }
-
         var token = getCurrentToken();
         switch (token.getType()) {
             case TokenType.DECIMAL_NUMBER -> {
@@ -327,6 +344,38 @@ public class Parser {
         return ExpressionListNode.builder().expressionList(expressionList).build();
     }
 
+    private ConditionNode parseConditionList() {
+        return parseCondition();
+    }
+
+    private ConditionNode parseCondition() {
+        if (isParseNotCompleted()) {
+            var left = parseTerm();
+            if (Objects.nonNull(left) && isParseNotCompleted()
+                    && getCurrentTokenType().equals(TokenType.PUNCTUATION_EQUAL)
+                    && getNextTokenType().equals(TokenType.PUNCTUATION_EQUAL)) {    // TODO: check if isParseNotCompleted before calling getNextTokenType()
+                tokenCursor++;
+                var right = parseTerm();
+                return ConditionNode.builder()
+                        .left(left)
+                        .right(right)
+                        .operator(ConditionOperator.EQUAL)
+                        .build();
+            } else if (Objects.nonNull(left) && isParseNotCompleted()
+                    && getCurrentTokenType().equals(TokenType.PUNCTUATION_EXCLAMATION_MARK)
+                    && getNextTokenType().equals(TokenType.PUNCTUATION_EQUAL)) {    // TODO: check if isParseNotCompleted before calling getNextTokenType()
+                tokenCursor++;
+                var right = parseTerm();
+                return ConditionNode.builder()
+                        .left(left)
+                        .right(right)
+                        .operator(ConditionOperator.NOT_EQUAL)
+                        .build();
+            }
+        }
+        throw new GrammarException("Unknown grammar for condition parsing");
+    }
+
     // == Helper methods ==
 
     /**
@@ -363,6 +412,10 @@ public class Parser {
     private Token getNextToken() {
         tokenCursor++;
         return getCurrentToken();
+    }
+
+    private String getNextTokenType() {
+        return getNextToken().getType();
     }
 
     /**

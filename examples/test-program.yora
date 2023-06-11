@@ -1,5 +1,10 @@
 int main()
     int a = 3;
+    if(a == 3)
+        int b = 6;
+        int c = a + b;
+        print(c);
+    end;
     int result = 4 + a;
     print(result);
 end;
