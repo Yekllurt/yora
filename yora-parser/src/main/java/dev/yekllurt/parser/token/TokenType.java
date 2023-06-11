@@ -9,6 +9,7 @@ public class TokenType {
     public static final String KEYWORD_VOID = "VOID";
     public static final String KEYWORD_END = "END";
     public static final String KEYWORD_RETURN = "RETURN";
+    public static final String KEYWORD_IF = "IF";
 
     public static final String PUNCTUATION_LEFT_BRACE = "LEFT_BRACE";
     public static final String PUNCTUATION_RIGHT_BRACE = "RIGHT_BRACE";
