@@ -6,10 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TokenDefinitionLoader {
 
@@ -58,7 +55,11 @@ public class TokenDefinitionLoader {
         if (getFirstChar(pattern) == '"' && getLastChar(pattern) == '"') {
             var shortenedPattern = pattern.substring(1, pattern.length() - 1);
             if (shortenedPattern.length() == 1) {
-                pattern = "[" + shortenedPattern + "]";
+                var prefix = "";
+                if (Set.of("^").contains(shortenedPattern)) {
+                    prefix += "\\";
+                }
+                pattern = "[" + prefix + shortenedPattern + "]";
             } else {
                 pattern = "(" + shortenedPattern + ")";
             }
