@@ -1,6 +1,8 @@
 package dev.yekllurt.parser.interpreter.nativefunction;
 
+import dev.yekllurt.parser.interpreter.nativefunction.impl.CosNativeFunction;
 import dev.yekllurt.parser.interpreter.nativefunction.impl.PrintNativeFunction;
+import dev.yekllurt.parser.interpreter.nativefunction.impl.SinNativeFunction;
 import dev.yekllurt.parser.interpreter.nativefunction.impl.SqrtNativeFunction;
 
 import java.util.HashMap;
@@ -13,6 +15,8 @@ public class NativeFunctionDirectory {
     static {
         NATIVE_FUNCTION_MAP.put("print", new PrintNativeFunction());
         NATIVE_FUNCTION_MAP.put("sqrt", new SqrtNativeFunction());
+        NATIVE_FUNCTION_MAP.put("cos", new CosNativeFunction());
+        NATIVE_FUNCTION_MAP.put("sin", new SinNativeFunction());
     }
 
     private NativeFunctionDirectory() {
