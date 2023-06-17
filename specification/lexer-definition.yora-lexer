@@ -11,6 +11,8 @@ KEYWORD         "void"      0   VOID
 KEYWORD         "end"       0   END
 KEYWORD         "return"    0   RETURN
 KEYWORD         "if"        0   IF
+KEYWORD         "true"      0   TRUE
+KEYWORD         "false"     0   FALSE
 
 PUNCTUATION     "("         0   LEFT_BRACE
 PUNCTUATION     ")"         0   RIGHT_BRACE
@@ -20,6 +22,7 @@ PUNCTUATION     "+"         0   PLUS
 PUNCTUATION     "-"         0   MINUS
 PUNCTUATION     "*"         0   STAR
 PUNCTUATION     "/"         0   DIVIDE
+PUNCTUATION     "^"         0   CARET
 PUNCTUATION     "="         0   EQUAL
 PUNCTUATION     "!"         0   EXCLAMATION_MARK
 

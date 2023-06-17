@@ -4,6 +4,7 @@ import dev.yekllurt.parser.interpreter.nativefunction.NativeFunction;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 public class PrintNativeFunction implements NativeFunction {
 
@@ -14,13 +15,13 @@ public class PrintNativeFunction implements NativeFunction {
      * @return null after print
      */
     @Override
-    public Object execute(Object... parameters) {
+    public Optional<Object> execute(Object... parameters) {
         if (Objects.nonNull(parameters) && parameters.length == 1) {
             System.out.println(parameters[0]);
         } else {
             System.out.println(Arrays.toString(parameters));
         }
-        return null;
+        return Optional.empty();
     }
 
 }

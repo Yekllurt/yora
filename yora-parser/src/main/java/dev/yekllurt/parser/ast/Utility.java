@@ -1,6 +1,7 @@
 package dev.yekllurt.parser.ast;
 
 import dev.yekllurt.parser.ast.throwable.exception.ParseException;
+import dev.yekllurt.parser.token.TokenType;
 
 /**
  * A helper class containing functions that are used by the parser and interpreter
@@ -61,11 +62,13 @@ public class Utility {
     }
 
     public static Float parseFloat(Object value) {
-        if (!isFloat(value)) {
+        if (!isNumber(value)) {
             throw new ParseException(String.format("Can't convert the value '%s' into a float", value));
         }
         if (value instanceof Float f) {
             return f;
+        } else if (value instanceof Integer i) {
+            return i.floatValue();
         } else if (value instanceof String str) {
             return Float.valueOf(str);
         }
@@ -74,6 +77,22 @@ public class Utility {
 
     public static boolean isNumber(Object value) {
         return isInteger(value) || isFloat(value);
+    }
+
+    public static String getReturnType(Object value) {
+        if (Utility.isInteger(value)) {
+            return TokenType.KEYWORD_INT;
+        }
+        if (Utility.isFloat(value)) {
+            return TokenType.KEYWORD_FLOAT;
+        }
+        if (value instanceof Boolean) {
+            return TokenType.KEYWORD_BOOLEAN;
+        }
+        if (value instanceof Character) {
+            return TokenType.KEYWORD_CHAR;
+        }
+        return null;
     }
 
 }

@@ -20,7 +20,7 @@ public class AssignmentNode implements ASTNode {
         var childReturnScope = new ReturnScopeImplementation();
         value.evaluate(variableScope, null, childReturnScope);
 
-        variableScope.assignVariable(identifier, null, childReturnScope.lookupReturnValue());
+        variableScope.updateVariable(identifier, childReturnScope.lookupReturnValue());
     }
 
 }

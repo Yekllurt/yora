@@ -21,6 +21,7 @@ public class TokenType {
     public static final String PUNCTUATION_DIVIDE = "DIVIDE";
     public static final String PUNCTUATION_EQUAL = "EQUAL";
     public static final String PUNCTUATION_EXCLAMATION_MARK = "EXCLAMATION_MARK";
+    public static final String PUNCTUATION_CARET = "CARET";
 
     public static final String IDENTIFIER = "IDENTIFIER";
     public static final String DECIMAL_NUMBER = "NUMBER";

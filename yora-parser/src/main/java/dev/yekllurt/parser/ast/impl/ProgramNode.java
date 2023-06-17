@@ -20,9 +20,11 @@ public class ProgramNode implements ASTNode {
     public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
         // TODO: only execute a function if it is the main function, if multiple main functions exist, then throw an error
         for (var function : functions) {
-            var childParameterScope = new ParameterScopeImplementation();
-            var childReturnScope = new ReturnScopeImplementation();
-            function.evaluate(variableScope, childParameterScope, childReturnScope);
+            if (function.getIdentifier().equals("main")) {
+                var childParameterScope = new ParameterScopeImplementation();
+                var childReturnScope = new ReturnScopeImplementation();
+                function.evaluate(variableScope, childParameterScope, childReturnScope);
+            }
         }
     }
 

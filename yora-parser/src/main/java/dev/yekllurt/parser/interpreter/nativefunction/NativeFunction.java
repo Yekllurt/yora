@@ -1,5 +1,7 @@
 package dev.yekllurt.parser.interpreter.nativefunction;
 
+import java.util.Optional;
+
 /**
  * An interface describing basic functions that are provided by the programming language
  */
@@ -8,6 +10,6 @@ public interface NativeFunction {
     /**
      * The implementation of the function
      */
-    Object execute(Object... parameters);
+    Optional<Object> execute(Object... parameters);
 
 }

@@ -1,6 +1,7 @@
 package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
+import dev.yekllurt.parser.ast.Utility;
 import dev.yekllurt.parser.interpreter.nativefunction.NativeFunctionDirectory;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
@@ -30,7 +31,8 @@ public class FunctionCallNode implements ASTNode {
                     expression.evaluate(variableScope, null, returnScopeExpression);
                     argumentsToPass.add(returnScopeExpression.lookupReturnValue());
                 }
-                function.execute(argumentsToPass.toArray());
+                function.execute(argumentsToPass.toArray())
+                        .ifPresent(result -> returnScope.assignReturnValue(Utility.getReturnType(result), result));
             } else {
                 throw new ExecutionError(String.format("Unknown node type %s for native function call", arguments.getClass().getSimpleName()));
             }

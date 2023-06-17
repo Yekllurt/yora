@@ -6,7 +6,6 @@ import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
-import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
 import dev.yekllurt.parser.interpreter.throwable.error.InvalidOperationError;
 import dev.yekllurt.parser.token.TokenType;
 import dev.yekllurt.parser.utility.Tuple;
@@ -15,7 +14,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ExpressionNode implements ASTNode {
+public class BinaryExpressionNode implements ASTNode {
 
     private final ASTNode left;             // is normally always a TermNode
     private final ASTNode right;            // is normally always a TermNode or ExpressionNode
@@ -23,24 +22,14 @@ public class ExpressionNode implements ASTNode {
 
     @Override
     public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
-        assertNodeType();
-
         switch (operator) {
             case TokenType.PUNCTUATION_PLUS -> performPlus(variableScope, parameterScope, returnScope);
             case TokenType.PUNCTUATION_MINUS -> performMinus(variableScope, parameterScope, returnScope);
             case TokenType.PUNCTUATION_STAR -> performStar(variableScope, parameterScope, returnScope);
             case TokenType.PUNCTUATION_DIVIDE -> performDivide(variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_CARET -> performPower(variableScope, parameterScope, returnScope);
 
             default -> throw new InvalidOperationError(String.format("No operation '%s' exists", operator));
-        }
-    }
-
-    private void assertNodeType() {
-        if (!(left instanceof TermNode)) {
-            throw new ExecutionError(String.format("The left node of an expression node must always be a TermNode, however it was of type '%s'", left.getClass().getSimpleName()));
-        }
-        if (!((right instanceof TermNode) || (right instanceof ExpressionNode))) {
-            throw new ExecutionError(String.format("The left node of an expression node must always be a TermNode or an ExpressionNode, however it was of type '%s'", left.getClass().getSimpleName()));
         }
     }
 
@@ -50,7 +39,7 @@ public class ExpressionNode implements ASTNode {
             if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) + Utility.parseFloat(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseInteger(nodeValues.x()) + Utility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseInteger(nodeValues.x()) + Utility.parseInteger(nodeValues.y()));
             }
         } else {
             returnScope.assignReturnValue(null, String.valueOf(nodeValues.x()) + String.valueOf(nodeValues.y()));
@@ -63,7 +52,7 @@ public class ExpressionNode implements ASTNode {
             if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) - Utility.parseFloat(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseInteger(nodeValues.x()) - Utility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseInteger(nodeValues.x()) - Utility.parseInteger(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to subtract the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -76,7 +65,7 @@ public class ExpressionNode implements ASTNode {
             if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) * Utility.parseFloat(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseInteger(nodeValues.x()) * Utility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseInteger(nodeValues.x()) * Utility.parseInteger(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to multiply the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -96,6 +85,19 @@ public class ExpressionNode implements ASTNode {
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to divide the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
+        }
+    }
+
+    private void performPower(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
+        var nodeValues = getNodeValues(variableScope, parameterScope);
+        if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
+            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Math.pow(Utility.parseFloat(nodeValues.x()), Utility.parseFloat(nodeValues.y())));
+            } else {
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, (int) Math.pow(Utility.parseInteger(nodeValues.x()), Utility.parseInteger(nodeValues.y())));
+            }
+        } else {
+            throw new InvalidOperationError(String.format("Unable to power the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
         }
     }
 

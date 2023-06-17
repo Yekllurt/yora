@@ -16,7 +16,13 @@ import java.util.Objects;
 @Builder
 public class TermNode implements ASTNode {
 
+    public enum TermType {
+        LITERAL,
+        DYNAMIC;
+    }
+
     private final Object value;
+    private final TermType type;
 
     @Override
     public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
