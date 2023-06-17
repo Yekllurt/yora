@@ -2,6 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.collection.SequencedCollection;
+import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
@@ -19,9 +20,10 @@ public class IfBranchNode implements ASTNode {
     private final SequencedCollection<ASTNode> statements;
 
     @Override
-    public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
+    public void evaluate(FunctionScope functionScope, VariableScope variableScope,
+                         ParameterScope parameterScope, ReturnScope returnScope) {
         var returnScopeCondition = new ReturnScopeImplementation();
-        condition.evaluate(variableScope, null, returnScopeCondition);
+        condition.evaluate(functionScope, variableScope, null, returnScopeCondition);
         if (!TokenType.KEYWORD_BOOLEAN.equals(returnScopeCondition.lookupReturnValueType())) {
             throw new ExecutionError(String.format("A condition returned the non-boolean value '%s'", returnScopeCondition.lookupReturnValueType()));
         }
@@ -29,7 +31,7 @@ public class IfBranchNode implements ASTNode {
         if (conditionEvaluation) {
             variableScope.beginScope();
             for (var statement : statements) {
-                statement.evaluate(variableScope, null, null);
+                statement.evaluate(functionScope, variableScope, null, null);
             }
             variableScope.endScope();
         }

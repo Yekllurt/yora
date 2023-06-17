@@ -2,6 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.Utility;
+import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
@@ -21,20 +22,23 @@ public class BinaryExpressionNode implements ASTNode {
     private final String operator;
 
     @Override
-    public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
+    public void evaluate(FunctionScope functionScope, VariableScope variableScope,
+                         ParameterScope parameterScope, ReturnScope returnScope) {
         switch (operator) {
-            case TokenType.PUNCTUATION_PLUS -> performPlus(variableScope, parameterScope, returnScope);
-            case TokenType.PUNCTUATION_MINUS -> performMinus(variableScope, parameterScope, returnScope);
-            case TokenType.PUNCTUATION_STAR -> performStar(variableScope, parameterScope, returnScope);
-            case TokenType.PUNCTUATION_DIVIDE -> performDivide(variableScope, parameterScope, returnScope);
-            case TokenType.PUNCTUATION_CARET -> performPower(variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_PLUS -> performPlus(functionScope, variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_MINUS -> performMinus(functionScope, variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_STAR -> performStar(functionScope, variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_DIVIDE ->
+                    performDivide(functionScope, variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_CARET -> performPower(functionScope, variableScope, parameterScope, returnScope);
 
             default -> throw new InvalidOperationError(String.format("No operation '%s' exists", operator));
         }
     }
 
-    private void performPlus(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(variableScope, parameterScope);
+    private void performPlus(FunctionScope functionScope, VariableScope variableScope,
+                             ParameterScope parameterScope, ReturnScope returnScope) {
+        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
             if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) + Utility.parseFloat(nodeValues.y()));
@@ -46,8 +50,9 @@ public class BinaryExpressionNode implements ASTNode {
         }
     }
 
-    private void performMinus(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(variableScope, parameterScope);
+    private void performMinus(FunctionScope functionScope, VariableScope variableScope,
+                              ParameterScope parameterScope, ReturnScope returnScope) {
+        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
             if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) - Utility.parseFloat(nodeValues.y()));
@@ -59,8 +64,9 @@ public class BinaryExpressionNode implements ASTNode {
         }
     }
 
-    private void performStar(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(variableScope, parameterScope);
+    private void performStar(FunctionScope functionScope, VariableScope variableScope,
+                             ParameterScope parameterScope, ReturnScope returnScope) {
+        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
             if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) * Utility.parseFloat(nodeValues.y()));
@@ -72,8 +78,9 @@ public class BinaryExpressionNode implements ASTNode {
         }
     }
 
-    private void performDivide(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(variableScope, parameterScope);
+    private void performDivide(FunctionScope functionScope, VariableScope variableScope,
+                               ParameterScope parameterScope, ReturnScope returnScope) {
+        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
             if (Utility.parseFloat(nodeValues.y()) == 0) {
                 throw new InvalidOperationError("Can't divide by 0");
@@ -88,8 +95,9 @@ public class BinaryExpressionNode implements ASTNode {
         }
     }
 
-    private void performPower(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(variableScope, parameterScope);
+    private void performPower(FunctionScope functionScope, VariableScope variableScope,
+                              ParameterScope parameterScope, ReturnScope returnScope) {
+        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
             if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Math.pow(Utility.parseFloat(nodeValues.x()), Utility.parseFloat(nodeValues.y())));
@@ -101,11 +109,12 @@ public class BinaryExpressionNode implements ASTNode {
         }
     }
 
-    private Tuple<Object, Object> getNodeValues(VariableScope variableScope, ParameterScope parameterScope) {
+    private Tuple<Object, Object> getNodeValues(FunctionScope functionScope, VariableScope variableScope,
+                                                ParameterScope parameterScope) {
         var returnScopeLeft = new ReturnScopeImplementation();
-        left.evaluate(variableScope, parameterScope, returnScopeLeft);
+        left.evaluate(functionScope, variableScope, parameterScope, returnScopeLeft);
         var returnScopeRight = new ReturnScopeImplementation();
-        right.evaluate(variableScope, parameterScope, returnScopeRight);
+        right.evaluate(functionScope, variableScope, parameterScope, returnScopeRight);
         return new Tuple<>(returnScopeLeft.lookupReturnValue(), returnScopeRight.lookupReturnValue());
     }
 

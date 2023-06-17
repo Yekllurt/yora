@@ -3,6 +3,7 @@ package dev.yekllurt.parser.ast.impl;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.Utility;
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunctionDirectory;
+import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
@@ -21,14 +22,15 @@ public class FunctionCallNode implements ASTNode {
     private final ASTNode arguments;
 
     @Override
-    public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
+    public void evaluate(FunctionScope functionScope, VariableScope variableScope,
+                         ParameterScope parameterScope, ReturnScope returnScope) {
         if (NativeFunctionDirectory.isNativeFunction(functionIdentifier)) {
             var function = NativeFunctionDirectory.getNativeFunction(functionIdentifier);
             if (arguments instanceof ExpressionListNode expressionList) {
                 var argumentsToPass = new ArrayList<>();
                 for (var expression : expressionList.getExpressionList()) {
                     var returnScopeExpression = new ReturnScopeImplementation();
-                    expression.evaluate(variableScope, null, returnScopeExpression);
+                    expression.evaluate(functionScope, variableScope, null, returnScopeExpression);
                     argumentsToPass.add(returnScopeExpression.lookupReturnValue());
                 }
                 function.execute(argumentsToPass.toArray())

@@ -2,6 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.Utility;
+import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
@@ -25,7 +26,8 @@ public class TermNode implements ASTNode {
     private final TermType type;
 
     @Override
-    public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
+    public void evaluate(FunctionScope functionScope, VariableScope variableScope,
+                         ParameterScope parameterScope, ReturnScope returnScope) {
         if (Objects.isNull(returnScope)) {
             throw new ExecutionError("Unable to return a value as the return scope is null");
         }

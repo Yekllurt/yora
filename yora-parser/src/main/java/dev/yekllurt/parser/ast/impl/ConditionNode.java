@@ -2,6 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
+import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
@@ -22,11 +23,12 @@ public class ConditionNode implements ASTNode {
     private final ConditionOperator operator;
 
     @Override
-    public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
+    public void evaluate(FunctionScope functionScope, VariableScope variableScope,
+                         ParameterScope parameterScope, ReturnScope returnScope) {
         var returnScopeLeft = new ReturnScopeImplementation();
         var returnScopeRight = new ReturnScopeImplementation();
-        left.evaluate(variableScope, null, returnScopeLeft);
-        right.evaluate(variableScope, null, returnScopeRight);
+        left.evaluate(functionScope, variableScope, null, returnScopeLeft);
+        right.evaluate(functionScope, variableScope, null, returnScopeRight);
         if (Objects.isNull(returnScopeLeft.lookupReturnValue()) && Objects.isNull(returnScopeRight.lookupReturnValue())) {
             throw new ExecutionError("Couldn't compare two values as they are both null and null values are not supported by the language");
         }
@@ -43,9 +45,8 @@ public class ConditionNode implements ASTNode {
                         : returnScopeRight.lookupReturnValue().equals(returnScopeLeft.lookupReturnValue());
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, !equal);
             }
-            default -> {
-                throw new UnsupportedOperationException("The condition operator '%s' is not supported".formatted(operator));
-            }
+            default ->
+                    throw new UnsupportedOperationException("The condition operator '%s' is not supported".formatted(operator));
         }
     }
 

@@ -2,6 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.collection.SequencedCollection;
+import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
@@ -23,16 +24,17 @@ public class FunctionNode implements ASTNode {
     private final ASTNode returnStatement;
 
     @Override
-    public void evaluate(VariableScope variableScope, ParameterScope parameterScope, ReturnScope returnScope) {
+    public void evaluate(FunctionScope functionScope, VariableScope variableScope,
+                         ParameterScope parameterScope, ReturnScope returnScope) {
         // TODO: handle parameters, amongst others these have to be evaluated
 
         for (var statement : statements) {
-            statement.evaluate(variableScope, parameterScope, null);
+            statement.evaluate(functionScope, variableScope, parameterScope, null);
         }
 
         if (Objects.nonNull(returnStatement)) {
             var childReturnScope = new ReturnScopeImplementation();
-            returnStatement.evaluate(variableScope, null, childReturnScope);
+            returnStatement.evaluate(functionScope, variableScope, null, childReturnScope);
             returnScope.assignReturnValue(returnType, childReturnScope.lookupReturnValue());
         }
     }
