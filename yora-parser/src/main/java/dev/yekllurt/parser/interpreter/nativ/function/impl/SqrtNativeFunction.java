@@ -13,7 +13,7 @@ public class SqrtNativeFunction implements NativeFunction {
         if (Objects.isNull(parameters) || parameters.length != 1) {
             throw new ExecutionError("The sqrt function only accepts one parameter");
         }
-        return Optional.of((float) Math.sqrt((float) parameters[0]));
+        return Optional.of(Math.sqrt(Double.parseDouble(String.valueOf(parameters[0]))));
     }
 
 }

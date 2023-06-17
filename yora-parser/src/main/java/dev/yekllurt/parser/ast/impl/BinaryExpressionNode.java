@@ -40,10 +40,10 @@ public class BinaryExpressionNode implements ASTNode {
                              ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
-            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) + Utility.parseFloat(nodeValues.y()));
+            if (Utility.isDouble(nodeValues.x()) || Utility.isDouble(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseDouble(nodeValues.x()) + Utility.parseDouble(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseInteger(nodeValues.x()) + Utility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseLong(nodeValues.x()) + Utility.parseLong(nodeValues.y()));
             }
         } else {
             returnScope.assignReturnValue(null, String.valueOf(nodeValues.x()) + String.valueOf(nodeValues.y()));
@@ -54,10 +54,10 @@ public class BinaryExpressionNode implements ASTNode {
                               ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
-            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) - Utility.parseFloat(nodeValues.y()));
+            if (Utility.isDouble(nodeValues.x()) || Utility.isDouble(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseDouble(nodeValues.x()) - Utility.parseDouble(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseInteger(nodeValues.x()) - Utility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseLong(nodeValues.x()) - Utility.parseLong(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to subtract the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -68,10 +68,10 @@ public class BinaryExpressionNode implements ASTNode {
                              ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
-            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) * Utility.parseFloat(nodeValues.y()));
+            if (Utility.isDouble(nodeValues.x()) || Utility.isDouble(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseDouble(nodeValues.x()) * Utility.parseDouble(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseInteger(nodeValues.x()) * Utility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseLong(nodeValues.x()) * Utility.parseLong(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to multiply the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -82,13 +82,13 @@ public class BinaryExpressionNode implements ASTNode {
                                ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
-            if (Utility.parseFloat(nodeValues.y()) == 0) {
+            if (Utility.parseDouble(nodeValues.y()) == 0) {
                 throw new InvalidOperationError("Can't divide by 0");
             }
-            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseFloat(nodeValues.x()) / Utility.parseFloat(nodeValues.y()));
+            if (Utility.isDouble(nodeValues.x()) || Utility.isDouble(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseDouble(nodeValues.x()) / Utility.parseDouble(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseInteger(nodeValues.x()) / Utility.parseInteger(nodeValues.y()));
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Utility.parseLong(nodeValues.x()) / Utility.parseLong(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to divide the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -99,10 +99,10 @@ public class BinaryExpressionNode implements ASTNode {
                               ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValues.x()) && Utility.isNumber(nodeValues.y())) {
-            if (Utility.isFloat(nodeValues.x()) || Utility.isFloat(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Math.pow(Utility.parseFloat(nodeValues.x()), Utility.parseFloat(nodeValues.y())));
+            if (Utility.isDouble(nodeValues.x()) || Utility.isDouble(nodeValues.y())) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Math.pow(Utility.parseDouble(nodeValues.x()), Utility.parseDouble(nodeValues.y())));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, (int) Math.pow(Utility.parseInteger(nodeValues.x()), Utility.parseInteger(nodeValues.y())));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, (int) Math.pow(Utility.parseLong(nodeValues.x()), Utility.parseLong(nodeValues.y())));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to power the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));

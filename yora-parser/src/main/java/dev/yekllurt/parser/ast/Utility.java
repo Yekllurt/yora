@@ -19,8 +19,11 @@ public class Utility {
         return false;
     }
 
-    public static boolean isInteger(Object value) {
+    public static boolean isLong(Object value) {
         if (value instanceof Integer) {
+            return true;
+        }
+        if (value instanceof Long) {
             return true;
         }
         if (value instanceof String str) {
@@ -34,25 +37,30 @@ public class Utility {
         return false;
     }
 
-    public static Integer parseInteger(Object value) {
-        if (!isInteger(value)) {
+    public static Long parseLong(Object value) {
+        if (!isLong(value)) {
             throw new ParseException(String.format("Can't convert the value '%s' into an integer", value));
         }
-        if (value instanceof Integer i) {
-            return i;
+        if (value instanceof Long l) {
+            return l;
+        } else if (value instanceof Integer i) {
+            return i.longValue();
         } else if (value instanceof String str) {
-            return Integer.valueOf(str);
+            return Long.valueOf(str);
         }
         throw new ParseException(String.format("Can't convert the value '%s' into an integer", value));
     }
 
-    public static boolean isFloat(Object value) {
+    public static boolean isDouble(Object value) {
         if (value instanceof Float) {
+            return true;
+        }
+        if (value instanceof Double) {
             return true;
         }
         if (value instanceof String str) {
             try {
-                Float.valueOf(str);
+                Double.valueOf(str);
                 return true;
             } catch (NumberFormatException e) {
                 return false;
@@ -61,29 +69,33 @@ public class Utility {
         return false;
     }
 
-    public static Float parseFloat(Object value) {
+    public static Double parseDouble(Object value) {
         if (!isNumber(value)) {
             throw new ParseException(String.format("Can't convert the value '%s' into a float", value));
         }
-        if (value instanceof Float f) {
-            return f;
+        if (value instanceof Double d) {
+            return d;
+        } else if (value instanceof Float f) {
+            return f.doubleValue();
         } else if (value instanceof Integer i) {
-            return i.floatValue();
+            return i.doubleValue();
+        } else if (value instanceof Long l) {
+            return l.doubleValue();
         } else if (value instanceof String str) {
-            return Float.valueOf(str);
+            return Double.valueOf(str);
         }
         throw new ParseException(String.format("Can't convert the value '%s' into a float", value));
     }
 
     public static boolean isNumber(Object value) {
-        return isInteger(value) || isFloat(value);
+        return isLong(value) || isDouble(value);
     }
 
     public static String getReturnType(Object value) {
-        if (Utility.isInteger(value)) {
+        if (Utility.isLong(value)) {
             return TokenType.KEYWORD_INT;
         }
-        if (Utility.isFloat(value)) {
+        if (Utility.isDouble(value)) {
             return TokenType.KEYWORD_FLOAT;
         }
         if (value instanceof Boolean) {

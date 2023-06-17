@@ -13,7 +13,7 @@ public class CosNativeFunction implements NativeFunction {
         if (Objects.isNull(parameters) || parameters.length != 1) {
             throw new ExecutionError("The cos function only accepts one parameter");
         }
-        return Optional.of((float) Math.cos(Float.parseFloat(String.valueOf(parameters[0]))));
+        return Optional.of(Math.cos(Double.parseDouble(String.valueOf(parameters[0]))));
     }
 
 }

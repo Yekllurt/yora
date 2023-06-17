@@ -34,7 +34,7 @@ public class UnaryExpressionNode implements ASTNode {
                              ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValue = getNodeValue(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValue)) {
-            if (Utility.isFloat(nodeValue)) {
+            if (Utility.isDouble(nodeValue)) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, nodeValue);
             } else {
                 returnScope.assignReturnValue(TokenType.KEYWORD_INT, nodeValue);
@@ -47,10 +47,10 @@ public class UnaryExpressionNode implements ASTNode {
                               ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValue = getNodeValue(functionScope, variableScope, parameterScope);
         if (Utility.isNumber(nodeValue)) {
-            if (Utility.isFloat(nodeValue)) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, -Utility.parseFloat(nodeValue));
+            if (Utility.isDouble(nodeValue)) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, -Utility.parseDouble(nodeValue));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, -Utility.parseInteger(nodeValue));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, -Utility.parseLong(nodeValue));
             }
         }
         // TODO: throw error

@@ -34,9 +34,9 @@ public class TermNode implements ASTNode {
         if (Utility.isIdentifier(value)) {
             String identifier = (String) value;
             returnScope.assignReturnValue(variableScope.lookupVariableType(identifier), variableScope.lookupVariable(identifier));
-        } else if (Utility.isInteger(value)) {
+        } else if (Utility.isLong(value)) {
             returnScope.assignReturnValue(TokenType.KEYWORD_INT, Integer.valueOf((String) value));
-        } else if (Utility.isFloat(value)) {
+        } else if (Utility.isDouble(value)) {
             returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Integer.valueOf((String) value));
         } else {
             throw new ExecutionError(String.format("Unable to resolve the term '%s'", value));
