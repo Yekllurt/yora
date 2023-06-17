@@ -2,7 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.Utility;
-import dev.yekllurt.parser.interpreter.nativefunction.NativeFunctionDirectory;
+import dev.yekllurt.parser.interpreter.nativ.function.NativeFunctionDirectory;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;

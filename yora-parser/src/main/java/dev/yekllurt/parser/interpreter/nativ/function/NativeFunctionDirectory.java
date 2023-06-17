@@ -1,16 +1,16 @@
-package dev.yekllurt.parser.interpreter.nativefunction;
+package dev.yekllurt.parser.interpreter.nativ.function;
 
-import dev.yekllurt.parser.interpreter.nativefunction.impl.CosNativeFunction;
-import dev.yekllurt.parser.interpreter.nativefunction.impl.PrintNativeFunction;
-import dev.yekllurt.parser.interpreter.nativefunction.impl.SinNativeFunction;
-import dev.yekllurt.parser.interpreter.nativefunction.impl.SqrtNativeFunction;
+import dev.yekllurt.parser.interpreter.nativ.function.impl.CosNativeFunction;
+import dev.yekllurt.parser.interpreter.nativ.function.impl.PrintNativeFunction;
+import dev.yekllurt.parser.interpreter.nativ.function.impl.SinNativeFunction;
+import dev.yekllurt.parser.interpreter.nativ.function.impl.SqrtNativeFunction;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class NativeFunctionDirectory {
 
-    private static final Map<String, dev.yekllurt.parser.interpreter.nativefunction.NativeFunction> NATIVE_FUNCTION_MAP = new HashMap<>();
+    private static final Map<String, NativeFunction> NATIVE_FUNCTION_MAP = new HashMap<>();
 
     static {
         NATIVE_FUNCTION_MAP.put("print", new PrintNativeFunction());
@@ -23,7 +23,7 @@ public class NativeFunctionDirectory {
         // Intentional as this class should not be instantiated by other classes
     }
 
-    public static dev.yekllurt.parser.interpreter.nativefunction.NativeFunction getNativeFunction(String identifier) {
+    public static NativeFunction getNativeFunction(String identifier) {
         return NATIVE_FUNCTION_MAP.get(identifier);
     }
 

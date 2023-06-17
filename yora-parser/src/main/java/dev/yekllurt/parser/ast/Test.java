@@ -8,8 +8,10 @@ import dev.yekllurt.parser.token.TokenLoader;
 import java.io.File;
 
 public class Test {
-
+// os.arch, os.name
     public static void main(String[] args) {
+        var a = System.getenv();
+        var b = System.getProperties();
         var tokens = new TokenLoader().load(new File("./examples/lexer/test-program.yora.out"));
         var parser = new Parser(tokens);
         var program = parser.parse();

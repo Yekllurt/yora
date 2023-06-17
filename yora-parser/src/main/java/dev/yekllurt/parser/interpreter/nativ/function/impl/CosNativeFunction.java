@@ -1,6 +1,6 @@
-package dev.yekllurt.parser.interpreter.nativefunction.impl;
+package dev.yekllurt.parser.interpreter.nativ.function.impl;
 
-import dev.yekllurt.parser.interpreter.nativefunction.NativeFunction;
+import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
 import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
 
 import java.util.Objects;

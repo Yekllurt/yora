@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.interpreter.nativefunction;
+package dev.yekllurt.parser.interpreter.nativ.function;
 
 import java.util.Optional;
 
