@@ -66,7 +66,7 @@ public class Parser {
                 tokenCursor++;
                 if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_LEFT_BRACE)) {
                     tokenCursor++;
-                    SequencedCollection<ASTNode> parameters = null;
+                    SequencedCollection<ParameterNode> parameters = null;
                     if (isParseNotCompleted() && List.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_VOID).contains(getCurrentTokenType())) {
                         parameters = parseParameterList();
                     }
@@ -112,8 +112,8 @@ public class Parser {
         return null;
     }
 
-    private SequencedCollection<ASTNode> parseParameterList() {
-        var parameters = new SequencedCollection<ASTNode>();
+    private SequencedCollection<ParameterNode> parseParameterList() {
+        var parameters = new SequencedCollection<ParameterNode>();
         var parameter = parseParameter();
         if (Objects.nonNull(parameter)) {
             parameters.add(parameter);
@@ -130,7 +130,7 @@ public class Parser {
         return parameters;
     }
 
-    private ASTNode parseParameter() {
+    private ParameterNode parseParameter() {
         if (isParseCompleted()) {
             return null;
         }
@@ -322,7 +322,7 @@ public class Parser {
     private ASTNode parseOperatorExpression(ASTNode left, String operator) {
         var right = parseExpression();
         if (Objects.nonNull(right)) {
-            return ExpressionNode.builder().left(left).right(right).operator(operator).build();
+            return BinaryExpressionNode.builder().left(left).right(right).operator(operator).build();
         }
         return null;
     }
