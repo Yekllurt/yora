@@ -10,10 +10,18 @@ import dev.yekllurt.parser.collection.SequencedCollection;
 import dev.yekllurt.parser.token.Token;
 import dev.yekllurt.parser.token.TokenType;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class Parser {
+
+    private static final Set<String> EXPR_PRIORITY_3 = Set.of(TokenType.PUNCTUATION_PLUS, TokenType.PUNCTUATION_MINUS);
+    private static final Set<String> EXPR_PRIORITY_2 = Set.of(TokenType.PUNCTUATION_STAR, TokenType.PUNCTUATION_DIVIDE);
+    private static final Set<String> EXPR_PRIORITY_1 = Set.of(TokenType.PUNCTUATION_CARET);
+
+    private static final Set<String> VARIABLE_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR);
+    private static final Set<String> RETURN_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_VOID);
+    private static final Set<String> STATEMENT_START_TYPES = Set.of(TokenType.IDENTIFIER, TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_IF);
 
     private final SequencedCollection<Token> tokens;
     private int tokenCursor = 0;
@@ -22,86 +30,66 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public ASTNode parse() {
-        var result = parseProgram();
+    public ProgramNode parse() {
+        var program = parseProgram();
         if (isParseNotCompleted()) {
-            throw new ParserException("Didn't use all available tokens");
+            throw new ParserException(String.format("Didn't use all available tokens. Only used %s out of %s tokens", tokenCursor, tokens.size()));
         }
-        return result;
+        return program;
     }
 
-    // == Parse methods ==
-
-    /**
-     * Handle the program grammar production rule
-     */
-    private ASTNode parseProgram() {
+    private ProgramNode parseProgram() {
         return ProgramNode.builder()
-                .functions(parseMemberList())
+                .functions(parseFunctionList())
                 .build();
     }
 
-    /**
-     * Handle the member grammar production rule
-     */
-    private SequencedCollection<FunctionNode> parseMemberList() {
-        var members = new SequencedCollection<FunctionNode>();
-        var member = parseMember();
-        while (member != null) {
-            members.add(member);
-            member = parseMember();
+    // FILE DIVIDER --- TEMP
+    private SequencedCollection<FunctionNode> parseFunctionList() {
+        var functionList = new SequencedCollection<FunctionNode>();
+        var function = parseFunction();
+        while (Objects.nonNull(function)) {
+            functionList.add(function);
+            function = parseFunction();
+            // TODO: add here better error handling
         }
-        return members;
+        return functionList;
     }
 
-    private FunctionNode parseMember() {
-        if (isParseCompleted()) {
-            return null;
-        }
-        var token = getCurrentToken();
-        if (List.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_VOID).contains(token.getType())) {
+    private FunctionNode parseFunction() {
+        if (isNextToken(RETURN_TYPES)) {
+            var returnType = getCurrentTokenType();
             tokenCursor++;
-            if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.IDENTIFIER)) {
-                var tokenIdentifier = getCurrentToken();
+            if (isNextToken(TokenType.IDENTIFIER)) {
+                var identifier = getCurrentTokenValue();
                 tokenCursor++;
-                if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_LEFT_BRACE)) {
+                if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
                     tokenCursor++;
                     SequencedCollection<ParameterNode> parameters = null;
-                    if (isParseNotCompleted() && List.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_VOID).contains(getCurrentTokenType())) {
+                    if (isNextToken(VARIABLE_TYPES)) {
                         parameters = parseParameterList();
                     }
-                    if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                    if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                         tokenCursor++;
                         SequencedCollection<ASTNode> statements = null;
-                        if (isParseNotCompleted() && !getCurrentTokenType().equals(TokenType.KEYWORD_RETURN)) {
+                        if (!isNextToken(TokenType.KEYWORD_RETURN)) {
                             statements = parseStatementList();
                         }
-                        if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.KEYWORD_RETURN)) {
+                        ReturnNode returnExpression = null;
+                        if (isNextToken(TokenType.KEYWORD_RETURN)) {
+                            returnExpression = parseReturn();
+                        }
+                        // TODO: add here to check if only a return expression exits if the function return type is not void
+                        if (isNextToken(TokenType.KEYWORD_END)) {
                             tokenCursor++;
-                            var returnExpr = parseReturn();
-                            if (Objects.nonNull(returnExpr) && isParseNotCompleted() && getCurrentTokenType().equals(TokenType.KEYWORD_END)) {
-                                tokenCursor++;
-                                if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
-                                    tokenCursor++;
-                                    return FunctionNode.builder()
-                                            .identifier(tokenIdentifier.getValue())
-                                            .returnType(token.getType())
-                                            .parameters(parameters)
-                                            .statements(statements)
-                                            .returnStatement(returnExpr)
-                                            .build();
-                                }
-                            }
-                        } else if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.KEYWORD_END)) {
-                            tokenCursor++;
-                            if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
+                            if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                                 tokenCursor++;
                                 return FunctionNode.builder()
-                                        .identifier(tokenIdentifier.getValue())
-                                        .returnType(token.getType())
+                                        .returnType(returnType)
+                                        .identifier(identifier)
                                         .parameters(parameters)
                                         .statements(statements)
-                                        .returnStatement(null)
+                                        .returnStatement(returnExpression)
                                         .build();
                             }
                         }
@@ -113,221 +101,198 @@ public class Parser {
     }
 
     private SequencedCollection<ParameterNode> parseParameterList() {
-        var parameters = new SequencedCollection<ParameterNode>();
+        var parameterList = new SequencedCollection<ParameterNode>();
         var parameter = parseParameter();
         if (Objects.nonNull(parameter)) {
-            parameters.add(parameter);
-            while (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_COMMA)) {
+            parameterList.add(parameter);
+            while (isNextToken(TokenType.PUNCTUATION_COMMA)) {
                 tokenCursor++;
                 parameter = parseParameter();
-                if (Objects.nonNull(parameter)) {
-                    parameters.add(parameter);
-                } else {
-                    return null;
+                if (Objects.isNull(parameter)) {
+                    throw new GrammarException("Failed to parse a parameter");
                 }
+                parameterList.add(parameter);
             }
         }
-        return parameters;
+        return parameterList;
     }
 
+    // Rule:
+    //  variable_type IDENTIFIER
     private ParameterNode parseParameter() {
-        if (isParseCompleted()) {
-            return null;
-        }
-        var token = getCurrentToken();
-        if (token.getType().matches("INT|FLOAT|BOOLEAN|CHAR|VOID")) {
+        if (isNextToken(VARIABLE_TYPES)) {
+            var parameterType = getCurrentTokenType();
             tokenCursor++;
-            if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.IDENTIFIER)) {
-                var tokenIdentifier = getCurrentToken();
+            if (isNextToken(TokenType.IDENTIFIER)) {
+                var identifier = getCurrentTokenValue();
                 tokenCursor++;
                 return ParameterNode.builder()
-                        .type(token.getType())
-                        .identifier(tokenIdentifier.getValue()).build();
+                        .type(parameterType)
+                        .identifier(identifier)
+                        .build();
             }
         }
         return null;
     }
 
     private SequencedCollection<ASTNode> parseStatementList() {
-        var statements = new SequencedCollection<ASTNode>();
-        var statement = parseStatement();
-        if (Objects.nonNull(statement)) {
-            statements.add(statement);
-            while (isParseNotCompleted() && getCurrentTokenType().matches("IDENTIFIER|INT|FLOAT|BOOLEAN|CHAR|VOID|IF")) {
-                statement = parseStatement();
-                if (Objects.nonNull(statement)) {
-                    statements.add(statement);
-                } else {
-                    return null;
+        var statementList = new SequencedCollection<ASTNode>();
+        var statemenet = parseStatement();
+        if (Objects.nonNull(statemenet)) {
+            statementList.add(statemenet);
+            while (isNextToken(STATEMENT_START_TYPES)) {
+                statemenet = parseStatement();
+                if (Objects.isNull(statemenet)) {
+                    throw new GrammarException("Failed to parse a statement");
+                }
+                statementList.add(statemenet);
+            }
+        }
+        return statementList;
+    }
+
+    // Rules:
+    //  variable_type IDENTIFIER EQUAL expression SEMICOLON
+    //  IDENTIFIER EQUAL expression SEMICOLON
+    //  expression SEMICOLON
+    private ASTNode parseStatement() {
+        // Rule: variable_type IDENTIFIER EQUAL expression SEMICOLON
+        if (isNextToken(VARIABLE_TYPES)) {
+            var variableType = getCurrentTokenType();
+            tokenCursor++;
+            if (isNextToken(TokenType.IDENTIFIER)) {
+                var identifier = getCurrentTokenValue();
+                tokenCursor++;
+                if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
+                    tokenCursor++;
+                    var expression = parseExpression();
+                    // TODO: add better error output
+                    if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                        tokenCursor++;
+                        return VariableDeclarationNode.builder()
+                                .type(variableType)
+                                .identifier(identifier)
+                                .value(expression)
+                                .build();
+                    }
+                }
+            }
+        } else if (isNextToken(TokenType.IDENTIFIER)) {
+            var identifier = getCurrentTokenValue();
+            tokenCursor++;
+            // Rule: IDENTIFIER EQUAL expression SEMICOLON
+            if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
+                tokenCursor++;
+                var expression = parseExpression();
+                // TODO: add better error output
+                if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                    tokenCursor++;
+                    return AssignmentNode.builder()
+                            .identifier(identifier)
+                            .value(expression)
+                            .build();
+                }
+            }
+            // Rules:
+            //  IDENTIFIER LEFT_BRACE RIGHT_BRACE SEMICOLON
+            //  IDENTIFIER LEFT_BRACE expression_list RIGHT_BRACE SEMICOLON
+            else if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
+                tokenCursor++;
+                // It is a function call
+                var arguments = parseExpressionList();
+                // TODO: add better error output
+                if (Objects.nonNull(arguments) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                    tokenCursor++;
+                    if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                        tokenCursor++;
+                        return FunctionCallNode.builder()
+                                .functionIdentifier(identifier)
+                                .arguments(arguments)
+                                .build();
+                    }
                 }
             }
         }
-        return statements;
-    }
-
-    private ASTNode parseStatement() {
-        if (isParseCompleted()) {
-            return null;
-        }
-
-        var token = getCurrentToken();
-        switch (token.getType()) {
-            case TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_VOID -> {
+        // Rules:
+        //  IF LEFT_BRACE condition_list RIGHT_BRACE statement_list END SEMICOLON
+        //  IF LEFT_BRACE condition_list RIGHT_BRACE statement_list return END SEMICOLON
+        else if (isNextToken(TokenType.KEYWORD_IF)) {
+            tokenCursor++;
+            if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
                 tokenCursor++;
-                if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.IDENTIFIER)) {
-                    var tokenIdentifier = getCurrentToken();
+                var conditions = parseCondition();
+                if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                     tokenCursor++;
-                    if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_EQUAL)) {
+                    var statements = parseStatementList();
+                    if (isNextToken(TokenType.KEYWORD_END)) {
                         tokenCursor++;
-                        ASTNode expression = parseExpression();
-                        if (Objects.nonNull(expression) && isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
+                        if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                             tokenCursor++;
-                            return VariableDeclarationNode.builder()
-                                    .type(token.getType())
-                                    .identifier(tokenIdentifier.getValue())
-                                    .value(expression)
+                            return IfBranchNode.builder()
+                                    .condition(conditions)
+                                    .statements(statements)
                                     .build();
                         }
                     }
                 }
             }
-            case TokenType.IDENTIFIER -> {
+        }
+        // Rule: expression SEMICOLON
+        else {
+            var expression = parseExpression();
+            if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                 tokenCursor++;
-                if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_EQUAL)) {
-                    tokenCursor++;
-                    var expression = parseExpression();
-                    if (Objects.nonNull(expression)
-                            && isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
-                        tokenCursor++;
-                        return AssignmentNode.builder()
-                                .identifier(token.getType())
-                                .value(expression)
-                                .build();
-                    }
-                } else if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_LEFT_BRACE)) {
-                    tokenCursor++;
-                    return parseFunctionCall(token);
-                }
-            }
-            case TokenType.KEYWORD_IF -> {
-                tokenCursor++;
-                if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_LEFT_BRACE)) {
-                    tokenCursor++;
-                    var conditions = parseConditionList();
-                    var x = 0;
-                    if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_RIGHT_BRACE)) {
-                        tokenCursor++;
-                        var statements = parseStatementList();
-                        if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.KEYWORD_END)) {
-                            tokenCursor++;
-                            if (isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
-                                tokenCursor++;
-                                return IfBranchNode.builder()
-                                        .condition(conditions)
-                                        .statements(statements)
-                                        .build();
-                            }
-                        }
-                    }
-                }
-            }
-            default -> {
-                // expression SEMICOLON - case
-                ASTNode expression = parseExpression();
-                if (Objects.nonNull(expression)
-                        && isParseNotCompleted() && getCurrentTokenType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
-                    tokenCursor++;
-                    return expression;
-                }
+                return expression;
             }
         }
         return null;
     }
 
-    private ASTNode parseReturn() {
-        var expression = parseExpression();
-        if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+    // Rule:
+    //  RETURN expression SEMICOLON
+    private ReturnNode parseReturn() {
+        if (isNextToken(TokenType.KEYWORD_RETURN)) {
             tokenCursor++;
-            return ReturnNode.builder().value(expression).build();
+            var expression = parseExpression();
+            if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                tokenCursor++;
+                return ReturnNode.builder()
+                        .value(expression)
+                        .build();
+            }
         }
         return null;
     }
 
-    private ASTNode parseTerm() {
-        var token = getCurrentToken();
-        switch (token.getType()) {
-            case TokenType.DECIMAL_NUMBER -> {
-                tokenCursor++;
-                return TermNode.builder().value(token.getValue()).build();
-            }
-            case TokenType.PUNCTUATION_LEFT_BRACE -> {
-                tokenCursor++;
-                return parseBracketExpression();
-            }
-            case TokenType.IDENTIFIER -> {
-                tokenCursor++;
-                return parseIdentifierExpression(token);
-            }
-            default ->
-                    throw new UnsupportedTokenTypeException(String.format("The token type '%s' is not supported", token.getType()));
+    private ConditionNode parseCondition() {
+        var left = parseAtom();
+        if (isNextToken(TokenType.PUNCTUATION_EQUAL) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+            tokenCursor += 2;   // Adding two as we are checking two values (==)
+            var right = parseAtom();
+            return ConditionNode.builder()
+                    .left(left)
+                    .right(right)
+                    .operator(ConditionOperator.EQUAL)
+                    .build();
         }
-    }
-
-    private ASTNode parseBracketExpression() {
-        var expression = parseExpression();
-        if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
-            return expression;
-        }
-        return null;
-    }
-
-    private ASTNode parseIdentifierExpression(Token identifierToken) {
-        if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
-            // It's a function call
-            return parseFunctionCall(identifierToken);
-        } else {
-            // It's a variable
-            return TermNode.builder().value(identifierToken.getValue()).build();
-        }
-    }
-
-    private ASTNode parseFunctionCall(Token functionNameToken) {
-        var expressionList = parseExpressionList();
-        if (Objects.nonNull(expressionList) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE) && getNextToken().getType().equals(TokenType.PUNCTUATION_SEMICOLON)) {
-            tokenCursor++;
-            return FunctionCallNode.builder()
-                    .functionIdentifier(functionNameToken.getValue())
-                    .arguments(expressionList)
+        if (isNextToken(TokenType.PUNCTUATION_EXCLAMATION_MARK) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+            tokenCursor += 2;   // Adding two as we are checking two values (!=)
+            var right = parseAtom();
+            return ConditionNode.builder()
+                    .left(left)
+                    .right(right)
+                    .operator(ConditionOperator.NOT_EQUAL)
                     .build();
         }
         return null;
     }
 
-    private ASTNode parseExpression() {
-        var left = parseTerm();
-        if (Objects.nonNull(left) && isParseNotCompleted()) {
-            String operator = getCurrentTokenType();
-            if (List.of(TokenType.PUNCTUATION_PLUS, TokenType.PUNCTUATION_MINUS, TokenType.PUNCTUATION_STAR, TokenType.PUNCTUATION_DIVIDE).contains(operator)) {
-                tokenCursor++;
-                return parseOperatorExpression(left, operator);
-            }
-            return left;
-        } else if (isParseNotCompleted() && isNextToken(TokenType.PUNCTUATION_MINUS)) {
-            tokenCursor++;
-            return parseTerm();
-        }
-        throw new GrammarException("Unknown grammar production rule for expression");
-    }
+    // FILE DIVIDER --- BOTTOM PART OF GRAMMAR
 
-    private ASTNode parseOperatorExpression(ASTNode left, String operator) {
-        var right = parseExpression();
-        if (Objects.nonNull(right)) {
-            return BinaryExpressionNode.builder().left(left).right(right).operator(operator).build();
-        }
-        return null;
-    }
-
-    private ASTNode parseExpressionList() {
+    // Rules:
+    //  expression
+    //  expression_list COMMA expression
+    private ExpressionListNode parseExpressionList() {
         var expressionList = new SequencedCollection<ASTNode>();
         var expression = parseExpression();
         while (Objects.nonNull(expression)) {
@@ -337,92 +302,215 @@ public class Parser {
                 tokenCursor++;
                 expression = parseExpression();
                 if (Objects.isNull(expression)) {
-                    throw new GrammarException("Could not find a production");
+                    throw new GrammarException("Failed parsing an expression due to there being no expression after a ','");
                 }
             }
         }
-        return ExpressionListNode.builder().expressionList(expressionList).build();
+        return ExpressionListNode.builder()
+                .expressionList(expressionList)
+                .build();
     }
 
-    private ConditionNode parseConditionList() {
-        return parseCondition();
+    private ASTNode parseExpression() {
+        return parseAddSubtractExpression();
     }
 
-    private ConditionNode parseCondition() {
-        if (isParseNotCompleted()) {
-            var left = parseTerm();
-            if (Objects.nonNull(left) && isParseNotCompleted()
-                    && getCurrentTokenType().equals(TokenType.PUNCTUATION_EQUAL)
-                    && getNextTokenType().equals(TokenType.PUNCTUATION_EQUAL)) {    // TODO: check if isParseNotCompleted before calling getNextTokenType()
+    // Rules:
+    //  multiply_divide_expression
+    //  multiply_divide_expression PLUS multiply_divide_expression
+    //  multiply_divide_expression MINUS multiply_divide_expression
+    private ASTNode parseAddSubtractExpression() {
+        var expression = parseMultiplyDivideExpression();
+        while (isParseNotCompleted() && EXPR_PRIORITY_3.contains(getCurrentTokenType())) {
+            // Rule: multiply_divide_expression PLUS multiply_divide_expression
+            if (isNextToken(TokenType.PUNCTUATION_PLUS)) {
                 tokenCursor++;
-                var right = parseTerm();
-                return ConditionNode.builder()
-                        .left(left)
+                var right = parseMultiplyDivideExpression();
+                expression = BinaryExpressionNode.builder()
+                        .left(expression)
                         .right(right)
-                        .operator(ConditionOperator.EQUAL)
+                        .operator(TokenType.PUNCTUATION_PLUS)
                         .build();
-            } else if (Objects.nonNull(left) && isParseNotCompleted()
-                    && getCurrentTokenType().equals(TokenType.PUNCTUATION_EXCLAMATION_MARK)
-                    && getNextTokenType().equals(TokenType.PUNCTUATION_EQUAL)) {    // TODO: check if isParseNotCompleted before calling getNextTokenType()
+                continue;
+            }
+            // Rule: multiply_divide_expression MINUS multiply_divide_expression
+            if (isNextToken(TokenType.PUNCTUATION_MINUS)) {
                 tokenCursor++;
-                var right = parseTerm();
-                return ConditionNode.builder()
-                        .left(left)
+                var right = parseMultiplyDivideExpression();
+                expression = BinaryExpressionNode.builder()
+                        .left(expression)
                         .right(right)
-                        .operator(ConditionOperator.NOT_EQUAL)
+                        .operator(TokenType.PUNCTUATION_MINUS)
                         .build();
+                continue;
             }
         }
-        throw new GrammarException("Unknown grammar for condition parsing");
+        // Rule: multiply_divide_expression
+        return expression;
     }
 
-    // == Helper methods ==
+    // Rules:
+    //  power_expression
+    //  power_expression STAR power_expression
+    //  power_expression DIVIDE power_expression
+    private ASTNode parseMultiplyDivideExpression() {
+        var expression = parsePowerExpression();
+        while (isParseNotCompleted() && EXPR_PRIORITY_2.contains(getCurrentTokenType())) {
+            // Rule: power_expression STAR power_expression
+            if (isNextToken(TokenType.PUNCTUATION_STAR)) {
+                tokenCursor++;
+                var right = parsePowerExpression();
+                expression = BinaryExpressionNode.builder()
+                        .left(expression)
+                        .right(right)
+                        .operator(TokenType.PUNCTUATION_STAR)
+                        .build();
+                continue;
+            }
+            // Rule: power_expression DIVIDE power_expression
+            if (isNextToken(TokenType.PUNCTUATION_DIVIDE)) {
+                tokenCursor++;
+                var right = parsePowerExpression();
+                expression = BinaryExpressionNode.builder()
+                        .left(expression)
+                        .right(right)
+                        .operator(TokenType.PUNCTUATION_DIVIDE)
+                        .build();
+                continue;
+            }
+        }
+        // Rule: power_expression
+        return expression;
+    }
 
-    /**
-     * Check if all tokens have been parsed
-     */
+    // Rules:
+    //  PLUS power_expression
+    //  MINUS power_expression
+    //  atom
+    //  atom CARET power_expression
+    private ASTNode parsePowerExpression() {
+        var token = getCurrentToken();
+        // Rule: PLUS power_expression
+        if (isNextToken(TokenType.PUNCTUATION_PLUS)) {
+            tokenCursor++;
+            var powerExpression = parsePowerExpression();
+            return UnaryExpressionNode.builder()
+                    .node(powerExpression)
+                    .operator(token.getType())
+                    .build();
+
+        }
+        // Rule: MINUS power_expression
+        if (isNextToken(TokenType.PUNCTUATION_MINUS)) {
+            tokenCursor++;
+            var powerExpression = parsePowerExpression();
+            return UnaryExpressionNode.builder()
+                    .node(powerExpression)
+                    .operator(token.getType())
+                    .build();
+        }
+        var atom = parseAtom();
+        // Rule: atom CARET power_expression
+        if (isNextToken(TokenType.PUNCTUATION_CARET)) {
+            var operator = getCurrentToken();
+            tokenCursor++;
+            var powerExpression = parsePowerExpression();
+            return BinaryExpressionNode.builder()
+                    .left(atom)
+                    .right(powerExpression)
+                    .operator(operator.getType())
+                    .build();
+        }
+        // Rule: atom
+        return atom;
+    }
+
+
+    // Rules:
+    //  NUMBER
+    //  IDENTIFIER
+    //  IDENTIFIER LEFT_BRACE expression_list RIGHT_BRACE
+    private ASTNode parseAtom() {
+        var token = getCurrentToken();
+        if (TokenType.DECIMAL_NUMBER.equals(token.getType())) {
+            tokenCursor++;
+            return TermNode.builder().value(token.getValue()).type(TermNode.TermType.LITERAL).build();
+        }
+        if (TokenType.PUNCTUATION_LEFT_BRACE.equals(token.getType())) {
+            tokenCursor++;
+            var expression = parseExpression();
+            // TODO: add better error output
+            if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                tokenCursor++;
+                return expression;
+            }
+            return null;
+        }
+        if (TokenType.IDENTIFIER.equals(token.getType())) {
+            tokenCursor++;
+            if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
+                tokenCursor++;
+                // It is a function call
+                var arguments = parseExpressionList();
+                // TODO: add better error output
+                if (Objects.nonNull(arguments) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                    tokenCursor++;
+                    return FunctionCallNode.builder()
+                            .functionIdentifier(token.getValue())
+                            .arguments(arguments)
+                            .build();
+                }
+                return null;
+            } else {
+                // It is a variable
+                return TermNode.builder().value(token.getValue()).type(TermNode.TermType.DYNAMIC).build();
+            }
+        }
+        throw new UnsupportedTokenTypeException(String.format("Failed parsing an atom due to a non supported token type '%s'", token.getType()));
+    }
+
+    // ========================
+    // === Helper functions ===
+    // ========================
     private boolean isParseCompleted() {
         return tokenCursor == tokens.size();
     }
 
-    /**
-     * Check if not all tokens have been parsed
-     */
     private boolean isParseNotCompleted() {
         return !isParseCompleted();
     }
 
-    /**
-     * Get the current token
-     */
     private Token getCurrentToken() {
         return tokens.get(tokenCursor);
     }
 
-    /**
-     * Get the current token type
-     */
     private String getCurrentTokenType() {
         return getCurrentToken().getType();
     }
 
-    /**
-     * Get the next token and increment the cursor
-     */
-    private Token getNextToken() {
+    private String getCurrentTokenValue() {
+        return getCurrentToken().getValue();
+    }
+
+    /*private Token getNextToken() {
         tokenCursor++;
         return getCurrentToken();
     }
 
     private String getNextTokenType() {
         return getNextToken().getType();
-    }
+    }*/
 
-    /**
-     * Check if the next token matches a given type
-     */
     private boolean isNextToken(String type) {
         return isParseNotCompleted() && getCurrentToken().getType().equals(type);
+    }
+
+    private boolean isNextToken(Set<String> types) {
+        return isParseNotCompleted() && types.contains(getCurrentToken().getType());
+    }
+
+    private boolean isNextNextToken(String type) {
+        return tokenCursor + 1 < tokens.size() && tokens.get(tokenCursor + 1).getType().equals(type);
     }
 
 }
