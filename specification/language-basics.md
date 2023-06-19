@@ -2,9 +2,9 @@
 
 ## Variables
 
-&nbsp; int &nbsp;&nbsp; The int data type is a 64-bit two's complement integer
-&nbsp; float &nbsp;&nbsp; The float data type is a double-precision 64-vit IEEE 754 floating point
-&nbsp; boolean &nbsp;&nbsp; The boolean data type has two possible values: true and false
+&nbsp; int &nbsp;&nbsp; The int data type is a 64-bit two's complement integer                      <br>
+&nbsp; float &nbsp;&nbsp; The float data type is a double-precision 64-vit IEEE 754 floating point  <br>
+&nbsp; boolean &nbsp;&nbsp; The boolean data type has two possible values: true and false           <br>
 
 ## Operators
 
@@ -39,13 +39,31 @@
 &nbsp; && &nbsp;&nbsp; Conditional-AND     <br>
 &nbsp; || &nbsp;&nbsp; Conditional-OR      <br>
 
-## Expressions, Statements and Blocks
-
 ## Control Flow Statements
 
 ### The if-then Statement
 
+The if-then statement is a basic control flow statement that tells your programm to execute a certain section of code
+only if a particular expression evaluates to true. <br>
+Example:
+
+```
+if(<condition>):
+    <statements>
+end:
+```
+
 ### The while Statement
 
+The while statement continually executes a block of statements while a particular condition is true.
+
+```
+while(<condition>):
+    <statements>
+end:
+```
+
 # Source
-Inspiration for this format is drawn by the Java documentation (https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html)
+
+Inspiration for this format is drawn by the Java
+documentation (https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html)
