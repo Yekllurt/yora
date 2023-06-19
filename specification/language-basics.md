@@ -2,6 +2,10 @@
 
 ## Variables
 
+&nbsp; int &nbsp;&nbsp; The int data type is a 64-bit two's complement integer
+&nbsp; float &nbsp;&nbsp; The float data type is a double-precision 64-vit IEEE 754 floating point
+&nbsp; boolean &nbsp;&nbsp; The boolean data type has two possible values: true and false
+
 ## Operators
 
 ### Simple Assignment Operator
@@ -42,3 +46,6 @@
 ### The if-then Statement
 
 ### The while Statement
+
+# Source
+Inspiration for this format is drawn by the Java documentation (https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html)
