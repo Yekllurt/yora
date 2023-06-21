@@ -308,6 +308,15 @@ public class Parser {
                     .operator(ConditionOperator.NOT_EQUAL)
                     .build();
         }
+        if (isNextToken(TokenType.GREATER_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+            tokenCursor += 2;   // Adding two as we are checking two values (>=)
+            var right = parseAtom();
+            return ConditionNode.builder()
+                    .left(left)
+                    .right(right)
+                    .operator(ConditionOperator.GREATER_THAN_EQUAL)
+                    .build();
+        }
         if (isNextToken(TokenType.GREATER_THAN)) {
             tokenCursor++;
             var right = parseAtom();
@@ -317,14 +326,23 @@ public class Parser {
                     .operator(ConditionOperator.GREATER_THAN)
                     .build();
         }
-        if (isNextToken(TokenType.GREATER_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
-            throw new UnsupportedOperationException("The condition >= is not implemented");
+        if (isNextToken(TokenType.LESS_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+            tokenCursor += 2;   // Adding two as we are checking two values (<=)
+            var right = parseAtom();
+            return ConditionNode.builder()
+                    .left(left)
+                    .right(right)
+                    .operator(ConditionOperator.LESS_THAN_EQUAL)
+                    .build();
         }
         if (isNextToken(TokenType.LESS_THAN)) {
-            throw new UnsupportedOperationException("The condition < is not implemented");
-        }
-        if (isNextToken(TokenType.LESS_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
-            throw new UnsupportedOperationException("The condition <= is not implemented");
+            tokenCursor++;
+            var right = parseAtom();
+            return ConditionNode.builder()
+                    .left(left)
+                    .right(right)
+                    .operator(ConditionOperator.LESS_THAN)
+                    .build();
         }
         return null;
     }

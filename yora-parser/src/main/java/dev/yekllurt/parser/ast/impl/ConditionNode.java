@@ -54,6 +54,27 @@ public class ConditionNode implements ASTNode {
                 var greaterThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) > Utility.parseDouble(returnScopeRight.lookupReturnValue());
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThan);
             }
+            case GREATER_THAN_EQUAL -> {
+                if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                    throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the >= operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
+                }
+                var greaterThanEqual = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) >= Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThanEqual);
+            }
+            case LESS_THAN -> {
+                if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                    throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the < operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
+                }
+                var lessThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) < Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, lessThan);
+            }
+            case LESS_THAN_EQUAL -> {
+                if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                    throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the <= operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
+                }
+                var lessThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) <= Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, lessThan);
+            }
             default ->
                     throw new UnsupportedOperationException("The condition operator '%s' is not supported".formatted(operator));
         }
