@@ -2,12 +2,14 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
+import dev.yekllurt.parser.ast.Utility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
 import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
+import dev.yekllurt.parser.interpreter.throwable.error.InvalidOperationError;
 import dev.yekllurt.parser.token.TokenType;
 import lombok.Builder;
 import lombok.Data;
@@ -44,6 +46,13 @@ public class ConditionNode implements ASTNode {
                         ? returnScopeLeft.lookupReturnValue().equals(returnScopeRight.lookupReturnValue())
                         : returnScopeRight.lookupReturnValue().equals(returnScopeLeft.lookupReturnValue());
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, !equal);
+            }
+            case GREATER_THAN -> {
+                if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                    throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the > operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
+                }
+                var greaterThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) > Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThan);
             }
             default ->
                     throw new UnsupportedOperationException("The condition operator '%s' is not supported".formatted(operator));

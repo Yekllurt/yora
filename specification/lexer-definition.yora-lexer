@@ -11,6 +11,7 @@ KEYWORD         "void"      0   VOID
 KEYWORD         "end"       0   END
 KEYWORD         "return"    0   RETURN
 KEYWORD         "if"        0   IF
+KEYWORD         "while"     0   WHILE
 KEYWORD         "true"      0   TRUE
 KEYWORD         "false"     0   FALSE
 
@@ -25,6 +26,8 @@ PUNCTUATION     "/"         0   DIVIDE
 PUNCTUATION     "^"         0   CARET
 PUNCTUATION     "="         0   EQUAL
 PUNCTUATION     "!"         0   EXCLAMATION_MARK
+PUNCTUATION     ">"         0   GREATER_THAN
+PUNCTUATION     "<"         0   LESS_THAN
 
 IDENTIFIER      {IDENTIFIER}        1   IDENTIFIER
 NUMBER_DECIMAL  {DECIMAL_NUMBER}    1   NUMBER

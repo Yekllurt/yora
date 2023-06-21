@@ -10,6 +10,7 @@ public class TokenType {
     public static final String KEYWORD_END = "END";
     public static final String KEYWORD_RETURN = "RETURN";
     public static final String KEYWORD_IF = "IF";
+    public static final String KEYWORD_WHILE = "WHILE";
 
     public static final String PUNCTUATION_LEFT_BRACE = "LEFT_BRACE";
     public static final String PUNCTUATION_RIGHT_BRACE = "RIGHT_BRACE";
@@ -22,6 +23,8 @@ public class TokenType {
     public static final String PUNCTUATION_EQUAL = "EQUAL";
     public static final String PUNCTUATION_EXCLAMATION_MARK = "EXCLAMATION_MARK";
     public static final String PUNCTUATION_CARET = "CARET";
+    public static final String GREATER_THAN = "GREATER_THAN";
+    public static final String LESS_THAN = "LESS_THAN";
 
     public static final String IDENTIFIER = "IDENTIFIER";
     public static final String DECIMAL_NUMBER = "NUMBER";

@@ -24,6 +24,8 @@ statement
     expression SEMICOLON
     IF LEFT_BRACE condition_list RIGHT_BRACE statement_list END SEMICOLON
     IF LEFT_BRACE condition_list RIGHT_BRACE statement_list return END SEMICOLON
+    WHILE LEFT_BRACE condition_list RIGHT_BRACE statement_list END SEMICOLON
+    WHILE LEFT_BRACE condition_list RIGHT_BRACE statement_list return END SEMICOLON
 
 statement_list
     statement

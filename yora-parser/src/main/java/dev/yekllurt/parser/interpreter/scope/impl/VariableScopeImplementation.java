@@ -46,7 +46,9 @@ public class VariableScopeImplementation implements VariableScope {
             throw new ScopeError(String.format("Can't update the variable '%s' as it doesn't exist in the current scope.", name));
         }
         for (var scope : variableScope) {
-            scope.computeIfPresent(name, (key, val) -> scope.put(name, new Tuple<>(lookupVariableType(name), value)));
+            if (scope.containsKey(name)) {
+                scope.put(name, new Tuple<>(lookupVariableType(name), value));
+            }
         }
     }
 
@@ -76,13 +78,8 @@ public class VariableScopeImplementation implements VariableScope {
         throw new ScopeError(String.format("Can't find the variable '%s' in the current scope or any parent scope.", name));
     }
 
-    /**
-     * Check if a variable exists in the current scope
-     *
-     * @param name the variable name
-     * @return if the variable exists in the current scope
-     */
-    private boolean existsVariable(String name) {
+    @Override
+    public boolean existsVariable(String name) {
         if (variableScope.isEmpty()) {
             throw new ScopeError(String.format("Can't check if the variable '%s' exists as there is not active scope available.", name));
         }

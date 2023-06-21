@@ -21,7 +21,7 @@ public class Parser {
 
     private static final Set<String> VARIABLE_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR);
     private static final Set<String> RETURN_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_VOID);
-    private static final Set<String> STATEMENT_START_TYPES = Set.of(TokenType.IDENTIFIER, TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_IF);
+    private static final Set<String> STATEMENT_START_TYPES = Set.of(TokenType.IDENTIFIER, TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_IF, TokenType.KEYWORD_WHILE);
 
     private final SequencedCollection<Token> tokens;
     private int tokenCursor = 0;
@@ -237,6 +237,30 @@ public class Parser {
                 }
             }
         }
+        // Rules:
+        //  WHILE LEFT_BRACE condition_list RIGHT_BRACE statement_list END SEMICOLON
+        //  WHILE LEFT_BRACE condition_list RIGHT_BRACE statement_list return END SEMICOLON
+        else if (isNextToken(TokenType.KEYWORD_WHILE)) {
+            tokenCursor++;
+            if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
+                tokenCursor++;
+                var conditions = parseCondition();
+                if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                    tokenCursor++;
+                    var statements = parseStatementList();
+                    if (isNextToken(TokenType.KEYWORD_END)) {
+                        tokenCursor++;
+                        if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                            tokenCursor++;
+                            return WhileBranchNode.builder()
+                                    .condition(conditions)
+                                    .statements(statements)
+                                    .build();
+                        }
+                    }
+                }
+            }
+        }
         // Rule: expression SEMICOLON
         else {
             var expression = parseExpression();
@@ -283,6 +307,24 @@ public class Parser {
                     .right(right)
                     .operator(ConditionOperator.NOT_EQUAL)
                     .build();
+        }
+        if (isNextToken(TokenType.GREATER_THAN)) {
+            tokenCursor++;
+            var right = parseAtom();
+            return ConditionNode.builder()
+                    .left(left)
+                    .right(right)
+                    .operator(ConditionOperator.GREATER_THAN)
+                    .build();
+        }
+        if (isNextToken(TokenType.GREATER_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+            throw new UnsupportedOperationException("The condition >= is not implemented");
+        }
+        if (isNextToken(TokenType.LESS_THAN)) {
+            throw new UnsupportedOperationException("The condition < is not implemented");
+        }
+        if (isNextToken(TokenType.LESS_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+            throw new UnsupportedOperationException("The condition <= is not implemented");
         }
         return null;
     }

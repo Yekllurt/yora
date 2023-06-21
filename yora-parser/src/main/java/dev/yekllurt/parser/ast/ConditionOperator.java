@@ -2,10 +2,14 @@ package dev.yekllurt.parser.ast;
 
 public enum ConditionOperator {
 
-    EQUAL,      // structure: ==, perhaps change to =
-    NOT_EQUAL,  // structure: !=, perhaps change to <>
-    OR,         // structure: ||
-    AND         // structure: &&
+    EQUAL,                  // structure: ==
+    NOT_EQUAL,              // structure: !=
+    GREATER_THAN,           // structure: >
+    GREATER_THAN_EQUAL,     // structure: >=
+    LESS_THAN,              // structure: <
+    LESS_THAN_EQUAL,        // structure: <=
+    OR,                     // structure: ||
+    AND                     // structure: &&
 
 }
 
