@@ -33,7 +33,13 @@ public class TermNode implements ASTNode {
         }
         if (Utility.isIdentifier(value)) {
             String identifier = (String) value;
-            returnScope.assignReturnValue(variableScope.lookupVariableType(identifier), variableScope.lookupVariable(identifier));
+            if (variableScope.existsVariable(identifier)) {
+                returnScope.assignReturnValue(variableScope.lookupVariableType(identifier), variableScope.lookupVariable(identifier));
+            } else if (parameterScope.existsParameter(identifier)) {
+                returnScope.assignReturnValue(parameterScope.lookupParameterType(identifier), parameterScope.lookupParameter(identifier));
+            } else {
+                throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));
+            }
         } else if (Utility.isLong(value)) {
             returnScope.assignReturnValue(TokenType.KEYWORD_INT, Integer.valueOf((String) value));
         } else if (Utility.isDouble(value)) {

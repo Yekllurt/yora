@@ -18,8 +18,8 @@ public class ExpressionListNode implements ASTNode {
     @Override
     public void evaluate(FunctionScope functionScope, VariableScope variableScope,
                          ParameterScope parameterScope, ReturnScope returnScope) {
-        for (ASTNode expression : expressionList) {
-            expression.evaluate(functionScope, variableScope, null, null); // handle here returnScope=null
+        for (var expression : expressionList) {
+            expression.evaluate(functionScope, variableScope, parameterScope, null); // handle here returnScope=null
         }
     }
 

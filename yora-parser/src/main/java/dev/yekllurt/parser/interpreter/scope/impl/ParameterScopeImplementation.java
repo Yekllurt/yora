@@ -35,13 +35,8 @@ public class ParameterScopeImplementation implements ParameterScope {
         return parameters.get(name).x();
     }
 
-    /**
-     * Check if a parameter exists in the current scope
-     *
-     * @param name the parameter name
-     * @return if the parameter exists in the current scope
-     */
-    private boolean existsParameter(String name) {
+    @Override
+    public boolean existsParameter(String name) {
         return parameters.containsKey(name);
     }
 

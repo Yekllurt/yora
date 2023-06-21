@@ -65,13 +65,13 @@ public class Parser {
                 tokenCursor++;
                 if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
                     tokenCursor++;
-                    SequencedCollection<ParameterNode> parameters = null;
+                    var parameters = new SequencedCollection<ParameterNode>();
                     if (isNextToken(VARIABLE_TYPES)) {
                         parameters = parseParameterList();
                     }
                     if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                         tokenCursor++;
-                        SequencedCollection<ASTNode> statements = null;
+                        var statements = new SequencedCollection<ASTNode>();
                         if (!isNextToken(TokenType.KEYWORD_RETURN)) {
                             statements = parseStatementList();
                         }

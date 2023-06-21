@@ -23,7 +23,7 @@ public class IfBranchNode implements ASTNode {
     public void evaluate(FunctionScope functionScope, VariableScope variableScope,
                          ParameterScope parameterScope, ReturnScope returnScope) {
         var returnScopeCondition = new ReturnScopeImplementation();
-        condition.evaluate(functionScope, variableScope, null, returnScopeCondition);
+        condition.evaluate(functionScope, variableScope, parameterScope, returnScopeCondition);
         if (!TokenType.KEYWORD_BOOLEAN.equals(returnScopeCondition.lookupReturnValueType())) {
             throw new ExecutionError(String.format("A condition returned the non-boolean value '%s'", returnScopeCondition.lookupReturnValueType()));
         }
@@ -31,7 +31,7 @@ public class IfBranchNode implements ASTNode {
         if (conditionEvaluation) {
             variableScope.beginScope();
             for (var statement : statements) {
-                statement.evaluate(functionScope, variableScope, null, null);
+                statement.evaluate(functionScope, variableScope, parameterScope, null);
             }
             variableScope.endScope();
         }

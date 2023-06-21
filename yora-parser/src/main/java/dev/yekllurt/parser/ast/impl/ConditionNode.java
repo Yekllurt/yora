@@ -27,8 +27,8 @@ public class ConditionNode implements ASTNode {
                          ParameterScope parameterScope, ReturnScope returnScope) {
         var returnScopeLeft = new ReturnScopeImplementation();
         var returnScopeRight = new ReturnScopeImplementation();
-        left.evaluate(functionScope, variableScope, null, returnScopeLeft);
-        right.evaluate(functionScope, variableScope, null, returnScopeRight);
+        left.evaluate(functionScope, variableScope, parameterScope, returnScopeLeft);
+        right.evaluate(functionScope, variableScope, parameterScope, returnScopeRight);
         if (Objects.isNull(returnScopeLeft.lookupReturnValue()) && Objects.isNull(returnScopeRight.lookupReturnValue())) {
             throw new ExecutionError("Couldn't compare two values as they are both null and null values are not supported by the language");
         }

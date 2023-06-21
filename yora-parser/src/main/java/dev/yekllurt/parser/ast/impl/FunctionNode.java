@@ -28,15 +28,20 @@ public class FunctionNode implements ASTNode {
                          ParameterScope parameterScope, ReturnScope returnScope) {
         // TODO: handle parameters, amongst others these have to be evaluated
 
+        variableScope.beginScope();
+
         for (var statement : statements) {
             statement.evaluate(functionScope, variableScope, parameterScope, null);
         }
 
         if (Objects.nonNull(returnStatement)) {
             var childReturnScope = new ReturnScopeImplementation();
-            returnStatement.evaluate(functionScope, variableScope, null, childReturnScope);
+            returnStatement.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
             returnScope.assignReturnValue(returnType, childReturnScope.lookupReturnValue());
         }
+
+        variableScope.endScope();
+
     }
 
 }

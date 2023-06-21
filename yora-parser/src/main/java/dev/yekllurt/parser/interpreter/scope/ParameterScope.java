@@ -27,4 +27,12 @@ public interface ParameterScope {
      */
     String lookupParameterType(String name);
 
+    /**
+     * Check if a parameter exists in the current scope
+     *
+     * @param name the parameter name
+     * @return if the parameter exists in the current scope
+     */
+    boolean existsParameter(String name);
+
 }

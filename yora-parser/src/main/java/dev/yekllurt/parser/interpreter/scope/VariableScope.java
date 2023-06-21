@@ -35,4 +35,12 @@ public interface VariableScope extends Scope {
      */
     String lookupVariableType(String name);
 
+    /**
+     * Check if a variable exists in the current scope
+     *
+     * @param name the variable name
+     * @return if the variable exists in the current scope
+     */
+    boolean existsVariable(String name);
+
 }

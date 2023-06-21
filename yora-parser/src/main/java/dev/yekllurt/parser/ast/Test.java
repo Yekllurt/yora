@@ -21,6 +21,7 @@ public class Test {
         functionScope.beginScope();
         VariableScope variableScope = new VariableScopeImplementation();
         variableScope.beginScope();
+        // TODO: if a user should be able to pass arguments when calling a program then pass them here via parameterScope
         program.evaluate(functionScope, variableScope, null, null);
         functionScope.endScope();
         variableScope.endScope();
