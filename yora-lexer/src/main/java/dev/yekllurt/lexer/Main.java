@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         if (!(args.length == 2 || args.length == 3)) {
-            System.out.println("Invalid argument length. Program arguments = <token-definition-file> <program-file> <token-output-file>");
+            System.err.println("Invalid argument length. Program arguments = <token-definition-file> <program-file> <token-output-file>");
             System.exit(1);
         }
 

@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.ast;
+package dev.yekllurt.parser;
 
 import dev.yekllurt.parser.ast.creator.Parser;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
@@ -9,12 +9,17 @@ import dev.yekllurt.parser.token.TokenLoader;
 
 import java.io.File;
 
-public class Test {
+public class Interpreter {
 
     public static void main(String[] args) {
-        var a = System.getenv();
-        var b = System.getProperties();
-        var tokens = new TokenLoader().load(new File("./examples/lexer/test-program.yora.out"));
+        if (args.length != 1) {
+            System.err.println("You must only provide one program");
+            System.exit(1);
+        }
+
+        var programFile = args[0];
+
+        var tokens = new TokenLoader().load(new File(programFile));
         var parser = new Parser(tokens);
         var program = parser.parse();
         FunctionScope functionScope = new FunctionScopeImplementation();
