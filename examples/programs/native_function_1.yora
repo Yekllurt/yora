@@ -1,0 +1,6 @@
+void main()
+    print(sin(1));
+    print(cos(0));
+    print(sqrt(9));
+    print(sqrt(5));
+end;

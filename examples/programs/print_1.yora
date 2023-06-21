@@ -1,0 +1,4 @@
+void main()
+    int a = 9;
+    print(9);
+end;
