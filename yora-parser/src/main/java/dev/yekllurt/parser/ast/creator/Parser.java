@@ -344,7 +344,7 @@ public class Parser {
                     .operator(ConditionOperator.LESS_THAN)
                     .build();
         }
-        return null;
+        throw new GrammarException(String.format("Failed parsing a condition du to an unsupported token type %s", getCurrentTokenType()));
     }
 
     // FILE DIVIDER --- BOTTOM PART OF GRAMMAR
@@ -551,15 +551,6 @@ public class Parser {
     private String getCurrentTokenValue() {
         return getCurrentToken().getValue();
     }
-
-    /*private Token getNextToken() {
-        tokenCursor++;
-        return getCurrentToken();
-    }
-
-    private String getNextTokenType() {
-        return getNextToken().getType();
-    }*/
 
     private boolean isNextToken(String type) {
         return isParseNotCompleted() && getCurrentToken().getType().equals(type);
