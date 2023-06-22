@@ -1,0 +1,6 @@
+// This is the main function that is called when the program is executed
+void main()
+    // int a = 9;
+    // print(9);
+    print(18);
+end;
