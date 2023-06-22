@@ -36,10 +36,24 @@ public class ConditionNode implements ASTNode {
         }
         switch (operator) {
             case EQUAL -> {
-                var equal = Objects.isNull(returnScopeRight.lookupReturnValue())
-                        ? returnScopeLeft.lookupReturnValue().equals(returnScopeRight.lookupReturnValue())
-                        : returnScopeRight.lookupReturnValue().equals(returnScopeLeft.lookupReturnValue());
-                returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, equal);
+                if (Utility.isNumber(returnScopeLeft.lookupReturnValue()) && Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                    var left = Utility.parseDouble(returnScopeLeft.lookupReturnValue());
+                    var right = Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                    if (Objects.nonNull(left)) {
+                        var equal = left.compareTo(right) == 0;
+                        returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, equal);
+                    } else if (Objects.nonNull(right)) {
+                        var equal = right.compareTo(left) == 0;
+                        returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, equal);
+                    } else {
+                        // TODO: throw error
+                    }
+                } else {
+                    var equal = Objects.isNull(returnScopeRight.lookupReturnValue())
+                            ? returnScopeLeft.lookupReturnValue().equals(returnScopeRight.lookupReturnValue())
+                            : returnScopeRight.lookupReturnValue().equals(returnScopeLeft.lookupReturnValue());
+                    returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, equal);
+                }
             }
             case NOT_EQUAL -> {
                 var equal = Objects.isNull(returnScopeRight.lookupReturnValue())
@@ -51,28 +65,28 @@ public class ConditionNode implements ASTNode {
                 if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
                     throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the > operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
                 }
-                var greaterThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) > Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                var greaterThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(Utility.parseDouble(returnScopeRight.lookupReturnValue())) > 0;
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThan);
             }
             case GREATER_THAN_EQUAL -> {
                 if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
                     throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the >= operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
                 }
-                var greaterThanEqual = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) >= Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                var greaterThanEqual = Utility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(Utility.parseDouble(returnScopeRight.lookupReturnValue())) >= 0;
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThanEqual);
             }
             case LESS_THAN -> {
                 if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
                     throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the < operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
                 }
-                var lessThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) < Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                var lessThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(Utility.parseDouble(returnScopeRight.lookupReturnValue())) < 0;
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, lessThan);
             }
             case LESS_THAN_EQUAL -> {
                 if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
                     throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the <= operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
                 }
-                var lessThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()) <= Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                var lessThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(Utility.parseDouble(returnScopeRight.lookupReturnValue())) <= 0;
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, lessThan);
             }
             default ->

@@ -1,0 +1,9 @@
+void main()
+    int a = 4;
+    while(a >= 0)
+        if(a % 2 == 0)
+            print(a);
+        end;
+        a = a - 1;
+    end;
+end;

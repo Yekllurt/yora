@@ -31,6 +31,8 @@ public class BinaryExpressionNode implements ASTNode {
             case TokenType.PUNCTUATION_DIVIDE ->
                     performDivide(functionScope, variableScope, parameterScope, returnScope);
             case TokenType.PUNCTUATION_CARET -> performPower(functionScope, variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_PERCENT ->
+                    performPercent(functionScope, variableScope, parameterScope, returnScope);
 
             default -> throw new InvalidOperationError(String.format("No operation '%s' exists", operator));
         }
@@ -106,6 +108,16 @@ public class BinaryExpressionNode implements ASTNode {
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to power the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
+        }
+    }
+
+    private void performPercent(FunctionScope functionScope, VariableScope variableScope,
+                                ParameterScope parameterScope, ReturnScope returnScope) {
+        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
+        if (Utility.isLong(nodeValues.x()) && Utility.isLong(nodeValues.y())) {
+            returnScope.assignReturnValue(TokenType.KEYWORD_INT, Utility.parseLong(nodeValues.x()) % Utility.parseLong(nodeValues.y()));
+        } else {
+            throw new InvalidOperationError(String.format("Unable to modulo the values '%s' and '%s' with each other, both must be integers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
         }
     }
 

@@ -16,7 +16,7 @@ import java.util.Set;
 public class Parser {
 
     private static final Set<String> EXPR_PRIORITY_3 = Set.of(TokenType.PUNCTUATION_PLUS, TokenType.PUNCTUATION_MINUS);
-    private static final Set<String> EXPR_PRIORITY_2 = Set.of(TokenType.PUNCTUATION_STAR, TokenType.PUNCTUATION_DIVIDE);
+    private static final Set<String> EXPR_PRIORITY_2 = Set.of(TokenType.PUNCTUATION_STAR, TokenType.PUNCTUATION_DIVIDE, TokenType.PUNCTUATION_PERCENT);
     private static final Set<String> EXPR_PRIORITY_1 = Set.of(TokenType.PUNCTUATION_CARET);
 
     private static final Set<String> VARIABLE_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR);
@@ -289,10 +289,10 @@ public class Parser {
     }
 
     private ConditionNode parseCondition() {
-        var left = parseAtom();
+        var left = parseExpression();
         if (isNextToken(TokenType.PUNCTUATION_EQUAL) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
             tokenCursor += 2;   // Adding two as we are checking two values (==)
-            var right = parseAtom();
+            var right = parseExpression();
             return ConditionNode.builder()
                     .left(left)
                     .right(right)
@@ -301,43 +301,43 @@ public class Parser {
         }
         if (isNextToken(TokenType.PUNCTUATION_EXCLAMATION_MARK) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
             tokenCursor += 2;   // Adding two as we are checking two values (!=)
-            var right = parseAtom();
+            var right = parseExpression();
             return ConditionNode.builder()
                     .left(left)
                     .right(right)
                     .operator(ConditionOperator.NOT_EQUAL)
                     .build();
         }
-        if (isNextToken(TokenType.GREATER_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+        if (isNextToken(TokenType.PUNCTUATION_GREATER_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
             tokenCursor += 2;   // Adding two as we are checking two values (>=)
-            var right = parseAtom();
+            var right = parseExpression();
             return ConditionNode.builder()
                     .left(left)
                     .right(right)
                     .operator(ConditionOperator.GREATER_THAN_EQUAL)
                     .build();
         }
-        if (isNextToken(TokenType.GREATER_THAN)) {
+        if (isNextToken(TokenType.PUNCTUATION_GREATER_THAN)) {
             tokenCursor++;
-            var right = parseAtom();
+            var right = parseExpression();
             return ConditionNode.builder()
                     .left(left)
                     .right(right)
                     .operator(ConditionOperator.GREATER_THAN)
                     .build();
         }
-        if (isNextToken(TokenType.LESS_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+        if (isNextToken(TokenType.PUNCTUATION_LESS_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
             tokenCursor += 2;   // Adding two as we are checking two values (<=)
-            var right = parseAtom();
+            var right = parseExpression();
             return ConditionNode.builder()
                     .left(left)
                     .right(right)
                     .operator(ConditionOperator.LESS_THAN_EQUAL)
                     .build();
         }
-        if (isNextToken(TokenType.LESS_THAN)) {
+        if (isNextToken(TokenType.PUNCTUATION_LESS_THAN)) {
             tokenCursor++;
-            var right = parseAtom();
+            var right = parseExpression();
             return ConditionNode.builder()
                     .left(left)
                     .right(right)
@@ -413,6 +413,7 @@ public class Parser {
     //  power_expression
     //  power_expression STAR power_expression
     //  power_expression DIVIDE power_expression
+    //  power_expression PERCENT power_expression
     private ASTNode parseMultiplyDivideExpression() {
         var expression = parsePowerExpression();
         while (isParseNotCompleted() && EXPR_PRIORITY_2.contains(getCurrentTokenType())) {
@@ -435,6 +436,17 @@ public class Parser {
                         .left(expression)
                         .right(right)
                         .operator(TokenType.PUNCTUATION_DIVIDE)
+                        .build();
+                continue;
+            }
+            // Rule: power_expression PERCENT power_expression
+            if (isNextToken(TokenType.PUNCTUATION_PERCENT)) {
+                tokenCursor++;
+                var right = parsePowerExpression();
+                expression = BinaryExpressionNode.builder()
+                        .left(expression)
+                        .right(right)
+                        .operator(TokenType.PUNCTUATION_PERCENT)
                         .build();
                 continue;
             }

@@ -63,6 +63,7 @@ multiply_divide_expression
     power_expression
     power_expression STAR power_expression
     power_expression DIVIDE power_expression
+    power_expression PERCENT power_expression
 
 power_expression
     PLUS power_expression
