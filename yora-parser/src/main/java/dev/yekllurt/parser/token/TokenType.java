@@ -5,7 +5,9 @@ public class TokenType {
     public static final String KEYWORD_INT = "INT";
     public static final String KEYWORD_FLOAT = "FLOAT";
     public static final String KEYWORD_BOOLEAN = "BOOLEAN";
+    @Deprecated
     public static final String KEYWORD_CHAR = "CHAR";
+    public static final String KEYWORD_STRING = "STRING";
     public static final String KEYWORD_VOID = "VOID";
     public static final String KEYWORD_END = "END";
     public static final String KEYWORD_RETURN = "RETURN";
@@ -29,6 +31,7 @@ public class TokenType {
 
     public static final String IDENTIFIER = "IDENTIFIER";
     public static final String DECIMAL_NUMBER = "NUMBER";
+    public static final String STRING = "STRING";
 
     private TokenType() {
         // Intentional as a helper class should not be instantiated by other classes

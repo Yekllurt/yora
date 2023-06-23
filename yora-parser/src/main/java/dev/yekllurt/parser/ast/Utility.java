@@ -12,6 +12,13 @@ public class Utility {
         // Intentional as a helper class should not be instantiated by other classes
     }
 
+    public static boolean isString(Object value) {
+        if (value instanceof String str) {
+            return str.matches(".*?");
+        }
+        return false;
+    }
+
     public static boolean isIdentifier(Object value) {
         if (value instanceof String str) {
             return str.matches("[a-zA-Z]+");
@@ -102,7 +109,7 @@ public class Utility {
             return TokenType.KEYWORD_BOOLEAN;
         }
         if (value instanceof Character) {
-            return TokenType.KEYWORD_CHAR;
+            return TokenType.KEYWORD_STRING;
         }
         return null;
     }

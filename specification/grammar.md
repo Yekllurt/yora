@@ -72,6 +72,7 @@ power_expression
     atom CARET power_expression
 
 atom
+    STRING
     NUMBER
     LEFT_BRACE expression RIGHT_BRACE
     IDENTIFIER
