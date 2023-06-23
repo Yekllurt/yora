@@ -137,7 +137,7 @@ public class Parser {
 
     private SequencedCollection<ASTNode> parseStatementList() {
         var statementList = new SequencedCollection<ASTNode>();
-        var statemenet = parseStatement();
+        var statemenet = isNextToken(STATEMENT_START_TYPES) ? parseStatement() : null;
         if (Objects.nonNull(statemenet)) {
             statementList.add(statemenet);
             while (isNextToken(STATEMENT_START_TYPES)) {
@@ -224,6 +224,7 @@ public class Parser {
                 if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                     tokenCursor++;
                     var statements = parseStatementList();
+                    var returnStatement = parseReturn();
                     if (isNextToken(TokenType.KEYWORD_END)) {
                         tokenCursor++;
                         if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
@@ -231,6 +232,7 @@ public class Parser {
                             return IfBranchNode.builder()
                                     .condition(conditions)
                                     .statements(statements)
+                                    .returnStatement(returnStatement)
                                     .build();
                         }
                     }

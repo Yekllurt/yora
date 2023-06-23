@@ -30,14 +30,27 @@ public class FunctionNode implements ASTNode {
 
         variableScope.beginSoftScope();
 
+        // Statement evaluation
         for (var statement : statements) {
-            statement.evaluate(functionScope, variableScope, parameterScope, null);
+            if (statement instanceof IfBranchNode ifBranchNode) {
+                var childReturnScope = new ReturnScopeImplementation();
+                ifBranchNode.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
+                // This is the case where someone uses a return statement in an if control flow
+                if (Objects.nonNull(childReturnScope.lookupReturnValueType())) {
+                    returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
+                    variableScope.endSoftScope();
+                    return;
+                }
+            } else {
+                statement.evaluate(functionScope, variableScope, parameterScope, null);
+            }
         }
 
+        // Return statement evaluation
         if (Objects.nonNull(returnStatement)) {
             var childReturnScope = new ReturnScopeImplementation();
             returnStatement.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
-            returnScope.assignReturnValue(returnType, childReturnScope.lookupReturnValue());
+            returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
         }
 
         variableScope.endSoftScope();

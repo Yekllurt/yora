@@ -1,4 +1,4 @@
-int main()
+void main()
     int a = 3;
     if(a == 3)
         int b = 6;

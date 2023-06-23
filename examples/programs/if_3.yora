@@ -1,0 +1,11 @@
+void main()
+    print(tripleEvenDoubleOdd(4));
+    print(tripleEvenDoubleOdd(3));
+end;
+
+int tripleEvenDoubleOdd(int value)
+    if(value % 2 == 0)
+        return 3 * value;
+    end;
+    return 2 * value;
+end;
