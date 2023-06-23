@@ -23,13 +23,19 @@ public class Interpreter {
         var parser = new Parser(tokens);
         var program = parser.parse();
         FunctionScope functionScope = new FunctionScopeImplementation();
-        functionScope.beginScope();
+        functionScope.beginHardScope();
+        functionScope.beginSoftScope();
+
         VariableScope variableScope = new VariableScopeImplementation();
-        variableScope.beginScope();
+        variableScope.beginHardScope();
+        variableScope.beginSoftScope();
         // TODO: if a user should be able to pass arguments when calling a program then pass them here via parameterScope
         program.evaluate(functionScope, variableScope, null, null);
-        functionScope.endScope();
-        variableScope.endScope();
+        variableScope.endSoftScope();
+        variableScope.endHardScope();
+
+        functionScope.endSoftScope();
+        functionScope.endHardScope();
     }
 
 }

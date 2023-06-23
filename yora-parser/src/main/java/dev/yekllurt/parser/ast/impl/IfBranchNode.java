@@ -29,11 +29,11 @@ public class IfBranchNode implements ASTNode {
         }
         var conditionEvaluation = (boolean) returnScopeCondition.lookupReturnValue();
         if (conditionEvaluation) {
-            variableScope.beginScope();
+            variableScope.beginSoftScope();
             for (var statement : statements) {
                 statement.evaluate(functionScope, variableScope, parameterScope, null);
             }
-            variableScope.endScope();
+            variableScope.endSoftScope();
         }
     }
 

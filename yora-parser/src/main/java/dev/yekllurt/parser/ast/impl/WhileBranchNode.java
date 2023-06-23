@@ -24,11 +24,11 @@ public class WhileBranchNode implements ASTNode {
                          ParameterScope parameterScope, ReturnScope returnScope) {
         boolean run = evaluateCondition(functionScope, variableScope, parameterScope);
         while (run) {
-            variableScope.beginScope();
+            variableScope.beginSoftScope();
             for (var statement : statements) {
                 statement.evaluate(functionScope, variableScope, parameterScope, null);
             }
-            variableScope.endScope();
+            variableScope.endSoftScope();
             run = evaluateCondition(functionScope, variableScope, parameterScope);
         }
 

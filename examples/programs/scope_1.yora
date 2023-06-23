@@ -1,0 +1,10 @@
+void main()
+    int a = 4;
+    a = double(a);
+    print(a);
+end;
+
+int double(int input)
+    int a = 2 * input;
+    return a;
+end;

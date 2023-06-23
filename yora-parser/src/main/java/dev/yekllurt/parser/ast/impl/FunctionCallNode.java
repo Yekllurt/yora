@@ -60,8 +60,12 @@ public class FunctionCallNode implements ASTNode {
                 childParameterScope.assignParameter(parameterNode.getIdentifier(), parameterNode.getType(), childReturnScope.lookupReturnValue());
             }
 
+            variableScope.beginHardScope();
+            variableScope.beginSoftScope();
             var childReturnScope = new ReturnScopeImplementation();
             functionNode.evaluate(functionScope, variableScope, childParameterScope, childReturnScope);
+            variableScope.endSoftScope();
+            variableScope.endHardScope();
 
             returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
         }

@@ -28,7 +28,7 @@ public class FunctionNode implements ASTNode {
                          ParameterScope parameterScope, ReturnScope returnScope) {
         // TODO: handle parameters, amongst others these have to be evaluated
 
-        variableScope.beginScope();
+        variableScope.beginSoftScope();
 
         for (var statement : statements) {
             statement.evaluate(functionScope, variableScope, parameterScope, null);
@@ -40,7 +40,7 @@ public class FunctionNode implements ASTNode {
             returnScope.assignReturnValue(returnType, childReturnScope.lookupReturnValue());
         }
 
-        variableScope.endScope();
+        variableScope.endSoftScope();
 
     }
 

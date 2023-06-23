@@ -8,38 +8,54 @@ import java.util.*;
 
 public class FunctionScopeImplementation implements FunctionScope {
 
-    private final Deque<Map<String, FunctionNode>> functionScope = new ArrayDeque<>();
+    private final Deque<Deque<Map<String, FunctionNode>>> functionScope = new ArrayDeque<>();
 
     @Override
-    public void beginScope() {
-        functionScope.push(new HashMap<>());
+    public void beginSoftScope() {
+        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek())) {
+            throw new ScopeError("Can't create a soft scope as no hard scope is active.");
+        }
+        functionScope.peek().push(new HashMap<>());
     }
 
     @Override
-    public void endScope() {
+    public void endSoftScope() {
+        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty()) {
+            throw new ScopeError("Can't end a soft scope as no hard scope is active.");
+        }
+        functionScope.peek().pop();
+    }
+
+    @Override
+    public void beginHardScope() {
+        functionScope.push(new ArrayDeque<>());
+    }
+
+    @Override
+    public void endHardScope() {
         if (functionScope.isEmpty()) {
-            throw new ScopeError("Can't end a scope as no scope is active.");
+            throw new ScopeError("Can't end a hard scope as no scope is active.");
         }
         functionScope.pop();
     }
 
     @Override
     public void assignFunction(String name, FunctionNode function) {
-        if (functionScope.isEmpty()) {
-            throw new ScopeError("Can't assign the function '%s' as there is not active scope available.".formatted(name));
+        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty()) {
+            throw new ScopeError("Can't assign the function '%s' as there is not active soft scope available.".formatted(name));
         }
         if (existsFunction(name)) {
-            throw new ScopeError(String.format("Can't assign the function '%s' as it already exists in the current scope.", name));
+            throw new ScopeError(String.format("Can't assign the function '%s' as it already exists in the current soft scope.", name));
         }
-        functionScope.peek().put(name, function);
+        functionScope.peek().peek().put(name, function);
     }
 
     @Override
     public FunctionNode lookupFunction(String name) {
-        if (functionScope.isEmpty()) {
-            throw new ScopeError(String.format("Can't lookup the function '%s' as there is not active scope available.", name));
+        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty()) {
+            throw new ScopeError(String.format("Can't lookup the function '%s' as there is not active soft scope available.", name));
         }
-        for (var scope : functionScope) {
+        for (var scope : functionScope.peek()) {
             if (scope.containsKey(name)) {
                 return scope.get(name);
             }
@@ -48,10 +64,10 @@ public class FunctionScopeImplementation implements FunctionScope {
     }
 
     private boolean existsFunction(String name) {
-        if (functionScope.isEmpty()) {
+        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty()) {
             throw new ScopeError(String.format("Can't check if the function '%s' exists as there is not active scope available.", name));
         }
-        for (var scope : functionScope) {
+        for (var scope : functionScope.peek()) {
             if (scope.containsKey(name)) {
                 return true;
             }
