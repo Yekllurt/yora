@@ -24,13 +24,8 @@ public class Lexer {
             var remainingInput = line.trim();
             var tokenMatch = false;
 
-            // TODO: update this check to >= 2 if string should be supporte as these contain whitespaces
-            if (remainingInput.split("\s+").length != 2) {
-                throw new LexerException(String.format("Invalid input: %s", remainingInput));
-            }
-
-            var type = remainingInput.split("\s+")[0];
-            var value = remainingInput.split("\s+")[1];
+            var type = remainingInput.split("\s+", 2)[0];
+            var value = remainingInput.split("\s+", 2)[1];
             for (TokenDefinition tokenDefinition : tokenDefinitionList) {
                 var pattern = Pattern.compile(tokenDefinition.getPattern());
                 var matcher = pattern.matcher(value);
@@ -40,6 +35,9 @@ public class Lexer {
                 }
 
                 tokenMatch = true;
+                if (type.equals("STRING")) {
+                    value = value.substring(1, value.length() - 1);
+                }
                 tokenList.add(Token.builder()
                         .type(tokenDefinition.getName())
                         .value(tokenDefinition.isKeepValue() ? value : null)

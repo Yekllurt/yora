@@ -1,5 +1,6 @@
 DECIMAL_NUMBER      (0)|([1-9][0-9]*(\.[0-9]+)?)|([0-9](\.[0-9]+)?)
 IDENTIFIER          [a-zA-Z]+
+STRING              \".*?\"
 
 ###
 
@@ -32,3 +33,4 @@ PUNCTUATION     "%"         0   PERCENT
 
 IDENTIFIER      {IDENTIFIER}        1   IDENTIFIER
 NUMBER_DECIMAL  {DECIMAL_NUMBER}    1   NUMBER
+STRING          {STRING}            1   STRING
