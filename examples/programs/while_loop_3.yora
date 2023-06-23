@@ -1,0 +1,14 @@
+void main()
+    print(foo(3));
+end;
+
+int foo(int value)
+    print(value);
+    int result = 0;
+    while(value > 0)
+        result = result + value;
+        value = value - 1;
+    end;
+    print(value);
+    return result;
+end;

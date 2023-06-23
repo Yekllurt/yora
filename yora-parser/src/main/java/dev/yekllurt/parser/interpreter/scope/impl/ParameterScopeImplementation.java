@@ -20,6 +20,14 @@ public class ParameterScopeImplementation implements ParameterScope {
     }
 
     @Override
+    public void updateParameter(String name, Object value) {
+        if (!existsParameter(name)) {
+            throw new ScopeError(String.format("Can't update the parameter '%s' as it doesn't exist in the current soft scope.", name));
+        }
+        parameters.put(name, new Tuple<>(lookupParameterType(name), value));
+    }
+
+    @Override
     public Object lookupParameter(String name) {
         if (!existsParameter(name)) {
             throw new ScopeError(String.format("Can't find the parameter '%s' in the current scope.", name));

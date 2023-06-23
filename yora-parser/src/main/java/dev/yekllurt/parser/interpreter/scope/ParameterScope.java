@@ -12,6 +12,14 @@ public interface ParameterScope {
     void assignParameter(String name, String type, Object value);
 
     /**
+     * Updates a parameter value in the current scope
+     *
+     * @param name  the variable name
+     * @param value the variable value
+     */
+    void updateParameter(String name, Object value);
+
+    /**
      * Lookup a parameter in the current scope
      *
      * @param name the parameter name

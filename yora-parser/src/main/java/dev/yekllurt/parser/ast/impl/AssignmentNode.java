@@ -6,6 +6,7 @@ import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
+import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
 import lombok.Builder;
 import lombok.Data;
 
@@ -22,7 +23,13 @@ public class AssignmentNode implements ASTNode {
         var childReturnScope = new ReturnScopeImplementation();
         value.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
 
-        variableScope.updateVariable(identifier, childReturnScope.lookupReturnValue());
+        if (variableScope.existsVariable(identifier)) {
+            variableScope.updateVariable(identifier, childReturnScope.lookupReturnValue());
+        } else if (parameterScope.existsParameter(identifier)) {
+            parameterScope.updateParameter(identifier, childReturnScope.lookupReturnValue());
+        } else {
+            throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));
+        }
     }
 
 }
