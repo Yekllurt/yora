@@ -19,9 +19,9 @@ public class Parser {
     private static final Set<String> EXPR_PRIORITY_2 = Set.of(TokenType.PUNCTUATION_STAR, TokenType.PUNCTUATION_DIVIDE, TokenType.PUNCTUATION_PERCENT);
     private static final Set<String> EXPR_PRIORITY_1 = Set.of(TokenType.PUNCTUATION_CARET);
 
-    private static final Set<String> VARIABLE_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_STRING);
-    private static final Set<String> RETURN_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_STRING, TokenType.KEYWORD_VOID);
-    private static final Set<String> STATEMENT_START_TYPES = Set.of(TokenType.IDENTIFIER, TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_CHAR, TokenType.KEYWORD_STRING, TokenType.KEYWORD_IF, TokenType.KEYWORD_WHILE);
+    private static final Set<String> VARIABLE_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING);
+    private static final Set<String> RETURN_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING, TokenType.KEYWORD_VOID);
+    private static final Set<String> STATEMENT_START_TYPES = Set.of(TokenType.IDENTIFIER, TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING, TokenType.KEYWORD_IF, TokenType.KEYWORD_WHILE);
 
     private final SequencedCollection<Token> tokens;
     private int tokenCursor = 0;
