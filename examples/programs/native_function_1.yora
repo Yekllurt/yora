@@ -1,6 +1,6 @@
 void main()
-    print(sin(1));
-    print(cos(0));
-    print(sqrt(9));
-    print(sqrt(5));
+    println(sin(1));
+    println(cos(0));
+    println(sqrt(9));
+    println(sqrt(5));
 end;

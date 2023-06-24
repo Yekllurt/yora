@@ -2,8 +2,8 @@ void main()
     int a = 4;
     int b = 3;
     b = double(b);
-    print(a);
-    print(b);
+    println(a);
+    println(b);
 end;
 
 int double(int input)

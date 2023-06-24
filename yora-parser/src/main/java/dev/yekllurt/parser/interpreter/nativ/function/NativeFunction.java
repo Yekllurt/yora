@@ -12,4 +12,11 @@ public interface NativeFunction {
      */
     Optional<Object> execute(Object... parameters);
 
+    /**
+     * The function name
+     *
+     * @return the function name
+     */
+    String getName();
+
 }

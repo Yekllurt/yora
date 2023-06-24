@@ -2,5 +2,5 @@
 void main()
     // int a = 9;
     // print(9);
-    print(18);
+    println(18);
 end;

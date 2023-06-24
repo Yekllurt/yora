@@ -2,11 +2,10 @@ package dev.yekllurt.parser.interpreter.nativ.function.impl;
 
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
-public class PrintNativeFunction implements NativeFunction {
+public class PrintlnNativeFunction implements NativeFunction {
 
     /**
      * Prints the parameters to the console
@@ -16,12 +15,16 @@ public class PrintNativeFunction implements NativeFunction {
      */
     @Override
     public Optional<Object> execute(Object... parameters) {
-        if (Objects.nonNull(parameters) && parameters.length == 1) {
-            System.out.println(parameters[0]);
-        } else {
-            System.out.println(Arrays.toString(parameters));
+        if (Objects.isNull(parameters) || parameters.length != 1) {
+            throw new IllegalArgumentException(String.format("The native function %s has exactly one parameter", getName()));
         }
+        System.out.println(parameters[0]);
         return Optional.empty();
+    }
+
+    @Override
+    public String getName() {
+        return "print";
     }
 
 }

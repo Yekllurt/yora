@@ -3,8 +3,8 @@ void main()
     if(a == 3)
         int b = 6;
         int c = a + b;
-        print(c);
+        println(c);
     end;
     int result = 4 + a;
-    print(result);
+    println(result);
 end;

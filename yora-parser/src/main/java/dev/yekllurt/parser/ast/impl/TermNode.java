@@ -19,7 +19,7 @@ public class TermNode implements ASTNode {
 
     public enum TermType {
         LITERAL,
-        DYNAMIC;
+        DYNAMIC
     }
 
     private final Object value;

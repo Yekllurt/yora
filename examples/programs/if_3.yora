@@ -1,6 +1,6 @@
 void main()
-    print(tripleEvenDoubleOdd(4));
-    print(tripleEvenDoubleOdd(3));
+    println(tripleEvenDoubleOdd(4));
+    println(tripleEvenDoubleOdd(3));
 end;
 
 int tripleEvenDoubleOdd(int value)

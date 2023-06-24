@@ -10,11 +10,11 @@ public class NativeFunctionDirectory {
     private static final Map<String, NativeFunction> NATIVE_FUNCTION_MAP = new HashMap<>();
 
     static {
-        NATIVE_FUNCTION_MAP.put("print", new PrintNativeFunction());
+        NATIVE_FUNCTION_MAP.put("println", new PrintlnNativeFunction());
         NATIVE_FUNCTION_MAP.put("sqrt", new SqrtNativeFunction());
         NATIVE_FUNCTION_MAP.put("cos", new CosNativeFunction());
         NATIVE_FUNCTION_MAP.put("sin", new SinNativeFunction());
-        NATIVE_FUNCTION_MAP.put("randl", new RandomLongNativeFunction());
+        NATIVE_FUNCTION_MAP.put("randl", new RandlNativeFunction());
     }
 
     private NativeFunctionDirectory() {

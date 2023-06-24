@@ -1,7 +1,7 @@
 void main()
     int a = 4;
     a = double(a);
-    print(a);
+    println(a);
 end;
 
 int double(int input)
