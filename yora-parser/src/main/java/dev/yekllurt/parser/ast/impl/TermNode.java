@@ -1,7 +1,7 @@
 package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
-import dev.yekllurt.parser.ast.Utility;
+import dev.yekllurt.parser.utility.ParserUtility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
@@ -31,7 +31,7 @@ public class TermNode implements ASTNode {
         if (Objects.isNull(returnScope)) {
             throw new ExecutionError("Unable to return a value as the return scope is null");
         }
-        if (Utility.isIdentifier(value)) {
+        if (ParserUtility.isIdentifier(value)) {
             String identifier = (String) value;
             if (variableScope.existsVariable(identifier)) {
                 returnScope.assignReturnValue(variableScope.lookupVariableType(identifier), variableScope.lookupVariable(identifier));
@@ -40,11 +40,11 @@ public class TermNode implements ASTNode {
             } else {
                 throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));
             }
-        } else if (Utility.isLong(value)) {
+        } else if (ParserUtility.isLong(value)) {
             returnScope.assignReturnValue(TokenType.KEYWORD_INT, Integer.valueOf((String) value));
-        } else if (Utility.isDouble(value)) {
+        } else if (ParserUtility.isDouble(value)) {
             returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Integer.valueOf((String) value));
-        } else if (Utility.isString(value)) {
+        } else if (ParserUtility.isString(value)) {
             returnScope.assignReturnValue(TokenType.KEYWORD_STRING, String.valueOf(value));
         } else {
             throw new ExecutionError(String.format("Unable to resolve the term '%s'", value));

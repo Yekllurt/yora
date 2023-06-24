@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.ast;
+package dev.yekllurt.parser.utility;
 
 import dev.yekllurt.parser.ast.throwable.exception.ParseException;
 import dev.yekllurt.parser.token.TokenType;
@@ -6,9 +6,9 @@ import dev.yekllurt.parser.token.TokenType;
 /**
  * A helper class containing functions that are used by the parser and interpreter
  */
-public class Utility {
+public class ParserUtility {
 
-    private Utility() {
+    private ParserUtility() {
         // Intentional as a helper class should not be instantiated by other classes
     }
 
@@ -35,7 +35,7 @@ public class Utility {
         }
         if (value instanceof String str) {
             try {
-                Integer.valueOf(str);
+                Long.valueOf(str);
                 return true;
             } catch (NumberFormatException e) {
                 return false;
@@ -99,10 +99,10 @@ public class Utility {
     }
 
     public static String getReturnType(Object value) {
-        if (Utility.isLong(value)) {
+        if (ParserUtility.isLong(value)) {
             return TokenType.KEYWORD_INT;
         }
-        if (Utility.isDouble(value)) {
+        if (ParserUtility.isDouble(value)) {
             return TokenType.KEYWORD_FLOAT;
         }
         if (value instanceof Boolean) {

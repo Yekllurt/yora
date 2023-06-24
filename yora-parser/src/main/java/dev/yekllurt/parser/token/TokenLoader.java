@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.token;
 
+import dev.yekllurt.parser.ast.throwable.exception.ParseException;
 import dev.yekllurt.parser.collection.SequencedCollection;
 import dev.yekllurt.parser.ast.throwable.exception.ParserException;
 
@@ -7,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Objects;
 
 public class TokenLoader {
 
@@ -19,9 +21,17 @@ public class TokenLoader {
                     continue;
                 }
                 var split = line.trim().split(" ", 2);
+                var type = split[0];
+                var value = split.length == 2 ? split[1] : null;
+                if (type.equals(TokenType.STRING)) {
+                    if (Objects.isNull(value)) {
+                        throw new ParseException(String.format("Attempting to load a token type %s which does not have a value", type));
+                    }
+                    value = value.substring(1, value.length() - 1);
+                }
                 tokens.add(Token.builder()
-                        .type(split[0])
-                        .value(split.length == 2 ? split[1] : null)
+                        .type(type)
+                        .value(value)
                         .build());
             }
             return tokens;

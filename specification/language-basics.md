@@ -85,45 +85,58 @@ function may not have the same name as a native function.
 
 #### print
 
-Name: print <br>
+Function: `print(<value>)` <br>
 Description: The print function prints a given argument to the console <br>
-Examples:
+Parameters:
 
-```
-print("Hello World!");
-```
+* `value`
+    * Datatype: any datatype
+    * Description: the datatype that is to be printed to the console
 
 ### Mathematical Functions
 
 #### cos
 
-Name: cos <br>
-Description: Calculates the cosine value of an angle <br>
-Examples:
+Function: `cos(<value>)` <br>
+Description: Calculates the cosine value of a value <br>
+Parameters:
 
-```
-int a = cos(1);
-```
+* `value`
+    * Datatype: int or float
+    * Description: the int or float from which the sin value should be calculated
 
 #### sin
 
-Name: cos <br>
-Description: Calculates the sine value of an angle <br>
-Examples:
+Function: `sin(<value>)` <br>
+Description: Calculates the sine value of n value <br>
+Parameters:
 
-```
-int a = sin(1);
-```
+* `value`
+    * Datatype: int or float
+    * Description: the int or float from which the sin value should be calculated
 
 #### sqrt
 
-Name: sqrt <br>
+Function: `sqrt(<value>)` <br>
 Description: Calculates the sqrt value <br>
-Examples:
+Parameters:
 
-```
-int a = sqrt(9);
-```
+* `value`
+    * Datatype: int
+    * Description: the int from which a sqrt should be calculated
+
+#### randl
+
+Function: `randl(<min>, <max>)` <br>
+Description: Calculates a random int within the given bounds <br>
+Parameters:
+
+* `min`
+    * Datatype: int
+    * Description: the minimum bound (inclusive)
+* `max`
+    * Datatype: int
+    * Description: the upper bound (inclusive)
 
 # Source
 

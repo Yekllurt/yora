@@ -2,7 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
-import dev.yekllurt.parser.ast.Utility;
+import dev.yekllurt.parser.utility.ParserUtility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
@@ -36,9 +36,9 @@ public class ConditionNode implements ASTNode {
         }
         switch (operator) {
             case EQUAL -> {
-                if (Utility.isNumber(returnScopeLeft.lookupReturnValue()) && Utility.isNumber(returnScopeRight.lookupReturnValue())) {
-                    var left = Utility.parseDouble(returnScopeLeft.lookupReturnValue());
-                    var right = Utility.parseDouble(returnScopeRight.lookupReturnValue());
+                if (ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) && ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
+                    var left = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue());
+                    var right = ParserUtility.parseDouble(returnScopeRight.lookupReturnValue());
                     if (Objects.nonNull(left)) {
                         var equal = left.compareTo(right) == 0;
                         returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, equal);
@@ -62,31 +62,31 @@ public class ConditionNode implements ASTNode {
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, !equal);
             }
             case GREATER_THAN -> {
-                if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
                     throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the > operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
                 }
-                var greaterThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(Utility.parseDouble(returnScopeRight.lookupReturnValue())) > 0;
+                var greaterThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) > 0;
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThan);
             }
             case GREATER_THAN_EQUAL -> {
-                if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
                     throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the >= operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
                 }
-                var greaterThanEqual = Utility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(Utility.parseDouble(returnScopeRight.lookupReturnValue())) >= 0;
+                var greaterThanEqual = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) >= 0;
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThanEqual);
             }
             case LESS_THAN -> {
-                if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
                     throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the < operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
                 }
-                var lessThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(Utility.parseDouble(returnScopeRight.lookupReturnValue())) < 0;
+                var lessThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) < 0;
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, lessThan);
             }
             case LESS_THAN_EQUAL -> {
-                if (!Utility.isNumber(returnScopeLeft.lookupReturnValue()) || !Utility.isNumber(returnScopeRight.lookupReturnValue())) {
+                if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
                     throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the <= operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
                 }
-                var lessThan = Utility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(Utility.parseDouble(returnScopeRight.lookupReturnValue())) <= 0;
+                var lessThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) <= 0;
                 returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, lessThan);
             }
             default ->

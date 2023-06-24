@@ -1,7 +1,7 @@
 package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
-import dev.yekllurt.parser.ast.Utility;
+import dev.yekllurt.parser.utility.ParserUtility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
@@ -33,8 +33,8 @@ public class UnaryExpressionNode implements ASTNode {
     private void performPlus(FunctionScope functionScope, VariableScope variableScope,
                              ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValue = getNodeValue(functionScope, variableScope, parameterScope);
-        if (Utility.isNumber(nodeValue)) {
-            if (Utility.isDouble(nodeValue)) {
+        if (ParserUtility.isNumber(nodeValue)) {
+            if (ParserUtility.isDouble(nodeValue)) {
                 returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, nodeValue);
             } else {
                 returnScope.assignReturnValue(TokenType.KEYWORD_INT, nodeValue);
@@ -46,11 +46,11 @@ public class UnaryExpressionNode implements ASTNode {
     private void performMinus(FunctionScope functionScope, VariableScope variableScope,
                               ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValue = getNodeValue(functionScope, variableScope, parameterScope);
-        if (Utility.isNumber(nodeValue)) {
-            if (Utility.isDouble(nodeValue)) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, -Utility.parseDouble(nodeValue));
+        if (ParserUtility.isNumber(nodeValue)) {
+            if (ParserUtility.isDouble(nodeValue)) {
+                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, -ParserUtility.parseDouble(nodeValue));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, -Utility.parseLong(nodeValue));
+                returnScope.assignReturnValue(TokenType.KEYWORD_INT, -ParserUtility.parseLong(nodeValue));
             }
         }
         // TODO: throw error

@@ -35,9 +35,6 @@ public class Lexer {
                 }
 
                 tokenMatch = true;
-                if (type.equals("STRING")) {
-                    value = value.substring(1, value.length() - 1);
-                }
                 tokenList.add(Token.builder()
                         .type(tokenDefinition.getName())
                         .value(tokenDefinition.isKeepValue() ? value : null)
