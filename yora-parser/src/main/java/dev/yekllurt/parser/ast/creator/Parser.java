@@ -4,6 +4,7 @@ import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
 import dev.yekllurt.parser.ast.impl.*;
 import dev.yekllurt.parser.ast.throwable.exception.GrammarException;
+import dev.yekllurt.parser.ast.throwable.exception.ParseException;
 import dev.yekllurt.parser.ast.throwable.exception.ParserException;
 import dev.yekllurt.parser.ast.throwable.exception.UnsupportedTokenTypeException;
 import dev.yekllurt.parser.collection.SequencedCollection;
@@ -75,7 +76,7 @@ public class Parser {
                         if (!isNextToken(TokenType.KEYWORD_RETURN)) {
                             statements = parseStatementList();
                         }
-                        var returnExpression = parseReturn();
+                        var returnExpression = parseReturnStatement();
                         // TODO: add here to check if only a return expression exits if the function return type is not void
                         if (isNextToken(TokenType.KEYWORD_END)) {
                             tokenCursor++;
@@ -221,7 +222,7 @@ public class Parser {
                 if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                     tokenCursor++;
                     var statements = parseStatementList();
-                    var returnStatement = parseReturn();
+                    var returnStatement = parseReturnStatement();
                     if (isNextToken(TokenType.KEYWORD_END)) {
                         tokenCursor++;
                         if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
@@ -273,7 +274,7 @@ public class Parser {
 
     // Rule:
     //  RETURN expression SEMICOLON
-    private ReturnNode parseReturn() {
+    private ReturnNode parseReturnStatement() {
         if (isNextToken(TokenType.KEYWORD_RETURN)) {
             tokenCursor++;
             var expression = parseExpression();
@@ -358,9 +359,8 @@ public class Parser {
             if (isNextToken(TokenType.PUNCTUATION_COMMA)) {
                 tokenCursor++;
                 expression = parseExpression();
-                if (Objects.isNull(expression)) {
-                    throw new GrammarException("Failed parsing an expression due to there being no expression after a ','");
-                }
+                ExceptionUtility.throwIf(Objects.isNull(expression),
+                        new ParseException(String.format("Unable to parse an expression list at token %s due to an expression being expected after a ',' however non was provided", tokenCursor)));
             }
         }
         return ExpressionListNode.builder()
@@ -501,45 +501,44 @@ public class Parser {
     //  IDENTIFIER LEFT_BRACE expression_list RIGHT_BRACE
     private ASTNode parseAtom() {
         var token = getCurrentToken();
-        if (TokenType.DECIMAL_NUMBER.equals(token.getType())) {
-            tokenCursor++;
-            return TermNode.builder().value(token.getValue()).type(TermNode.TermType.LITERAL).build();
-        }
-        if (TokenType.STRING.equals(token.getType())) {
-            tokenCursor++;
-            return TermNode.builder().value(token.getValue()).type(TermNode.TermType.LITERAL).build();
-        }
-        if (TokenType.PUNCTUATION_LEFT_BRACE.equals(token.getType())) {
-            tokenCursor++;
-            var expression = parseExpression();
-            // TODO: add better error output
-            if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+        switch (token.getType()) {
+            case TokenType.DECIMAL_NUMBER, TokenType.STRING -> {
                 tokenCursor++;
-                return expression;
+                return TermNode.builder().value(token.getValue()).type(TermNode.TermType.LITERAL).build();
             }
-            return null;
-        }
-        if (TokenType.IDENTIFIER.equals(token.getType())) {
-            tokenCursor++;
-            if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
+            case TokenType.PUNCTUATION_LEFT_BRACE -> {
                 tokenCursor++;
-                // It is a function call
-                var arguments = parseExpressionList();
+                var expression = parseExpression();
                 // TODO: add better error output
-                if (Objects.nonNull(arguments) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                     tokenCursor++;
-                    return FunctionCallNode.builder()
-                            .functionIdentifier(token.getValue())
-                            .arguments(arguments)
-                            .build();
+                    return expression;
                 }
                 return null;
-            } else {
-                // It is a variable
-                return TermNode.builder().value(token.getValue()).type(TermNode.TermType.DYNAMIC).build();
             }
+            case TokenType.IDENTIFIER -> {
+                tokenCursor++;
+                if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
+                    tokenCursor++;
+                    // It is a function call
+                    var arguments = parseExpressionList();
+                    if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                        tokenCursor++;
+                        return FunctionCallNode.builder()
+                                .functionIdentifier(token.getValue())
+                                .arguments(arguments)
+                                .build();
+                    }
+                    return null; // TODO: throw error instead?
+                } else {
+                    // It is a variable
+                    return TermNode.builder().value(token.getValue()).type(TermNode.TermType.DYNAMIC).build();
+                }
+            }
+            default ->
+                    throw new UnsupportedTokenTypeException(String.format("Unable to parse an atom at token %s due to an unsupported token type '%s' being provided", tokenCursor, getCurrentTokenType()));
+
         }
-        throw new UnsupportedTokenTypeException(String.format("Failed parsing an atom due to a non supported token type '%s'", token.getType()));
     }
 
     // ========================
