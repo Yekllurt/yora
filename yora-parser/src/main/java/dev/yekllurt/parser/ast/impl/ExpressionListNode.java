@@ -19,7 +19,7 @@ public class ExpressionListNode implements ASTNode {
     public void evaluate(FunctionScope functionScope, VariableScope variableScope,
                          ParameterScope parameterScope, ReturnScope returnScope) {
         for (var expression : expressionList) {
-            expression.evaluate(functionScope, variableScope, parameterScope, null); // handle here returnScope=null
+            expression.evaluate(functionScope, variableScope, parameterScope, null); // TODO: handle here returnScope=null
         }
     }
 

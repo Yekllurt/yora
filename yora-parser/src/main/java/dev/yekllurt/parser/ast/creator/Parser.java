@@ -75,10 +75,7 @@ public class Parser {
                         if (!isNextToken(TokenType.KEYWORD_RETURN)) {
                             statements = parseStatementList();
                         }
-                        ReturnNode returnExpression = null;
-                        if (isNextToken(TokenType.KEYWORD_RETURN)) {
-                            returnExpression = parseReturn();
-                        }
+                        var returnExpression = parseReturn();
                         // TODO: add here to check if only a return expression exits if the function return type is not void
                         if (isNextToken(TokenType.KEYWORD_END)) {
                             tokenCursor++;
@@ -348,8 +345,6 @@ public class Parser {
         }
         throw new GrammarException(String.format("Failed parsing a condition du to an unsupported token type %s", getCurrentTokenType()));
     }
-
-    // FILE DIVIDER --- BOTTOM PART OF GRAMMAR
 
     // Rules:
     //  expression

@@ -17,8 +17,8 @@ import lombok.Data;
 @Builder
 public class BinaryExpressionNode implements ASTNode {
 
-    private final ASTNode left;             // is normally always a TermNode
-    private final ASTNode right;            // is normally always a TermNode or ExpressionNode
+    private final ASTNode left;
+    private final ASTNode right;
     private final String operator;
 
     @Override
