@@ -211,8 +211,8 @@ public class Parser {
             }
         }
         // Rules:
-        //  IF LEFT_BRACE condition_list RIGHT_BRACE statement_list END SEMICOLON
-        //  IF LEFT_BRACE condition_list RIGHT_BRACE statement_list return END SEMICOLON
+        //  IF LEFT_BRACE condition RIGHT_BRACE statement_list END SEMICOLON
+        //  IF LEFT_BRACE condition RIGHT_BRACE statement_list return END SEMICOLON
         else if (isNextToken(TokenType.KEYWORD_IF)) {
             tokenCursor++;
             if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
@@ -237,8 +237,8 @@ public class Parser {
             }
         }
         // Rules:
-        //  WHILE LEFT_BRACE condition_list RIGHT_BRACE statement_list END SEMICOLON
-        //  WHILE LEFT_BRACE condition_list RIGHT_BRACE statement_list return END SEMICOLON
+        //  WHILE LEFT_BRACE condition RIGHT_BRACE statement_list END SEMICOLON
+        //  WHILE LEFT_BRACE condition RIGHT_BRACE statement_list return END SEMICOLON
         else if (isNextToken(TokenType.KEYWORD_WHILE)) {
             tokenCursor++;
             if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
