@@ -1,13 +1,43 @@
 # Language Basics
 
+## Table of Contents
+
+1. [Program Structure](#program-structure)
+2. [Variables](#variables)
+    1. [Basic Data Types](#basic-data-types)
+    2. [Arrays](#arrays)
+3. [Operators](#operators)
+    1. [Simple Assignment Operators](#simple-assignment-operator)
+    2. [Arithmetic Operators](#arithmetic-operators)
+    3. [Unary Operators](#unary-operators)
+    4. [Equality and Relational Operators](#equality-and-relational-operators)
+    5. [Conditional Operators](#conditional-operators)
+4. [Control flow statements](#control-flow-statements)
+    1. [The if-then Statement](#the-if-then-statement)
+    2. [The if-then-else Statement](#the-if-then-else-statement)
+    3. [The while Statement](#the-while-statement)
+5. [Functions](#functions)
+6. [Native functions](#native-functions)
+    1. [I/O Functions](#io-functions)
+    2. [Mathematical Functions](#mathematical-functions)
+7. [Source](#source)
+
+## Program Structure
+
 ## Variables
 
-| Datatype | Description                                                              |
-|----------|--------------------------------------------------------------------------|
-| int      | The int data type is a 64-bit two's complement integer                   |
-| float    | The float data type is a double-precision 64-vit IEEE 754 floating point |
-| boolean  | The boolean data type has two possible values: true and false            |
-| string   | The string data type is a list of characters                             |                                            |   |   |   |
+### Basic Data Types
+
+| Datatype | Description                                                              | Note              |
+|----------|--------------------------------------------------------------------------|-------------------|
+| int      | The int data type is a 64-bit two's complement integer                   |                   |
+| float    | The float data type is a double-precision 64-vit IEEE 754 floating point |                   |
+| boolean  | The boolean data type has two possible values: true and false            | Not yet supported |
+| string   | The string data type is a list of characters                             |                   |
+
+### Arrays
+
+An arrays is a container that holds a fixed number of values of a single data type.
 
 ## Operators
 
@@ -56,24 +86,64 @@
 
 ### The if-then Statement
 
-The if-then statement is a basic control flow statement that tells your programm to execute a certain section of code
+The if-then statement is a basic control flow statement that tells your program to execute a certain section of code
 only if a particular expression evaluates to true. <br>
 Example:
 
 ```
-if(<condition>):
+if(<condition>)
     <statements>
-end:
+    <return-statement>
+end;
 ```
+
+### The if-then-else Statement
+
+The if-then-else statement is similar to the if-then statement a basic control flow statement with the difference that
+if the given condition is false, it can execute an alternativ set of statements.
+
+```
+if(<condition>)
+    <statements>
+    <return-statement>
+else:
+    <statements>
+    <return-statement>
+end;
+```
+
+Note: Not yet supported
 
 ### The while Statement
 
 The while statement continually executes a block of statements while a particular condition is true.
 
 ```
-while(<condition>):
+while(<condition>)
     <statements>
-end:
+end;
+```
+
+## Functions
+
+### Definition
+
+A function declares executable code that can be invoked from anywhere within the code (Note: recursion is not
+supported), passing a fixed number of values as arguments and having a well-defined return type (maybe void).
+
+```
+<return-type> <identifier>(<parameters>)
+    <statements>
+    <return-statement>
+end;
+```
+
+### Invoking
+
+This is also valid for [native functions](#native-functions).
+
+```
+<identifier>(<parameters>);
 ```
 
 ## Native Functions
@@ -138,7 +208,8 @@ Parameters:
     * Datatype: int
     * Description: the upper bound (inclusive)
 
-# Source
+## Source
 
 Inspiration for this format is drawn by the Java
-documentation (https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html)
+documentation (https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html) and java
+specification (https://docs.oracle.com/javase/specs/jls/se12/html/index.html)
