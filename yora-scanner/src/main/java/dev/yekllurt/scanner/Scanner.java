@@ -19,19 +19,19 @@ public class Scanner {
     }
 
     public List<Token> tokenize() {
-        List<Token> tokenList = new LinkedList<>();
+        var tokenList = new LinkedList<Token>();
 
-        int currentPosition = 0;
+        var currentPosition = 0;
         while (currentPosition < input.length()) {
 
-            String remainingInput = input.substring(currentPosition);
-            boolean tokenMatch = false;
-            for (TokenDefinition tokenDefinition : tokenDefinitionList) {
-                Pattern pattern = Pattern.compile(tokenDefinition.getPattern());
-                Matcher matcher = pattern.matcher(remainingInput);
+            var remainingInput = input.substring(currentPosition);
+            var tokenMatch = false;
+            for (var tokenDefinition : tokenDefinitionList) {
+                var pattern = Pattern.compile(tokenDefinition.getPattern());
+                var matcher = pattern.matcher(remainingInput);
 
                 if (matcher.lookingAt()) {
-                    String lexeme = matcher.group();
+                    var lexeme = matcher.group();
                     currentPosition += lexeme.length();
                     if (!tokenDefinition.isIgnore()) {
                         tokenList.add(Token.builder()

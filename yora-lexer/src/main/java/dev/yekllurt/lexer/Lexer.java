@@ -17,16 +17,16 @@ public class Lexer {
         this.tokenDefinitionList = tokenDefinitionList;
     }
 
-    public LinkedList<Token> tokenize() {
+    public List<Token> tokenize() {
         var tokenList = new LinkedList<Token>();
 
-        for (String line : input.split("\n")) {
+        for (var line : input.split("\n")) {
             var remainingInput = line.trim();
             var tokenMatch = false;
 
             var type = remainingInput.split("\s+", 2)[0];
             var value = remainingInput.split("\s+", 2)[1];
-            for (TokenDefinition tokenDefinition : tokenDefinitionList) {
+            for (var tokenDefinition : tokenDefinitionList) {
                 var pattern = Pattern.compile(tokenDefinition.getPattern());
                 var matcher = pattern.matcher(value);
 

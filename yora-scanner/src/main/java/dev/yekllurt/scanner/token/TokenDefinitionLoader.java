@@ -10,11 +10,11 @@ import java.util.List;
 public class TokenDefinitionLoader {
 
     public List<TokenDefinition> load(File file) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            List<TokenDefinition> result = new LinkedList<>();
+        try (var reader = new BufferedReader(new FileReader(file))) {
+            var result = new LinkedList<TokenDefinition>();
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] lineData = line.split("\s+", 3);
+                var lineData = line.split("\s+", 3);
                 result.add(TokenDefinition.builder()
                         .name(lineData[0].trim())
                         .ignore(!lineData[1].trim().equals("0"))
