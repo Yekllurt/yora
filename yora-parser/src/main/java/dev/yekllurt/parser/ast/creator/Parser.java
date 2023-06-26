@@ -9,6 +9,7 @@ import dev.yekllurt.parser.ast.throwable.exception.UnsupportedTokenTypeException
 import dev.yekllurt.parser.collection.SequencedCollection;
 import dev.yekllurt.parser.token.Token;
 import dev.yekllurt.parser.token.TokenType;
+import dev.yekllurt.parser.utility.ExceptionUtility;
 
 import java.util.Objects;
 import java.util.Set;
@@ -32,9 +33,8 @@ public class Parser {
 
     public ProgramNode parse() {
         var program = parseProgram();
-        if (isParseNotCompleted()) {
-            throw new ParserException(String.format("Didn't use all available tokens. Only used %s out of %s tokens", tokenCursor, tokens.size()));
-        }
+        ExceptionUtility.throwIf(isParseNotCompleted(),
+                new ParserException(String.format("Didn't use all available tokens. Only used %s out of %s tokens", tokenCursor, tokens.size())));
         return program;
     }
 

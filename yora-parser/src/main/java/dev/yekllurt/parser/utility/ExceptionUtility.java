@@ -1,13 +1,13 @@
 package dev.yekllurt.parser.utility;
 
-public class ValidationUtility {
+public class ExceptionUtility {
 
-    private ValidationUtility() {
+    private ExceptionUtility() {
         // Intentional as a helper class should not be instantiated by other classes
     }
 
-    public static void validate(boolean condition, RuntimeException exception) {
-        if (!condition) {
+    public static void throwIf(boolean condition, RuntimeException exception) {
+        if (condition) {
             throw exception;
         }
     }
