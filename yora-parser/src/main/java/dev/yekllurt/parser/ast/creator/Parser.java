@@ -2,6 +2,7 @@ package dev.yekllurt.parser.ast.creator;
 
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
+import dev.yekllurt.parser.ast.Configuration;
 import dev.yekllurt.parser.ast.impl.*;
 import dev.yekllurt.parser.ast.throwable.exception.GrammarException;
 import dev.yekllurt.parser.ast.throwable.exception.ParseException;
@@ -23,6 +24,8 @@ public class Parser {
 
     private static final Set<String> VARIABLE_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING);
     private static final Set<String> RETURN_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING, TokenType.KEYWORD_VOID);
+    private static final Set<String> RETURN_TYPES_WITH_VALUES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING);
+    private static final Set<String> RETURN_TYPES_WITHOUT_VALUES = Set.of(TokenType.KEYWORD_VOID);
     private static final Set<String> STATEMENT_START_TYPES = Set.of(TokenType.IDENTIFIER, TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING, TokenType.KEYWORD_IF, TokenType.KEYWORD_WHILE);
 
     private final SequencedCollection<Token> tokens;
@@ -67,6 +70,8 @@ public class Parser {
                     var parameters = new SequencedCollection<ParameterNode>();
                     if (isNextToken(VARIABLE_TYPES)) {
                         parameters = parseParameterList();
+                        ExceptionUtility.throwIf(parameters.size() > Configuration.MAX_FUNCTION_PARAMETERS,
+                                new ParseException(String.format("Unable to parse the function '%s' as its function header expects %s however only %s are allowed", identifier, parameters.size(), Configuration.MAX_FUNCTION_PARAMETERS)));
                     }
                     if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                         tokenCursor++;
@@ -75,7 +80,10 @@ public class Parser {
                             statements = parseStatementList();
                         }
                         var returnExpression = parseReturnStatement();
-                        // TODO: add here to check if only a return expression exits if the function return type is not void
+                        ExceptionUtility.throwIf(RETURN_TYPES_WITH_VALUES.contains(returnType) && Objects.isNull(returnExpression),
+                                new ParseException(String.format("Unable to parse the function '%s' as it expects to return a value of type '%s' however it does not return anything", identifier, returnType)));
+                        ExceptionUtility.throwIf(RETURN_TYPES_WITHOUT_VALUES.contains(returnType) && Objects.nonNull(returnExpression),
+                                new ParseException(String.format("Unable to parse the function '%s' as it expects to not return a value however it does return a value", identifier)));
                         if (isNextToken(TokenType.KEYWORD_END)) {
                             tokenCursor++;
                             if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
