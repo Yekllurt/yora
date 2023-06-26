@@ -45,14 +45,12 @@ public class Parser {
                 .build();
     }
 
-    // FILE DIVIDER --- TEMP
     private SequencedCollection<FunctionNode> parseFunctionList() {
         var functionList = new SequencedCollection<FunctionNode>();
         var function = parseFunction();
         while (Objects.nonNull(function)) {
             functionList.add(function);
             function = parseFunction();
-            // TODO: add here better error handling
         }
         return functionList;
     }
@@ -106,9 +104,8 @@ public class Parser {
             while (isNextToken(TokenType.PUNCTUATION_COMMA)) {
                 tokenCursor++;
                 parameter = parseParameter();
-                if (Objects.isNull(parameter)) {
-                    throw new GrammarException("Failed to parse a parameter");
-                }
+                ExceptionUtility.throwIf(Objects.isNull(parameter),
+                        new ParseException(String.format("Unable to parse a parameter list at token %s due to a parameter being expected after a ',' however non was provided", tokenCursor)));
                 parameterList.add(parameter);
             }
         }
