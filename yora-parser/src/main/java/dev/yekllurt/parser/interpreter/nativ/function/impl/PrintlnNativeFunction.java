@@ -1,7 +1,7 @@
 package dev.yekllurt.parser.interpreter.nativ.function.impl;
 
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
-import dev.yekllurt.parser.utility.ExceptionUtility;
+import dev.yekllurt.api.utility.ExceptionUtility;
 
 import java.util.Objects;
 import java.util.Optional;

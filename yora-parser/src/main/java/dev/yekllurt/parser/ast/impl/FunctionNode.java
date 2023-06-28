@@ -1,7 +1,7 @@
 package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.parser.ast.ASTNode;
-import dev.yekllurt.parser.collection.SequencedCollection;
+import dev.yekllurt.api.collection.SequencedCollection;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;

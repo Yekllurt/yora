@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.utility;
+package dev.yekllurt.api.utility;
 
 public class SystemUtility {
 

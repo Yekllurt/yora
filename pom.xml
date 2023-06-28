@@ -13,6 +13,7 @@
         <module>yora-scanner</module>
         <module>yora-lexer</module>
         <module>yora-parser</module>
+        <module>yora-api</module>
     </modules>
 
     <properties>

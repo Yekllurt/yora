@@ -6,7 +6,7 @@ import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.FunctionScopeImplementation;
 import dev.yekllurt.parser.interpreter.scope.impl.VariableScopeImplementation;
 import dev.yekllurt.parser.token.TokenLoader;
-import dev.yekllurt.parser.utility.SystemUtility;
+import dev.yekllurt.api.utility.SystemUtility;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.collection;
+package dev.yekllurt.api.collection;
 
 import java.util.Iterator;
 import java.util.Objects;

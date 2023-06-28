@@ -2,7 +2,7 @@ package dev.yekllurt.parser.interpreter.scope.impl;
 
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.throwable.error.ScopeError;
-import dev.yekllurt.parser.utility.Tuple;
+import dev.yekllurt.api.tuples.Tuple;
 
 import java.util.HashMap;
 import java.util.Map;

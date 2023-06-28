@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.utility;
+package dev.yekllurt.api.tuples;
 
 /**
  * A record that holds two arbitrary values
