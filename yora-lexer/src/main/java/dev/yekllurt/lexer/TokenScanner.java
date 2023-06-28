@@ -1,25 +1,25 @@
-package dev.yekllurt.scanner;
+package dev.yekllurt.lexer;
 
-import dev.yekllurt.scanner.token.Token;
-import dev.yekllurt.scanner.token.TokenDefinition;
+import dev.yekllurt.api.collection.SequencedCollection;
+import dev.yekllurt.api.token.Token;
+import dev.yekllurt.lexer.throwable.LexerException;
+import dev.yekllurt.lexer.token.TokenScanDefinition;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Scanner {
+public class TokenScanner {
 
     private final String input;
-    private final List<TokenDefinition> tokenDefinitionList;
+    private final List<TokenScanDefinition> tokenDefinitionList;
 
-    public Scanner(String input, List<TokenDefinition> tokenDefinitionList) {
+    public TokenScanner(String input, List<TokenScanDefinition> tokenDefinitionList) {
         this.input = input;
         this.tokenDefinitionList = tokenDefinitionList;
     }
 
-    public List<Token> tokenize() {
-        var tokenList = new LinkedList<Token>();
+    public SequencedCollection<Token> tokenize() {
+        var tokenList = new SequencedCollection<Token>();
 
         var currentPosition = 0;
         while (currentPosition < input.length()) {
@@ -45,7 +45,7 @@ public class Scanner {
             }
 
             if (!tokenMatch) {
-                throw new ScannerException(String.format("Invalid character '%s' at position %s", input.charAt(currentPosition), currentPosition));
+                throw new LexerException(String.format("Invalid character '%s' at position %s", input.charAt(currentPosition), currentPosition));
             }
 
         }

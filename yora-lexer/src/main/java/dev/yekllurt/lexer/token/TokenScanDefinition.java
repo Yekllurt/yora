@@ -1,11 +1,11 @@
-package dev.yekllurt.scanner.token;
+package dev.yekllurt.lexer.token;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class TokenDefinition {
+public class TokenScanDefinition {
 
     private final String name;
     private final String pattern;

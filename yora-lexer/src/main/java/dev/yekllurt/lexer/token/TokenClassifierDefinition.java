@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TokenDefinition {
+public class TokenClassifierDefinition {
 
     private final String category;
     private final String pattern;
