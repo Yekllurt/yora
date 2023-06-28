@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.ast.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.utility.ParserUtility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
@@ -35,9 +36,9 @@ public class UnaryExpressionNode implements ASTNode {
         var nodeValue = getNodeValue(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeValue)) {
             if (ParserUtility.isDouble(nodeValue)) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, nodeValue);
+                returnScope.assignReturnValue(DataType.FLOAT, nodeValue);
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, nodeValue);
+                returnScope.assignReturnValue(DataType.INT, nodeValue);
             }
         }
         // TODO: throw error
@@ -48,9 +49,9 @@ public class UnaryExpressionNode implements ASTNode {
         var nodeValue = getNodeValue(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeValue)) {
             if (ParserUtility.isDouble(nodeValue)) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, -ParserUtility.parseDouble(nodeValue));
+                returnScope.assignReturnValue(DataType.FLOAT, -ParserUtility.parseDouble(nodeValue));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, -ParserUtility.parseLong(nodeValue));
+                returnScope.assignReturnValue(DataType.INT, -ParserUtility.parseLong(nodeValue));
             }
         }
         // TODO: throw error

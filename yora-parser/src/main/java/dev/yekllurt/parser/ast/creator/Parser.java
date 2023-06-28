@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.ast.creator;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
 import dev.yekllurt.parser.ast.Configuration;
@@ -130,7 +131,7 @@ public class Parser {
                 var identifier = getCurrentTokenValue();
                 tokenCursor++;
                 return ParameterNode.builder()
-                        .type(parameterType)
+                        .type(DataType.fromString(parameterType, false))
                         .identifier(identifier)
                         .build();
             }
@@ -173,7 +174,7 @@ public class Parser {
                     if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                         tokenCursor++;
                         return VariableDeclarationNode.builder()
-                                .type(variableType)
+                                .type(DataType.fromString(variableType, false))
                                 .identifier(identifier)
                                 .value(expression)
                                 .build();

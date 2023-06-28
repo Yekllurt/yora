@@ -1,5 +1,7 @@
 package dev.yekllurt.parser.interpreter.scope;
 
+import dev.yekllurt.api.DataType;
+
 public interface ParameterScope {
 
     /**
@@ -9,7 +11,7 @@ public interface ParameterScope {
      * @param type  the parameter type
      * @param value the parameter value
      */
-    void assignParameter(String name, String type, Object value);
+    void assignParameter(String name, DataType type, Object value);
 
     /**
      * Updates a parameter value in the current scope
@@ -33,7 +35,7 @@ public interface ParameterScope {
      * @param name the parameter name
      * @return the parameter type
      */
-    String lookupParameterType(String name);
+    DataType lookupParameterType(String name);
 
     /**
      * Check if a parameter exists in the current scope

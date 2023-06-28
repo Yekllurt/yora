@@ -1,5 +1,7 @@
 package dev.yekllurt.parser.interpreter.scope;
 
+import dev.yekllurt.api.DataType;
+
 public interface ReturnScope {
 
     /**
@@ -8,7 +10,7 @@ public interface ReturnScope {
      * @param type  the return type
      * @param value the return value
      */
-    void assignReturnValue(String type, Object value);
+    void assignReturnValue(DataType type, Object value);
 
     /**
      * Lookup the return value in the current scope
@@ -22,6 +24,6 @@ public interface ReturnScope {
      *
      * @return the return type
      */
-    String lookupReturnValueType();
+    DataType lookupReturnValueType();
 
 }

@@ -1,6 +1,6 @@
 LINE_COMMENT    1   //.*
 KEYWORD         0   int|float|boolean|void|end|return|if|while|true|false
-PUNCTUATION     0   [();,+\-*/^=!><%]
+PUNCTUATION     0   [\[\]();,+\-*/^=!><%]
 NUMBER_DECIMAL  0   (0)|([1-9][0-9]*(\.[0-9]+)?)|([0-9](\.[0-9]+)?)
 IDENTIFIER      0   [a-zA-Z]+
 STRING          0   \".*?\"

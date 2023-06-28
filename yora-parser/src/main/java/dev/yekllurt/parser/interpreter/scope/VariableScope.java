@@ -1,5 +1,7 @@
 package dev.yekllurt.parser.interpreter.scope;
 
+import dev.yekllurt.api.DataType;
+
 public interface VariableScope extends Scope {
 
     /**
@@ -9,7 +11,7 @@ public interface VariableScope extends Scope {
      * @param type  the variable type
      * @param value the variable value
      */
-    void assignVariable(String name, String type, Object value);
+    void assignVariable(String name, DataType type, Object value);
 
     /**
      * Updates a variable value in the current scope
@@ -33,7 +35,7 @@ public interface VariableScope extends Scope {
      * @param name the variable name
      * @return the variable type
      */
-    String lookupVariableType(String name);
+    DataType lookupVariableType(String name);
 
     /**
      * Check if a variable exists in the current scope

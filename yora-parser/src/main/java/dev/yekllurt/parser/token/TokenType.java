@@ -14,6 +14,8 @@ public class TokenType {
 
     public static final String PUNCTUATION_LEFT_BRACE = "LEFT_BRACE";
     public static final String PUNCTUATION_RIGHT_BRACE = "RIGHT_BRACE";
+    public static final String PUNCTUATION_LEFT_BRACKET = "LEFT_BRACKET";
+    public static final String PUNCTUATION_RIGHT_BRACKET = "RIGHT_BRACKET";
     public static final String PUNCTUATION_SEMICOLON = "SEMICOLON";
     public static final String PUNCTUATION_COMMA = "COMMA";
     public static final String PUNCTUATION_PLUS = "PLUS";

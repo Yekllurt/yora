@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.interpreter.scope.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.throwable.error.ScopeError;
 import dev.yekllurt.api.tuples.Tuple;
@@ -8,7 +9,7 @@ import java.util.*;
 
 public class VariableScopeImplementation implements VariableScope {
 
-    private final Deque<Deque<Map<String, Tuple<String, Object>>>> variableScope = new ArrayDeque<>();
+    private final Deque<Deque<Map<String, Tuple<DataType, Object>>>> variableScope = new ArrayDeque<>();
 
     @Override
     public void beginSoftScope() {
@@ -40,7 +41,7 @@ public class VariableScopeImplementation implements VariableScope {
     }
 
     @Override
-    public void assignVariable(String name, String type, Object value) {
+    public void assignVariable(String name, DataType type, Object value) {
         if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
             throw new ScopeError("Can't assign the variable '%s' as there is not active soft scope available.".formatted(name));
         }
@@ -79,7 +80,7 @@ public class VariableScopeImplementation implements VariableScope {
     }
 
     @Override
-    public String lookupVariableType(String name) {
+    public DataType lookupVariableType(String name) {
         if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
             throw new ScopeError(String.format("Can't lookup the variable '%s' as there is no active soft scope available.", name));
         }

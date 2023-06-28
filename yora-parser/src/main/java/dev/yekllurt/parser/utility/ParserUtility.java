@@ -1,7 +1,7 @@
 package dev.yekllurt.parser.utility;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.throwable.exception.ParseException;
-import dev.yekllurt.parser.token.TokenType;
 
 /**
  * A helper class containing functions that are used by the parser and interpreter
@@ -98,18 +98,18 @@ public class ParserUtility {
         return isLong(value) || isDouble(value);
     }
 
-    public static String getReturnType(Object value) {
+    public static DataType getReturnType(Object value) {
         if (ParserUtility.isLong(value)) {
-            return TokenType.KEYWORD_INT;
+            return DataType.INT;
         }
         if (ParserUtility.isDouble(value)) {
-            return TokenType.KEYWORD_FLOAT;
+            return DataType.FLOAT;
         }
         if (value instanceof Boolean) {
-            return TokenType.KEYWORD_BOOLEAN;
+            return DataType.BOOLEAN;
         }
         if (value instanceof Character) {
-            return TokenType.KEYWORD_STRING;
+            return DataType.STRING;
         }
         return null;
     }

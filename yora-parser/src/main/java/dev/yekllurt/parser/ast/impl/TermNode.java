@@ -1,13 +1,13 @@
 package dev.yekllurt.parser.ast.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
-import dev.yekllurt.parser.utility.ParserUtility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
-import dev.yekllurt.parser.token.TokenType;
+import dev.yekllurt.parser.utility.ParserUtility;
 import lombok.Builder;
 import lombok.Data;
 
@@ -41,11 +41,11 @@ public class TermNode implements ASTNode {
                 throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));
             }
         } else if (ParserUtility.isLong(value)) {
-            returnScope.assignReturnValue(TokenType.KEYWORD_INT, Integer.valueOf((String) value));
+            returnScope.assignReturnValue(DataType.INT, Integer.valueOf((String) value));
         } else if (ParserUtility.isDouble(value)) {
-            returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Integer.valueOf((String) value));
+            returnScope.assignReturnValue(DataType.FLOAT, Integer.valueOf((String) value));
         } else if (ParserUtility.isString(value)) {
-            returnScope.assignReturnValue(TokenType.KEYWORD_STRING, String.valueOf(value));
+            returnScope.assignReturnValue(DataType.STRING, String.valueOf(value));
         } else {
             throw new ExecutionError(String.format("Unable to resolve the term '%s'", value));
         }

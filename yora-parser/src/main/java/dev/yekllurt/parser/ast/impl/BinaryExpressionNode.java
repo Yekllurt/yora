@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.ast.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.utility.ParserUtility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
@@ -43,9 +44,9 @@ public class BinaryExpressionNode implements ASTNode {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
             if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseDouble(nodeValues.x()) + ParserUtility.parseDouble(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble(nodeValues.x()) + ParserUtility.parseDouble(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, ParserUtility.parseLong(nodeValues.x()) + ParserUtility.parseLong(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) + ParserUtility.parseLong(nodeValues.y()));
             }
         } else {
             returnScope.assignReturnValue(null, String.valueOf(nodeValues.x()) + String.valueOf(nodeValues.y()));
@@ -57,9 +58,9 @@ public class BinaryExpressionNode implements ASTNode {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
             if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseDouble(nodeValues.x()) - ParserUtility.parseDouble(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble(nodeValues.x()) - ParserUtility.parseDouble(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, ParserUtility.parseLong(nodeValues.x()) - ParserUtility.parseLong(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) - ParserUtility.parseLong(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to subtract the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -71,9 +72,9 @@ public class BinaryExpressionNode implements ASTNode {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
             if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseDouble(nodeValues.x()) * ParserUtility.parseDouble(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble(nodeValues.x()) * ParserUtility.parseDouble(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, ParserUtility.parseLong(nodeValues.x()) * ParserUtility.parseLong(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) * ParserUtility.parseLong(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to multiply the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -88,9 +89,9 @@ public class BinaryExpressionNode implements ASTNode {
                 throw new InvalidOperationError("Can't divide by 0");
             }
             if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseDouble(nodeValues.x()) / ParserUtility.parseDouble(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble(nodeValues.x()) / ParserUtility.parseDouble(nodeValues.y()));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, ParserUtility.parseLong(nodeValues.x()) / ParserUtility.parseLong(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) / ParserUtility.parseLong(nodeValues.y()));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to divide the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -102,9 +103,9 @@ public class BinaryExpressionNode implements ASTNode {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
             if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(TokenType.KEYWORD_FLOAT, Math.pow(ParserUtility.parseDouble(nodeValues.x()), ParserUtility.parseDouble(nodeValues.y())));
+                returnScope.assignReturnValue(DataType.FLOAT, Math.pow(ParserUtility.parseDouble(nodeValues.x()), ParserUtility.parseDouble(nodeValues.y())));
             } else {
-                returnScope.assignReturnValue(TokenType.KEYWORD_INT, (int) Math.pow(ParserUtility.parseLong(nodeValues.x()), ParserUtility.parseLong(nodeValues.y())));
+                returnScope.assignReturnValue(DataType.INT, (int) Math.pow(ParserUtility.parseLong(nodeValues.x()), ParserUtility.parseLong(nodeValues.y())));
             }
         } else {
             throw new InvalidOperationError(String.format("Unable to power the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
@@ -115,7 +116,7 @@ public class BinaryExpressionNode implements ASTNode {
                                 ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
         if (ParserUtility.isLong(nodeValues.x()) && ParserUtility.isLong(nodeValues.y())) {
-            returnScope.assignReturnValue(TokenType.KEYWORD_INT, ParserUtility.parseLong(nodeValues.x()) % ParserUtility.parseLong(nodeValues.y()));
+            returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) % ParserUtility.parseLong(nodeValues.y()));
         } else {
             throw new InvalidOperationError(String.format("Unable to modulo the values '%s' and '%s' with each other, both must be integers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
         }

@@ -17,6 +17,8 @@ KEYWORD         "false"     0   FALSE
 
 PUNCTUATION     "("         0   LEFT_BRACE
 PUNCTUATION     ")"         0   RIGHT_BRACE
+PUNCTUATION     "["         0   LEFT_BRACKET
+PUNCTUATION     "]"         0   RIGHT_BRACKET
 PUNCTUATION     ";"         0   SEMICOLON
 PUNCTUATION     ","         0   COMMA
 PUNCTUATION     "+"         0   PLUS

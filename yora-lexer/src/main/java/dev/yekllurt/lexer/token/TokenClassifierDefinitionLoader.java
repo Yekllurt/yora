@@ -56,7 +56,7 @@ public class TokenClassifierDefinitionLoader {
             var shortenedPattern = pattern.substring(1, pattern.length() - 1);
             if (shortenedPattern.length() == 1) {
                 var prefix = "";
-                if (Set.of("^").contains(shortenedPattern)) {
+                if (Set.of("^", "[", "]").contains(shortenedPattern)) {
                     prefix += "\\";
                 }
                 pattern = "[" + prefix + shortenedPattern + "]";

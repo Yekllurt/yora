@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.interpreter.scope.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.throwable.error.ScopeError;
 import dev.yekllurt.api.tuples.Tuple;
@@ -9,10 +10,10 @@ import java.util.Map;
 
 public class ParameterScopeImplementation implements ParameterScope {
 
-    private final Map<String, Tuple<String, Object>> parameters = new HashMap<>();
+    private final Map<String, Tuple<DataType, Object>> parameters = new HashMap<>();
 
     @Override
-    public void assignParameter(String name, String type, Object value) {
+    public void assignParameter(String name, DataType type, Object value) {
         if (existsParameter(name)) {
             throw new ScopeError(String.format("Can't assign the parameter '%s' as it already exists in the current scope.", name));
         }
@@ -36,7 +37,7 @@ public class ParameterScopeImplementation implements ParameterScope {
     }
 
     @Override
-    public String lookupParameterType(String name) {
+    public DataType lookupParameterType(String name) {
         if (!existsParameter(name)) {
             throw new ScopeError(String.format("Can't find the parameter '%s' in the current scope.", name));
         }

@@ -1,8 +1,8 @@
 package dev.yekllurt.parser.ast.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
-import dev.yekllurt.parser.utility.ParserUtility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
@@ -10,7 +10,7 @@ import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
 import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
 import dev.yekllurt.parser.interpreter.throwable.error.InvalidOperationError;
-import dev.yekllurt.parser.token.TokenType;
+import dev.yekllurt.parser.utility.ParserUtility;
 import lombok.Builder;
 import lombok.Data;
 
@@ -60,10 +60,10 @@ public class ConditionNode implements ASTNode {
             var rightReturnValue = ParserUtility.parseDouble(returnScopeRight.lookupReturnValue());
             if (Objects.nonNull(leftReturnValue)) {
                 var equal = leftReturnValue.compareTo(rightReturnValue) == 0;
-                returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, equal);
+                returnScope.assignReturnValue(DataType.BOOLEAN, equal);
             } else if (Objects.nonNull(rightReturnValue)) {
                 var equal = rightReturnValue.compareTo(leftReturnValue) == 0;
-                returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, equal);
+                returnScope.assignReturnValue(DataType.BOOLEAN, equal);
             } else {
                 // TODO: throw error
             }
@@ -71,7 +71,7 @@ public class ConditionNode implements ASTNode {
             var equal = Objects.isNull(returnScopeRight.lookupReturnValue())
                     ? returnScopeLeft.lookupReturnValue().equals(returnScopeRight.lookupReturnValue())
                     : returnScopeRight.lookupReturnValue().equals(returnScopeLeft.lookupReturnValue());
-            returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, equal);
+            returnScope.assignReturnValue(DataType.BOOLEAN, equal);
         }
     }
 
@@ -81,7 +81,7 @@ public class ConditionNode implements ASTNode {
         var equal = Objects.isNull(returnScopeRight.lookupReturnValue())
                 ? returnScopeLeft.lookupReturnValue().equals(returnScopeRight.lookupReturnValue())
                 : returnScopeRight.lookupReturnValue().equals(returnScopeLeft.lookupReturnValue());
-        returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, !equal);
+        returnScope.assignReturnValue(DataType.BOOLEAN, !equal);
     }
 
     private void performGreaterThan(FunctionScope functionScope, VariableScope variableScope,
@@ -91,7 +91,7 @@ public class ConditionNode implements ASTNode {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the > operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
         var greaterThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) > 0;
-        returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThan);
+        returnScope.assignReturnValue(DataType.BOOLEAN, greaterThan);
     }
 
     private void performGreaterThanEqual(FunctionScope functionScope, VariableScope variableScope,
@@ -101,7 +101,7 @@ public class ConditionNode implements ASTNode {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the >= operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
         var greaterThanEqual = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) >= 0;
-        returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, greaterThanEqual);
+        returnScope.assignReturnValue(DataType.BOOLEAN, greaterThanEqual);
     }
 
     private void performLessThan(FunctionScope functionScope, VariableScope variableScope,
@@ -111,7 +111,7 @@ public class ConditionNode implements ASTNode {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the < operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
         var lessThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) < 0;
-        returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, lessThan);
+        returnScope.assignReturnValue(DataType.BOOLEAN, lessThan);
     }
 
     private void performLessThanEqual(FunctionScope functionScope, VariableScope variableScope,
@@ -121,7 +121,7 @@ public class ConditionNode implements ASTNode {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the <= operator however both must be numbers", returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
         var lessThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) <= 0;
-        returnScope.assignReturnValue(TokenType.KEYWORD_BOOLEAN, lessThan);
+        returnScope.assignReturnValue(DataType.BOOLEAN, lessThan);
     }
 
 }
