@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.ast.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.api.collection.SequencedCollection;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
@@ -8,7 +9,6 @@ import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
 import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
-import dev.yekllurt.parser.token.TokenType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -37,7 +37,7 @@ public class WhileBranchNode implements ASTNode {
     private boolean evaluateCondition(FunctionScope functionScope, VariableScope variableScope, ParameterScope parameterScope) {
         var returnScopeCondition = new ReturnScopeImplementation();
         condition.evaluate(functionScope, variableScope, parameterScope, returnScopeCondition);
-        if (!TokenType.KEYWORD_BOOLEAN.equals(returnScopeCondition.lookupReturnValueType())) {
+        if (!DataType.BOOLEAN.equals(returnScopeCondition.lookupReturnValueType())) {
             throw new ExecutionError(String.format("A condition returned the non-boolean value '%s'", returnScopeCondition.lookupReturnValueType()));
         }
         return (boolean) returnScopeCondition.lookupReturnValue();
