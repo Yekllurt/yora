@@ -29,10 +29,10 @@ public class IfBranchNode implements ASTNode {
         // Condition evaluation
         var returnScopeCondition = new ReturnScopeImplementation();
         condition.evaluate(functionScope, variableScope, parameterScope, returnScopeCondition);
-        if (!DataType.BOOLEAN.equals(returnScopeCondition.lookupReturnValueType())) {
-            throw new ExecutionError(String.format("A condition returned the non-boolean value '%s'", returnScopeCondition.lookupReturnValueType()));
+        if (!DataType.BOOLEAN.equals(returnScopeCondition.lookupReturnValue().dataType())) {
+            throw new ExecutionError(String.format("A condition returned the non-boolean value '%s'", returnScopeCondition.lookupReturnValue().dataType()));
         }
-        var conditionEvaluation = (boolean) returnScopeCondition.lookupReturnValue();
+        var conditionEvaluation = (boolean) returnScopeCondition.lookupReturnValue().data();
 
         if (conditionEvaluation) {
             variableScope.beginSoftScope();
@@ -46,7 +46,7 @@ public class IfBranchNode implements ASTNode {
             if (Objects.nonNull(returnStatement)) {
                 var childReturnScope = new ReturnScopeImplementation();
                 returnStatement.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
-                returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
+                returnScope.assignReturnValue(childReturnScope.lookupReturnValue().dataType(), childReturnScope.lookupReturnValue());
             }
 
             variableScope.endSoftScope();

@@ -1,6 +1,7 @@
 package dev.yekllurt.parser.interpreter.scope.impl;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.parser.interpreter.scope.Data;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.throwable.ScopeError;
 
@@ -8,26 +9,19 @@ import java.util.Objects;
 
 public class ReturnScopeImplementation implements ReturnScope {
 
-    private DataType type;
-    private Object value;
+    private Data data;
 
     @Override
     public void assignReturnValue(DataType type, Object value) {
-        if (Objects.nonNull(this.value)) {
+        if (Objects.nonNull(this.data)) {
             throw new ScopeError("Can't assign the value '%s' as return value as in the scope a return valued has already been assigned");
         }
-        this.type = type;
-        this.value = value;
+        this.data = new Data(type, value);
     }
 
     @Override
-    public Object lookupReturnValue() {
-        return value;
-    }
-
-    @Override
-    public DataType lookupReturnValueType() {
-        return type;
+    public Data lookupReturnValue() {
+        return this.data;
     }
 
 }

@@ -17,13 +17,6 @@ public interface ReturnScope {
      *
      * @return the return value
      */
-    Object lookupReturnValue();
-
-    /**
-     * Lookup the type of the return value
-     *
-     * @return the return type
-     */
-    DataType lookupReturnValueType();
+    Data lookupReturnValue();
 
 }

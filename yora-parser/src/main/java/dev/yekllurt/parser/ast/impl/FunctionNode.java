@@ -36,8 +36,8 @@ public class FunctionNode implements ASTNode {
                 var childReturnScope = new ReturnScopeImplementation();
                 ifBranchNode.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
                 // This is the case where someone uses a return statement in an if control flow
-                if (Objects.nonNull(childReturnScope.lookupReturnValueType())) {
-                    returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
+                if (Objects.nonNull(childReturnScope.lookupReturnValue().dataType())) {
+                    returnScope.assignReturnValue(childReturnScope.lookupReturnValue().dataType(), childReturnScope.lookupReturnValue());
                     variableScope.endSoftScope();
                     return;
                 }
@@ -50,7 +50,7 @@ public class FunctionNode implements ASTNode {
         if (Objects.nonNull(returnStatement)) {
             var childReturnScope = new ReturnScopeImplementation();
             returnStatement.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
-            returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
+            returnScope.assignReturnValue(childReturnScope.lookupReturnValue().dataType(), childReturnScope.lookupReturnValue());
         }
 
         variableScope.endSoftScope();
