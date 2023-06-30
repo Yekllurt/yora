@@ -12,6 +12,8 @@ public interface ReturnScope {
      */
     void assignReturnValue(DataType type, Object value);
 
+    Data lookup();
+
     /**
      * Lookup the return value in the current scope
      *

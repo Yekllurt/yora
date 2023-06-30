@@ -98,6 +98,10 @@ public class ParserUtility {
         return isLong(value) || isDouble(value);
     }
 
+    public static boolean isNumber(DataType dataType) {
+        return dataType.equals(DataType.INT) || dataType.equals(DataType.FLOAT);
+    }
+
     public static DataType getReturnType(Object value) {
         if (ParserUtility.isLong(value)) {
             return DataType.INT;

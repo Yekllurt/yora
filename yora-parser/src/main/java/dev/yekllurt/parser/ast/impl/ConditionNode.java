@@ -35,29 +35,21 @@ public class ConditionNode implements ASTNode {
             throw new ExecutionError("Couldn't compare two values as they are both null and null values are not supported by the language");
         }
         switch (operator) {
-            case EQUAL ->
-                    performEqual(functionScope, variableScope, parameterScope, returnScope, returnScopeLeft, returnScopeRight);
-            case NOT_EQUAL ->
-                    performNotEqual(functionScope, variableScope, parameterScope, returnScope, returnScopeLeft, returnScopeRight);
-            case GREATER_THAN ->
-                    performGreaterThan(functionScope, variableScope, parameterScope, returnScope, returnScopeLeft, returnScopeRight);
-            case GREATER_THAN_EQUAL ->
-                    performGreaterThanEqual(functionScope, variableScope, parameterScope, returnScope, returnScopeLeft, returnScopeRight);
-            case LESS_THAN ->
-                    performLessThan(functionScope, variableScope, parameterScope, returnScope, returnScopeLeft, returnScopeRight);
-            case LESS_THAN_EQUAL ->
-                    performLessThanEqual(functionScope, variableScope, parameterScope, returnScope, returnScopeLeft, returnScopeRight);
+            case EQUAL -> performEqual(returnScope, returnScopeLeft, returnScopeRight);
+            case NOT_EQUAL -> performNotEqual(returnScope, returnScopeLeft, returnScopeRight);
+            case GREATER_THAN -> performGreaterThan(returnScope, returnScopeLeft, returnScopeRight);
+            case GREATER_THAN_EQUAL -> performGreaterThanEqual(returnScope, returnScopeLeft, returnScopeRight);
+            case LESS_THAN -> performLessThan(returnScope, returnScopeLeft, returnScopeRight);
+            case LESS_THAN_EQUAL -> performLessThanEqual(returnScope, returnScopeLeft, returnScopeRight);
             default ->
                     throw new UnsupportedOperationException("The condition operator '%s' is not supported".formatted(operator));
         }
     }
 
-    private void performEqual(FunctionScope functionScope, VariableScope variableScope,
-                              ParameterScope parameterScope, ReturnScope returnScope,
-                              ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) && ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
-            var leftReturnValue = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue());
-            var rightReturnValue = ParserUtility.parseDouble(returnScopeRight.lookupReturnValue());
+    private void performEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
+        if (ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) && ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
+            var leftReturnValue = returnScopeLeft.lookup().toDouble();
+            var rightReturnValue = returnScopeRight.lookup().toDouble();
             if (Objects.nonNull(leftReturnValue)) {
                 var equal = leftReturnValue.compareTo(rightReturnValue) == 0;
                 returnScope.assignReturnValue(DataType.BOOLEAN, equal);
@@ -75,57 +67,57 @@ public class ConditionNode implements ASTNode {
         }
     }
 
-    private void performNotEqual(FunctionScope functionScope, VariableScope variableScope,
-                                 ParameterScope parameterScope, ReturnScope returnScope,
-                                 ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
+    private void performNotEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
         var equal = Objects.isNull(returnScopeRight.lookupReturnValue())
                 ? returnScopeLeft.lookupReturnValue().equals(returnScopeRight.lookupReturnValue())
                 : returnScopeRight.lookupReturnValue().equals(returnScopeLeft.lookupReturnValue());
         returnScope.assignReturnValue(DataType.BOOLEAN, !equal);
     }
 
-    private void performGreaterThan(FunctionScope functionScope, VariableScope variableScope,
-                                    ParameterScope parameterScope, ReturnScope returnScope,
-                                    ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
+    private void performGreaterThan(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
+        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the > operator however both must be numbers",
                     returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
-        var greaterThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) > 0;
+        var greaterThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup()) > 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, greaterThan);
     }
 
-    private void performGreaterThanEqual(FunctionScope functionScope, VariableScope variableScope,
-                                         ParameterScope parameterScope, ReturnScope returnScope,
-                                         ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
+    private void performGreaterThanEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
+        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the >= operator however both must be numbers",
                     returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
-        var greaterThanEqual = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) >= 0;
+        var greaterThanEqual = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup()) >= 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, greaterThanEqual);
     }
 
-    private void performLessThan(FunctionScope functionScope, VariableScope variableScope,
-                                 ParameterScope parameterScope, ReturnScope returnScope,
-                                 ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
+    private void performLessThan(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
+        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the < operator however both must be numbers",
                     returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
-        var lessThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) < 0;
+        var lessThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup()) < 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, lessThan);
     }
 
-    private void performLessThanEqual(FunctionScope functionScope, VariableScope variableScope,
-                                      ParameterScope parameterScope, ReturnScope returnScope,
-                                      ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
+    private void performLessThanEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
+        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the <= operator however both must be numbers",
                     returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
-        var lessThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) <= 0;
+        var lessThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup()) <= 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, lessThan);
+    }
+
+    private int compareTwoNumbers(dev.yekllurt.parser.interpreter.scope.Data number1, dev.yekllurt.parser.interpreter.scope.Data number2) {
+        if (!number1.isDouble() || !number2.isDouble()) {
+            return number1.toDouble().compareTo(number2.toDouble());
+        }
+        if (!number1.isLong() || !number2.isLong()) {
+            return number1.toLong().compareTo(number2.toLong());
+        }
+        throw new ExecutionError("Attempting two compare two non numbers with each other that are supposed to be numbers");
     }
 
 }
