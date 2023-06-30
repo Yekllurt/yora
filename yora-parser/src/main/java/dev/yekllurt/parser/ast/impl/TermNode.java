@@ -6,7 +6,7 @@ import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
-import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
+import dev.yekllurt.parser.interpreter.throwable.ExecutionError;
 import dev.yekllurt.parser.utility.ParserUtility;
 import lombok.Builder;
 import lombok.Data;

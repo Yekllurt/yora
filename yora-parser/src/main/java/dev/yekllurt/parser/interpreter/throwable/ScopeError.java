@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.interpreter.throwable.error;
+package dev.yekllurt.parser.interpreter.throwable;
 
 /**
  * An error that is thrown when an invalid scope status is reached such as no active scope,

@@ -2,7 +2,7 @@ package dev.yekllurt.parser.interpreter.scope.impl;
 
 import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
-import dev.yekllurt.parser.interpreter.throwable.error.ScopeError;
+import dev.yekllurt.parser.interpreter.throwable.ScopeError;
 
 import java.util.Objects;
 

@@ -8,7 +8,7 @@ import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
-import dev.yekllurt.parser.interpreter.throwable.error.InvalidOperationError;
+import dev.yekllurt.parser.interpreter.throwable.InvalidOperationError;
 import dev.yekllurt.parser.token.TokenType;
 import dev.yekllurt.api.tuples.Tuple;
 import lombok.Builder;

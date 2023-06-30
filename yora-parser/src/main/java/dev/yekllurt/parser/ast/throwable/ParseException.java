@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.ast.throwable.exception;
+package dev.yekllurt.parser.ast.throwable;
 
 /**
  * An exception that is thrown when attempting to convert/parse a term into something that it isn't

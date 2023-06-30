@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.ast.throwable.exception;
+package dev.yekllurt.parser.ast.throwable;
 
 public class GrammarException extends RuntimeException {
 

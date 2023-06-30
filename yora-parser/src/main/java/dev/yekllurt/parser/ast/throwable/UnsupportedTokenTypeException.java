@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.ast.throwable.exception;
+package dev.yekllurt.parser.ast.throwable;
 
 /**
  * An exception that is thrown by the parser when it attempts to handle a token that it doesn't recognize in other

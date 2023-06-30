@@ -1,7 +1,7 @@
 package dev.yekllurt.parser.utility;
 
 import dev.yekllurt.api.DataType;
-import dev.yekllurt.parser.ast.throwable.exception.ParseException;
+import dev.yekllurt.parser.ast.throwable.ParseException;
 
 /**
  * A helper class containing functions that are used by the parser and interpreter

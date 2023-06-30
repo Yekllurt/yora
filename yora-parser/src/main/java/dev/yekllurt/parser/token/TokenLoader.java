@@ -1,8 +1,8 @@
 package dev.yekllurt.parser.token;
 
-import dev.yekllurt.parser.ast.throwable.exception.ParseException;
+import dev.yekllurt.parser.ast.throwable.ParseException;
 import dev.yekllurt.api.collection.SequencedCollection;
-import dev.yekllurt.parser.ast.throwable.exception.ParserException;
+import dev.yekllurt.parser.ast.throwable.ParserException;
 
 import java.io.BufferedReader;
 import java.io.File;

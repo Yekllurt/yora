@@ -9,8 +9,8 @@ import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ParameterScopeImplementation;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
-import dev.yekllurt.parser.interpreter.throwable.error.ExecutionError;
-import dev.yekllurt.parser.interpreter.throwable.error.InvalidOperationError;
+import dev.yekllurt.parser.interpreter.throwable.ExecutionError;
+import dev.yekllurt.parser.interpreter.throwable.InvalidOperationError;
 import lombok.Builder;
 import lombok.Data;
 

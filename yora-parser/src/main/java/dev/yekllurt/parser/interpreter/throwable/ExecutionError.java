@@ -1,4 +1,4 @@
-package dev.yekllurt.parser.interpreter.throwable.error;
+package dev.yekllurt.parser.interpreter.throwable;
 
 public class ExecutionError extends Error {
 
