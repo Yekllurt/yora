@@ -33,35 +33,35 @@ public class UnaryExpressionNode implements ASTNode {
 
     private void performPlus(FunctionScope functionScope, VariableScope variableScope,
                              ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValue = getNodeValue(functionScope, variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValue)) {
-            if (ParserUtility.isDouble(nodeValue)) {
-                returnScope.assignReturnValue(DataType.FLOAT, nodeValue);
+        var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        if (ParserUtility.isNumber(nodeData.dataType())) {
+            if (nodeData.isDouble()) {
+                returnScope.assignReturnValue(DataType.FLOAT, nodeData.data());
             } else {
-                returnScope.assignReturnValue(DataType.INT, nodeValue);
+                returnScope.assignReturnValue(DataType.INT, nodeData.data());
             }
         }
-        // TODO: throw error
+        throw new InvalidOperationError(String.format("Can't perform a unary plus operation on data of the data type %s", nodeData.dataType()));
     }
 
     private void performMinus(FunctionScope functionScope, VariableScope variableScope,
                               ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValue = getNodeValue(functionScope, variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValue)) {
-            if (ParserUtility.isDouble(nodeValue)) {
-                returnScope.assignReturnValue(DataType.FLOAT, -ParserUtility.parseDouble(nodeValue));
+        var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        if (ParserUtility.isNumber(nodeData.dataType())) {
+            if (nodeData.isDouble()) {
+                returnScope.assignReturnValue(DataType.FLOAT, -nodeData.toDouble());
             } else {
-                returnScope.assignReturnValue(DataType.INT, -ParserUtility.parseLong(nodeValue));
+                returnScope.assignReturnValue(DataType.INT, -nodeData.toLong());
             }
         }
-        // TODO: throw error
+        throw new InvalidOperationError(String.format("Can't perform a unary minus operation on data of the data type %s", nodeData.dataType()));
     }
 
-    private Object getNodeValue(FunctionScope functionScope, VariableScope variableScope,
-                                ParameterScope parameterScope) {
+    private dev.yekllurt.parser.interpreter.scope.Data getNodeData(FunctionScope functionScope, VariableScope variableScope,
+                                                                   ParameterScope parameterScope) {
         var returnScope = new ReturnScopeImplementation();
         node.evaluate(functionScope, variableScope, parameterScope, returnScope);
-        return returnScope.lookupReturnValue();
+        return returnScope.lookup();
     }
 
 }

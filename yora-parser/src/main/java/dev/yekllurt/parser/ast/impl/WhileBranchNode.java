@@ -41,7 +41,7 @@ public class WhileBranchNode implements ASTNode {
             throw new ExecutionError(String.format("A condition returned the non-boolean value '%s'",
                     returnScopeCondition.lookupReturnValueType()));
         }
-        return (boolean) returnScopeCondition.lookupReturnValue();
+        return returnScopeCondition.lookup().toBoolean();
     }
 
 }

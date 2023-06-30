@@ -4,7 +4,6 @@ import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.interpreter.scope.Data;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.throwable.ScopeError;
-import dev.yekllurt.api.tuples.Tuple;
 
 import java.util.*;
 

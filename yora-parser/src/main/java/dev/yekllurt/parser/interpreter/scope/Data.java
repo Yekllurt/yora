@@ -39,4 +39,15 @@ public record Data(DataType dataType, Object data) {
         return (Double) data;
     }
 
+    public Boolean toBoolean() {
+        if (!DataType.BOOLEAN.equals(dataType)) {
+            throw new InvalidOperationError(String.format("Can't convert data from the type %s into an int", dataType));
+        }
+        return (Boolean) data;
+    }
+
+    public String toString() {
+        return String.valueOf(data);
+    }
+
 }

@@ -33,7 +33,7 @@ public class IfBranchNode implements ASTNode {
             throw new ExecutionError(String.format("A condition returned the non-boolean value '%s'",
                     returnScopeCondition.lookupReturnValueType()));
         }
-        var conditionEvaluation = (boolean) returnScopeCondition.lookupReturnValue();
+        var conditionEvaluation = returnScopeCondition.lookup().toBoolean();
 
         if (conditionEvaluation) {
             variableScope.beginSoftScope();

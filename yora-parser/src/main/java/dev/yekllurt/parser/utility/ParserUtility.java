@@ -94,7 +94,7 @@ public class ParserUtility {
         throw new ParseException(String.format("Can't convert the value '%s' into a float", value));
     }
 
-    public static boolean isNumber(Object value) {
+    private static boolean isNumber(Object value) {
         return isLong(value) || isDouble(value);
     }
 

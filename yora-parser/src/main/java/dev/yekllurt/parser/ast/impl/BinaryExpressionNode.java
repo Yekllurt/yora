@@ -41,94 +41,94 @@ public class BinaryExpressionNode implements ASTNode {
 
     private void performPlus(FunctionScope functionScope, VariableScope variableScope,
                              ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble(nodeValues.x()) + ParserUtility.parseDouble(nodeValues.y()));
+        var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
+            if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
+                returnScope.assignReturnValue(DataType.FLOAT, nodeData.x().toDouble() + nodeData.y().toDouble());
             } else {
-                returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) + ParserUtility.parseLong(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() + nodeData.y().toLong());
             }
         } else {
-            returnScope.assignReturnValue(null, String.valueOf(nodeValues.x()) + String.valueOf(nodeValues.y()));
+            returnScope.assignReturnValue(DataType.STRING, nodeData.x().toString() + nodeData.y().toString());
         }
     }
 
     private void performMinus(FunctionScope functionScope, VariableScope variableScope,
                               ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble(nodeValues.x()) - ParserUtility.parseDouble(nodeValues.y()));
+        var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
+            if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
+                returnScope.assignReturnValue(DataType.FLOAT, nodeData.x().toDouble() - nodeData.y().toDouble());
             } else {
-                returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) - ParserUtility.parseLong(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() - nodeData.y().toLong());
             }
         } else {
-            throw new InvalidOperationError(String.format("Unable to subtract the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
+            throw new InvalidOperationError(String.format("Unable to subtract the values '%s' and '%s' with each other, both must be numbers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
         }
     }
 
     private void performStar(FunctionScope functionScope, VariableScope variableScope,
                              ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble(nodeValues.x()) * ParserUtility.parseDouble(nodeValues.y()));
+        var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
+            if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
+                returnScope.assignReturnValue(DataType.FLOAT, nodeData.x().toDouble() * nodeData.y().toDouble());
             } else {
-                returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) * ParserUtility.parseLong(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() * nodeData.y().toLong());
             }
         } else {
-            throw new InvalidOperationError(String.format("Unable to multiply the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
+            throw new InvalidOperationError(String.format("Unable to multiply the values '%s' and '%s' with each other, both must be numbers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
         }
     }
 
     private void performDivide(FunctionScope functionScope, VariableScope variableScope,
                                ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.parseDouble(nodeValues.y()) == 0) {
+        var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
+            if (nodeData.y().toDouble() == 0) {
                 throw new InvalidOperationError("Can't divide by 0");
             }
-            if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble(nodeValues.x()) / ParserUtility.parseDouble(nodeValues.y()));
+            if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
+                returnScope.assignReturnValue(DataType.FLOAT, nodeData.x().toDouble() / nodeData.y().toDouble());
             } else {
-                returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) / ParserUtility.parseLong(nodeValues.y()));
+                returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() / nodeData.y().toLong());
             }
         } else {
-            throw new InvalidOperationError(String.format("Unable to divide the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
+            throw new InvalidOperationError(String.format("Unable to divide the values '%s' and '%s' with each other, both must be numbers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
         }
     }
 
     private void performPower(FunctionScope functionScope, VariableScope variableScope,
                               ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
-        if (ParserUtility.isNumber(nodeValues.x()) && ParserUtility.isNumber(nodeValues.y())) {
-            if (ParserUtility.isDouble(nodeValues.x()) || ParserUtility.isDouble(nodeValues.y())) {
-                returnScope.assignReturnValue(DataType.FLOAT, Math.pow(ParserUtility.parseDouble(nodeValues.x()), ParserUtility.parseDouble(nodeValues.y())));
+        var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
+            if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
+                returnScope.assignReturnValue(DataType.FLOAT, Math.pow(nodeData.x().toDouble(), nodeData.y().toDouble()));
             } else {
-                returnScope.assignReturnValue(DataType.INT, (int) Math.pow(ParserUtility.parseLong(nodeValues.x()), ParserUtility.parseLong(nodeValues.y())));
+                returnScope.assignReturnValue(DataType.INT, (long) Math.pow(nodeData.x().toLong(), nodeData.y().toLong()));
             }
         } else {
-            throw new InvalidOperationError(String.format("Unable to power the values '%s' and '%s' with each other, both must be numbers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
+            throw new InvalidOperationError(String.format("Unable to power the values '%s' and '%s' with each other, both must be numbers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
         }
     }
 
     private void performPercent(FunctionScope functionScope, VariableScope variableScope,
                                 ParameterScope parameterScope, ReturnScope returnScope) {
-        var nodeValues = getNodeValues(functionScope, variableScope, parameterScope);
-        if (ParserUtility.isLong(nodeValues.x()) && ParserUtility.isLong(nodeValues.y())) {
-            returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(nodeValues.x()) % ParserUtility.parseLong(nodeValues.y()));
+        var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        if (nodeData.x().isLong() && nodeData.y().isLong()) {
+            returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() % nodeData.y().toLong());
         } else {
-            throw new InvalidOperationError(String.format("Unable to modulo the values '%s' and '%s' with each other, both must be integers", nodeValues.x().getClass().getSimpleName(), nodeValues.y().getClass().getSimpleName()));
+            throw new InvalidOperationError(String.format("Unable to modulo the values '%s' and '%s' with each other, both must be integers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
         }
     }
 
-    private Tuple<Object, Object> getNodeValues(FunctionScope functionScope, VariableScope variableScope,
-                                                ParameterScope parameterScope) {
+    private Tuple<dev.yekllurt.parser.interpreter.scope.Data, dev.yekllurt.parser.interpreter.scope.Data> getNodeData(FunctionScope functionScope, VariableScope variableScope,
+                                                                                                                      ParameterScope parameterScope) {
         var returnScopeLeft = new ReturnScopeImplementation();
         left.evaluate(functionScope, variableScope, parameterScope, returnScopeLeft);
         var returnScopeRight = new ReturnScopeImplementation();
         right.evaluate(functionScope, variableScope, parameterScope, returnScopeRight);
-        return new Tuple<>(returnScopeLeft.lookupReturnValue(), returnScopeRight.lookupReturnValue());
+        return new Tuple<>(returnScopeLeft.lookup(), returnScopeRight.lookup());
     }
 
 }
