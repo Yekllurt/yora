@@ -33,7 +33,7 @@ public class FunctionCallNode implements ASTNode {
             for (var argument : arguments.getExpressionList()) {
                 var returnScopeExpression = new ReturnScopeImplementation();
                 argument.evaluate(functionScope, variableScope, parameterScope, returnScopeExpression);
-                argumentsToPass.add(returnScopeExpression.lookupReturnValue().data());
+                argumentsToPass.add(returnScopeExpression.lookupReturnValue());
             }
             function.execute(argumentsToPass.toArray())
                     .ifPresent(result -> returnScope.assignReturnValue(ParserUtility.getReturnType(result), result));
@@ -53,9 +53,9 @@ public class FunctionCallNode implements ASTNode {
                 var childReturnScope = new ReturnScopeImplementation();
                 argument.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
 
-                if (!Objects.equals(childReturnScope.lookupReturnValue().dataType(), parameterNode.getType())) {
+                if (!Objects.equals(childReturnScope.lookupReturnValueType(), parameterNode.getType())) {
                     throw new ExecutionError(String.format("Attempting to pass an argument of type %s however an argument of type %s is expected",
-                            childReturnScope.lookupReturnValue().dataType(), parameterNode.getType()));
+                            childReturnScope.lookupReturnValueType(), parameterNode.getType()));
                 }
 
                 // TODO: check if the return value is actually a valid value
@@ -69,7 +69,7 @@ public class FunctionCallNode implements ASTNode {
             variableScope.endSoftScope();
             variableScope.endHardScope();
 
-            returnScope.assignReturnValue(childReturnScope.lookupReturnValue().dataType(), childReturnScope.lookupReturnValue());
+            returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
         }
 
     }

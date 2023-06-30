@@ -89,7 +89,7 @@ public class ConditionNode implements ASTNode {
                                     ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
         if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the > operator however both must be numbers",
-                    returnScopeLeft.lookupReturnValue().dataType(), returnScopeRight.lookupReturnValue().dataType()));
+                    returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
         var greaterThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) > 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, greaterThan);
@@ -100,7 +100,7 @@ public class ConditionNode implements ASTNode {
                                          ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
         if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the >= operator however both must be numbers",
-                    returnScopeLeft.lookupReturnValue().dataType(), returnScopeRight.lookupReturnValue().dataType()));
+                    returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
         var greaterThanEqual = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) >= 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, greaterThanEqual);
@@ -111,7 +111,7 @@ public class ConditionNode implements ASTNode {
                                  ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
         if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the < operator however both must be numbers",
-                    returnScopeLeft.lookupReturnValue().dataType(), returnScopeRight.lookupReturnValue().dataType()));
+                    returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
         var lessThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) < 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, lessThan);
@@ -122,7 +122,7 @@ public class ConditionNode implements ASTNode {
                                       ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
         if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValue()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValue())) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the <= operator however both must be numbers",
-                    returnScopeLeft.lookupReturnValue().dataType(), returnScopeRight.lookupReturnValue().dataType()));
+                    returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
         var lessThan = ParserUtility.parseDouble(returnScopeLeft.lookupReturnValue()).compareTo(ParserUtility.parseDouble(returnScopeRight.lookupReturnValue())) <= 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, lessThan);

@@ -20,8 +20,18 @@ public class ReturnScopeImplementation implements ReturnScope {
     }
 
     @Override
-    public Data lookupReturnValue() {
-        return this.data;
+    public Object lookupReturnValue() {
+        if (Objects.isNull(this.data)) {
+            return null;
+        }
+        return this.data.data();
     }
 
+    @Override
+    public DataType lookupReturnValueType() {
+        if (Objects.isNull(this.data)) {
+            return null;
+        }
+        return this.data.dataType();
+    }
 }

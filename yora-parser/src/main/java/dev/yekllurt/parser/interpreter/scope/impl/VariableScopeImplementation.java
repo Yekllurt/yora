@@ -1,6 +1,7 @@
 package dev.yekllurt.parser.interpreter.scope.impl;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.parser.interpreter.scope.Data;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.throwable.ScopeError;
 import dev.yekllurt.api.tuples.Tuple;
@@ -9,7 +10,7 @@ import java.util.*;
 
 public class VariableScopeImplementation implements VariableScope {
 
-    private final Deque<Deque<Map<String, Tuple<DataType, Object>>>> variableScope = new ArrayDeque<>();
+    private final Deque<Deque<Map<String, Data>>> variableScope = new ArrayDeque<>();
 
     @Override
     public void beginSoftScope() {
@@ -48,7 +49,7 @@ public class VariableScopeImplementation implements VariableScope {
         if (existsVariable(name)) {
             throw new ScopeError(String.format("Can't assign the variable '%s' as it already exists in the current soft scope.", name));
         }
-        variableScope.peek().peek().put(name, new Tuple<>(type, value));
+        variableScope.peek().peek().put(name, new Data(type, value));
     }
 
     @Override
@@ -61,7 +62,7 @@ public class VariableScopeImplementation implements VariableScope {
         }
         for (var scope : variableScope.peek()) {
             if (scope.containsKey(name)) {
-                scope.put(name, new Tuple<>(lookupVariableType(name), value));
+                scope.put(name, new Data(lookupVariableType(name), value));
             }
         }
     }
@@ -73,7 +74,7 @@ public class VariableScopeImplementation implements VariableScope {
         }
         for (var scope : variableScope.peek()) {
             if (scope.containsKey(name)) {
-                return scope.get(name).y();
+                return scope.get(name).data();
             }
         }
         throw new ScopeError(String.format("Can't find the variable '%s' in the current scope or any parent soft scope.", name));
@@ -86,7 +87,7 @@ public class VariableScopeImplementation implements VariableScope {
         }
         for (var scope : variableScope.peek()) {
             if (scope.containsKey(name)) {
-                return scope.get(name).x();
+                return scope.get(name).dataType();
             }
         }
         throw new ScopeError(String.format("Can't find the variable '%s' in the current soft scope or any parent scope.", name));

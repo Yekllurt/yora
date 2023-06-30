@@ -21,7 +21,7 @@ public class ReturnNode implements ASTNode {
         var childReturnScope = new ReturnScopeImplementation();
         value.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
 
-        returnScope.assignReturnValue(childReturnScope.lookupReturnValue().dataType(), childReturnScope.lookupReturnValue());
+        returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
     }
 
 }
