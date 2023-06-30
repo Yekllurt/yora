@@ -29,13 +29,13 @@ public class FunctionCallNode implements ASTNode {
                          ParameterScope parameterScope, ReturnScope returnScope) {
         if (NativeFunctionDirectory.isNativeFunction(functionIdentifier)) {
             var function = NativeFunctionDirectory.getNativeFunction(functionIdentifier);
-            var argumentsToPass = new ArrayList<>();
+            var argumentsToPass = new ArrayList<dev.yekllurt.parser.interpreter.scope.Data>();
             for (var argument : arguments.getExpressionList()) {
                 var returnScopeExpression = new ReturnScopeImplementation();
                 argument.evaluate(functionScope, variableScope, parameterScope, returnScopeExpression);
-                argumentsToPass.add(returnScopeExpression.lookupReturnValue());
+                argumentsToPass.add(returnScopeExpression.lookup());
             }
-            function.execute(argumentsToPass.toArray())
+            function.execute(argumentsToPass)
                     .ifPresent(result -> returnScope.assignReturnValue(ParserUtility.getReturnType(result), result));
         } else {
             var functionNode = functionScope.lookupFunction(functionIdentifier);
