@@ -31,6 +31,8 @@ public class TermNode implements ASTNode {
         if (Objects.isNull(returnScope)) {
             throw new ExecutionError("Unable to return a value as the return scope is null");
         }
+
+        // This must be before the STRING check as an identifier is also a STRING
         if (ParserUtility.isIdentifier(value)) {
             String identifier = (String) value;
             if (variableScope.existsVariable(identifier)) {
@@ -40,14 +42,17 @@ public class TermNode implements ASTNode {
             } else {
                 throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));
             }
-        } else if (ParserUtility.isLong(value)) {
-            returnScope.assignReturnValue(DataType.INT, Integer.valueOf((String) value));
-        } else if (ParserUtility.isDouble(value)) {
-            returnScope.assignReturnValue(DataType.FLOAT, Integer.valueOf((String) value));
-        } else if (ParserUtility.isString(value)) {
-            returnScope.assignReturnValue(DataType.STRING, String.valueOf(value));
         } else {
-            throw new ExecutionError(String.format("Unable to resolve the term '%s'", value));
+            var dataType = ParserUtility.getReturnType(value);
+            switch (dataType) {
+                case INT -> returnScope.assignReturnValue(DataType.INT, Long.valueOf((String) value));
+                case FLOAT -> returnScope.assignReturnValue(DataType.FLOAT, Double.valueOf((String) value));
+                case STRING -> returnScope.assignReturnValue(DataType.STRING, String.valueOf(value));
+                case INT_ARRAY -> returnScope.assignReturnValue(DataType.INT_ARRAY, value);
+                case FLOAT_ARRAY -> returnScope.assignReturnValue(DataType.FLOAT_ARRAY, value);
+                case STRING_ARRAY -> returnScope.assignReturnValue(DataType.STRING_ARRAY, value);
+                default -> throw new ExecutionError(String.format("Unable to resolve the term '%s'", value));
+            }
         }
     }
 

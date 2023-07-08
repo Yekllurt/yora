@@ -26,6 +26,33 @@ public class ParserUtility {
         return false;
     }
 
+    public static boolean isInt(Object value) {
+        if (value instanceof Integer) {
+            return true;
+        }
+        if (value instanceof String str) {
+            try {
+                Integer.valueOf(str);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static Integer parseInt(Object value) {
+        if (!isInt(value)) {
+            throw new ParseException(String.format("Can't convert the value '%s' into an integer", value));
+        }
+        if (value instanceof Integer i) {
+            return i;
+        } else if (value instanceof String str) {
+            return Integer.valueOf(str);
+        }
+        throw new ParseException(String.format("Can't convert the value '%s' into an integer", value));
+    }
+
     public static boolean isLong(Object value) {
         if (value instanceof Integer) {
             return true;
@@ -102,18 +129,40 @@ public class ParserUtility {
         return dataType.equals(DataType.INT) || dataType.equals(DataType.FLOAT);
     }
 
+    public static boolean isStringArray(Object value) {
+        return value instanceof String[];
+    }
+
+    public static boolean isLongArray(Object value) {
+        return value instanceof long[] || value instanceof Long[];
+    }
+
+    public static boolean isDoubleArray(Object value) {
+        return value instanceof double[] || value instanceof Double[];
+    }
+
+    public static boolean isArray(DataType dataType) {
+        return DataType.STRING_ARRAY == dataType || DataType.INT_ARRAY == dataType || DataType.FLOAT_ARRAY == dataType;
+    }
+
     public static DataType getReturnType(Object value) {
-        if (ParserUtility.isLong(value)) {
+        if (isLong(value)) {
             return DataType.INT;
         }
-        if (ParserUtility.isDouble(value)) {
+        if (isDouble(value)) {
             return DataType.FLOAT;
         }
-        if (value instanceof Boolean) {
-            return DataType.BOOLEAN;
-        }
-        if (value instanceof Character) {
+        if (isString(value)) {
             return DataType.STRING;
+        }
+        if (isLongArray(value)) {
+            return DataType.INT_ARRAY;
+        }
+        if (isDoubleArray(value)) {
+            return DataType.FLOAT_ARRAY;
+        }
+        if (isStringArray(value)) {
+            return DataType.STRING_ARRAY;
         }
         return null;
     }

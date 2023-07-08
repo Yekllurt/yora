@@ -2,6 +2,7 @@ package dev.yekllurt.parser.interpreter.scope;
 
 import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.interpreter.throwable.InvalidOperationError;
+import dev.yekllurt.parser.utility.ParserUtility;
 
 public record Data(DataType dataType, Object data) {
 
@@ -44,6 +45,13 @@ public record Data(DataType dataType, Object data) {
             throw new InvalidOperationError(String.format("Can't convert data from the type %s into an int", dataType));
         }
         return (Boolean) data;
+    }
+
+    public Object[] toArray() {
+        if (!ParserUtility.isArray(dataType)) {
+            throw new InvalidOperationError(String.format("Can't convert data from the type %s into an array", dataType));
+        }
+        return (Object[]) data;
     }
 
     public String toString() {

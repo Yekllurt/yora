@@ -14,7 +14,7 @@ public class ReturnScopeImplementation implements ReturnScope {
     @Override
     public void assignReturnValue(DataType type, Object value) {
         if (Objects.nonNull(this.data)) {
-            throw new ScopeError("Can't assign the value '%s' as return value as in the scope a return valued has already been assigned");
+            throw new ScopeError("Can't assign the return value as in the scope a return valued has already been assigned");
         }
         this.data = new Data(type, value);
     }

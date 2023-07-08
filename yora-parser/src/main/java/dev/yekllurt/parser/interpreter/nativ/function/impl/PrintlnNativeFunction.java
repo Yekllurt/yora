@@ -3,7 +3,9 @@ package dev.yekllurt.parser.interpreter.nativ.function.impl;
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
 import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.interpreter.scope.Data;
+import dev.yekllurt.parser.utility.ParserUtility;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,8 +23,11 @@ public class PrintlnNativeFunction implements NativeFunction {
         ExceptionUtility.throwIf(Objects.isNull(parameters) || parameters.size() != 1,
                 new IllegalArgumentException(String.format("The native function %s has exactly one parameter",
                         getName())));
-
-        System.out.println(Objects.isNull(parameters.get(0)) ? null : parameters.get(0).data());
+        if (Objects.isNull(parameters.get(0))) {
+            throw new UnsupportedOperationException("Can't output null to the console");
+        }
+        var data = parameters.get(0);
+        System.out.println(ParserUtility.isArray(data.dataType()) ? Arrays.toString(data.toArray()) : data.data());
         return Optional.empty();
     }
 

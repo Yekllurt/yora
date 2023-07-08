@@ -13,6 +13,7 @@ import dev.yekllurt.api.collection.SequencedCollection;
 import dev.yekllurt.parser.token.Token;
 import dev.yekllurt.parser.token.TokenType;
 import dev.yekllurt.api.utility.ExceptionUtility;
+import dev.yekllurt.parser.utility.ParserUtility;
 
 import java.util.Objects;
 import java.util.Set;
@@ -157,13 +158,17 @@ public class Parser {
 
     // Rules:
     //  variable_type IDENTIFIER EQUAL expression SEMICOLON
+    //  variable_type LEFT_BRACKET NUMBER RIGHT_BRACKET IDENTIFIER SEMICOLON
     //  IDENTIFIER EQUAL expression SEMICOLON
     //  expression SEMICOLON
     private ASTNode parseStatement() {
-        // Rule: variable_type IDENTIFIER EQUAL expression SEMICOLON
+        // Rules:
+        //  variable_type IDENTIFIER EQUAL expression SEMICOLON
+        //  variable_type LEFT_BRACKET NUMBER RIGHT_BRACKET IDENTIFIER SEMICOLON
         if (isNextToken(VARIABLE_TYPES)) {
             var variableType = getCurrentTokenType();
             tokenCursor++;
+            // Rule: variable_type IDENTIFIER EQUAL expression SEMICOLON
             if (isNextToken(TokenType.IDENTIFIER)) {
                 var identifier = getCurrentTokenValue();
                 tokenCursor++;
@@ -180,6 +185,33 @@ public class Parser {
                                 .build();
                     }
                 }
+                // Rule: variable_type LEFT_BRACKET NUMBER RIGHT_BRACKET IDENTIFIER SEMICOLON
+            } else if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACKET)) {
+                tokenCursor++;
+                if (isNextToken(TokenType.DECIMAL_NUMBER)) {
+                    var value = ParserUtility.parseInt(getCurrentTokenValue());
+                    tokenCursor++;
+                    if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACKET)) {
+                        tokenCursor++;
+                        if (isNextToken(TokenType.IDENTIFIER)) {
+                            var identifier = getCurrentTokenValue();
+                            tokenCursor++;
+                            if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                                tokenCursor++;
+                                var dataType = DataType.fromString(variableType, true);
+                                return VariableDeclarationNode.builder()
+                                        .type(dataType)
+                                        .identifier(identifier)
+                                        .value(TermNode.builder()
+                                                .value(DataType.createArray(dataType, value))
+                                                .type(TermNode.TermType.LITERAL)
+                                                .build())
+                                        .build();
+                            }
+                        }
+                    }
+                }
+
             }
         } else if (isNextToken(TokenType.IDENTIFIER)) {
             var identifier = getCurrentTokenValue();
