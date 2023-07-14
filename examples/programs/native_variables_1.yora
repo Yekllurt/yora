@@ -1,0 +1,9 @@
+void main()
+    println("PI: " + PI);
+    println("E: " + E);
+    println("Operating system: " + OSNAME);
+    println("Operating system architecture: " + OSARCH);
+    println("Java version: " + JAVAVERSION);
+    println("Java VM version: " + JAVAVMVERSION);
+    println("Java VM vendor: " + JAVAVMVENDOR);
+end;

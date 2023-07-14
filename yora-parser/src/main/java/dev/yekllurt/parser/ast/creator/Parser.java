@@ -171,6 +171,11 @@ public class Parser {
             // Rule: variable_type IDENTIFIER EQUAL expression SEMICOLON
             if (isNextToken(TokenType.IDENTIFIER)) {
                 var identifier = getCurrentTokenValue();
+                if (!isValidUserVariableIdentifier(identifier)) {
+                    if (isSystemVariableIdentifier(identifier)) {
+                        throw new ParseException("A program can't define a variable with an identifier following the system variable identifier naming guidelines");
+                    }
+                }
                 tokenCursor++;
                 if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                     tokenCursor++;
@@ -195,6 +200,11 @@ public class Parser {
                         tokenCursor++;
                         if (isNextToken(TokenType.IDENTIFIER)) {
                             var identifier = getCurrentTokenValue();
+                            if (!isValidUserVariableIdentifier(identifier)) {
+                                if (isSystemVariableIdentifier(identifier)) {
+                                    throw new ParseException("A program can't define a variable with an identifier following the system variable identifier naming guidelines");
+                                }
+                            }
                             tokenCursor++;
                             if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                                 tokenCursor++;
@@ -215,6 +225,11 @@ public class Parser {
             }
         } else if (isNextToken(TokenType.IDENTIFIER)) {
             var identifier = getCurrentTokenValue();
+            if (!isValidUserVariableIdentifier(identifier)) {
+                if (isSystemVariableIdentifier(identifier)) {
+                    throw new ParseException("A program can't override a system variable");
+                }
+            }
             tokenCursor++;
             // Rule: IDENTIFIER EQUAL expression SEMICOLON
             if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
@@ -672,6 +687,24 @@ public class Parser {
 
     private boolean isNextNextToken(String type) {
         return tokenCursor + 1 < tokens.size() && tokens.get(tokenCursor + 1).getType().equals(type);
+    }
+
+    private boolean isValidUserVariableIdentifier(String identifier) {
+        if (Objects.isNull(identifier)) {
+            return false;
+        }
+        if (isSystemVariableIdentifier(identifier)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isSystemVariableIdentifier(String identifier) {
+        // Only system variables are allowed to be all upper case
+        if (identifier.equals(identifier.toUpperCase())) {
+            return true;
+        }
+        return false;
     }
 
 }

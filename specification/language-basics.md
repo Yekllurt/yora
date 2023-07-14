@@ -17,10 +17,13 @@
     2. [The if-then-else Statement](#the-if-then-else-statement)
     3. [The while Statement](#the-while-statement)
 5. [Functions](#functions)
-6. [Native functions](#native-functions)
+6. [Native Functions](#native-functions)
     1. [I/O Functions](#io-functions)
     2. [Mathematical Functions](#mathematical-functions)
-7. [Source](#source)
+7. [Native Variables](#native-variables)
+    1. [Constants](#constants)
+    2. [System Variables](#system-variables)
+8. [Source](#source)
 
 ## Program Structure
 
@@ -207,6 +210,31 @@ Parameters:
 * `max`
     * Datatype: int
     * Description: the upper bound (inclusive)
+
+## Native Variables
+
+Note: The name is case-sensitive and only native variables are allowed to be all uppercase
+
+### Constants
+
+A native constant is a pre-defined immutable variable holding a commonly used value.
+
+| Name | Value        |
+|------|--------------|
+| PI   | 3.1415926535 |
+| E    | 2.7182818284 |
+
+### System Variables
+
+A system variable that holds a (dynamic) variable.
+
+| Name          | Description                                                        |
+|---------------|--------------------------------------------------------------------|
+| OSARCH        | The operating system architecture on which the program is executed |
+| OSNAME        | The operating system name on which the program is executed         |
+| JAVAVERSION   | The java version                                                   |
+| JAVAVMVERSION | The java vm version                                                |
+| JAVAVMVENDOR  | The java vm vendor                                                 |
 
 ## Source
 

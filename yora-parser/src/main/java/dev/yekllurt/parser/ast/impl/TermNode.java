@@ -2,6 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
+import dev.yekllurt.parser.interpreter.nativ.variable.NativeVariableDirectory;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
@@ -38,7 +39,12 @@ public class TermNode implements ASTNode {
         // This must be before the STRING check as an identifier is also a STRING
         if (ParserUtility.isIdentifier(value)) {
             String identifier = (String) value;
-            if (variableScope.existsVariable(identifier)) {
+            if (NativeVariableDirectory.isNativeVariable(identifier)) {
+                var nativeVariable = NativeVariableDirectory.getNativeVariable(identifier);
+                var nativeVariableValue = nativeVariable.getValue();
+                var nativeVariableDataType = ParserUtility.getReturnType(nativeVariableValue);
+                returnScope.assignReturnValue(nativeVariableDataType, nativeVariableValue);
+            } else if (variableScope.existsVariable(identifier)) {
                 if (ParserUtility.isArray(variableScope.lookupVariableType(identifier))) {
                     if (Objects.isNull(index)) {
                         returnScope.assignReturnValue(variableScope.lookupVariableType(identifier), variableScope.lookupVariable(identifier));
