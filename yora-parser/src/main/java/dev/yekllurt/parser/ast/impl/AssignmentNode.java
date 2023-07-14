@@ -2,10 +2,7 @@ package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
-import dev.yekllurt.parser.interpreter.scope.FunctionScope;
-import dev.yekllurt.parser.interpreter.scope.ParameterScope;
-import dev.yekllurt.parser.interpreter.scope.ReturnScope;
-import dev.yekllurt.parser.interpreter.scope.VariableScope;
+import dev.yekllurt.parser.interpreter.scope.*;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
 import dev.yekllurt.parser.interpreter.throwable.ExecutionError;
 import dev.yekllurt.parser.interpreter.throwable.InvalidOperationError;
@@ -30,66 +27,30 @@ public class AssignmentNode implements ASTNode {
         value.evaluate(functionScope, variableScope, parameterScope, childReturnScopeValue);
 
         if (variableScope.existsData(identifier)) {
-            performVariableScopeAssignment(functionScope, variableScope, parameterScope, returnScope, childReturnScopeValue);
+            performVariableAssignment(functionScope, variableScope, parameterScope, variableScope, childReturnScopeValue);
         } else if (parameterScope.existsData(identifier)) {
-            performParameterScopeAssignment(functionScope, variableScope, parameterScope, returnScope, childReturnScopeValue);
+            performVariableAssignment(functionScope, variableScope, parameterScope, parameterScope, childReturnScopeValue);
         } else {
             throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));
         }
     }
 
-    private void performVariableScopeAssignment(FunctionScope functionScope, VariableScope variableScope,
-                                                ParameterScope parameterScope, ReturnScope returnScope,
-                                                ReturnScopeImplementation childReturnScope) {
-        var variable = variableScope.lookup(identifier);
+    private void performVariableAssignment(FunctionScope functionScope, VariableScope variableScope,
+                                           ParameterScope parameterScope,
+                                           DataScope scopeToUpdate, ReturnScopeImplementation childReturnScope) {
+        var variable = scopeToUpdate.lookup(identifier);
+        // TODO: perform data type checks like in the variable declaration node
         if (variable.isArray()) {
             assertIndexNotNull();
             var returnScopeIndex = new ReturnScopeImplementation();
             index.evaluate(functionScope, variableScope, parameterScope, returnScopeIndex);
-            updateArray(variableScope, returnScopeIndex.lookupReturnValue(), childReturnScope.lookupReturnValue());
+            updateArray(scopeToUpdate, returnScopeIndex.lookupReturnValue(), childReturnScope.lookupReturnValue());
         } else {
-            variableScope.updateData(identifier, childReturnScope.lookupReturnValue());
+            scopeToUpdate.updateData(identifier, childReturnScope.lookupReturnValue());
         }
     }
 
-    private void performParameterScopeAssignment(FunctionScope functionScope, VariableScope variableScope,
-                                                 ParameterScope parameterScope, ReturnScope returnScope,
-                                                 ReturnScopeImplementation childReturnScope) {
-        var variable = parameterScope.lookup(identifier);
-        if (variable.isArray()) {
-            var returnScopeIndex = new ReturnScopeImplementation();
-            index.evaluate(functionScope, variableScope, parameterScope, returnScopeIndex);
-            updateArray(parameterScope, returnScopeIndex.lookupReturnValue(), childReturnScope.lookupReturnValue());
-        } else {
-            parameterScope.updateData(identifier, childReturnScope.lookupReturnValue());
-        }
-    }
-
-    private void updateArray(VariableScope scope, Object index, Object updateValue) {
-        var data = scope.lookup(identifier);
-        var indexInt = parseIndex(index);
-
-        if (DataType.STRING_ARRAY.equals(data.dataType())) {
-            var temp = data.toStringArray();
-            assertNotOutOfBounds(temp.length, indexInt);
-            temp[indexInt] = (String) updateValue;
-            scope.updateData(identifier, temp);
-        } else if (DataType.INT_ARRAY.equals(data.dataType())) {
-            var temp = data.toLongArray();
-            assertNotOutOfBounds(temp.length, indexInt);
-            temp[indexInt] = (Long) updateValue;
-            scope.updateData(identifier, temp);
-        } else if (DataType.FLOAT_ARRAY.equals(data.dataType())) {
-            var temp = data.toDoubleArray();
-            assertNotOutOfBounds(temp.length, indexInt);
-            temp[indexInt] = (Double) updateValue;
-            scope.updateData(identifier, temp);
-        } else {
-            throw new InvalidOperationError(String.format("Failed updating the array of data type '%s' as it is not supported", data.dataType()));
-        }
-    }
-
-    private void updateArray(ParameterScope scope, Object index, Object updateValue) {
+    private void updateArray(DataScope scope, Object index, Object updateValue) {
         var data = scope.lookup(identifier);
         var indexInt = parseIndex(index);
 
