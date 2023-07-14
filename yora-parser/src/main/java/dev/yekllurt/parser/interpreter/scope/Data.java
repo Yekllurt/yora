@@ -2,9 +2,12 @@ package dev.yekllurt.parser.interpreter.scope;
 
 import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.interpreter.throwable.InvalidOperationError;
-import dev.yekllurt.parser.utility.ParserUtility;
 
 public record Data(DataType dataType, Object data) {
+
+    public boolean isString() {
+        return DataType.STRING.equals(dataType);
+    }
 
     public boolean isLong() {
         return DataType.INT.equals(dataType);
@@ -12,6 +15,10 @@ public record Data(DataType dataType, Object data) {
 
     public boolean isDouble() {
         return DataType.FLOAT.equals(dataType);
+    }
+
+    public boolean isNumber() {
+        return isLong() || isDouble();
     }
 
     public boolean isStringArray() {
@@ -24,6 +31,10 @@ public record Data(DataType dataType, Object data) {
 
     public boolean isDoubleArray() {
         return DataType.FLOAT_ARRAY.equals(dataType);
+    }
+
+    public boolean isArray() {
+        return isStringArray() || isLongArray() || isDoubleArray();
     }
 
     public Long toLong() {
