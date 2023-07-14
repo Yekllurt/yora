@@ -1,0 +1,27 @@
+void main()
+    int arraySize = 10;
+    int[10] a;
+    int i = 0;
+    int j = 0;
+
+    while(i < arraySize)
+        a[i] = randl(0, 10);
+        i = i + 1;
+    end;
+    println(a);
+
+    i = 0;
+    while(i < arraySize - 1)
+        while(j < arraySize - 1)
+            if(a[j] > a[j + 1])
+                int temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
+            end;
+            j = j + 1;
+        end;
+        i = i + 1;
+        j = 0;
+    end;
+    println(a);
+end;

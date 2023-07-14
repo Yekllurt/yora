@@ -21,6 +21,8 @@ public interface ParameterScope {
      */
     void updateParameter(String name, Object value);
 
+    Data lookup(String name);
+
     /**
      * Lookup a parameter in the current scope
      *

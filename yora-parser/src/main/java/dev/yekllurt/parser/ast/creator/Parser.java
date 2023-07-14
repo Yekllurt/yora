@@ -73,7 +73,7 @@ public class Parser {
                     if (isNextToken(VARIABLE_TYPES)) {
                         parameters = parseParameterList();
                         ExceptionUtility.throwIf(parameters.size() > Configuration.MAX_FUNCTION_PARAMETERS,
-                                new ParseException(String.format("Unable to parse the function '%s' as its function header expects %s however only %s are allowed", identifier, parameters.size(), Configuration.MAX_FUNCTION_PARAMETERS)));
+                                new ParseException(String.format("Unable to parse the function '%s' as its function header expects %s parameters however only %s are allowed", identifier, parameters.size(), Configuration.MAX_FUNCTION_PARAMETERS)));
                     }
                     if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                         tokenCursor++;
@@ -227,6 +227,52 @@ public class Parser {
                             .identifier(identifier)
                             .value(expression)
                             .build();
+                }
+            }
+            // Rule:
+            //  IDENTIFIER LEFT_BRACKET NUMBER RIGHT_BRACKET EQUAL expression SEMICOLON
+            else if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACKET)) {
+                tokenCursor++;
+                if (isNextToken(TokenType.DECIMAL_NUMBER)) {
+                    var index = ParserUtility.parseInt(getCurrentTokenValue());
+                    tokenCursor++;
+                    if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACKET)) {
+                        tokenCursor++;
+                        if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
+                            tokenCursor++;
+                            var expression = parseExpression();
+                            // TODO: add better error output
+                            if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                                tokenCursor++;
+                                return AssignmentNode.builder()
+                                        .identifier(identifier)
+                                        .index(TermNode.builder()
+                                                .value(index)
+                                                .type(TermNode.TermType.LITERAL)
+                                                .build())
+                                        .value(expression)
+                                        .build();
+                            }
+                        }
+                    }
+                } else {
+                    var indexExpression = parseExpression();
+                    if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACKET)) {
+                        tokenCursor++;
+                        if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
+                            tokenCursor++;
+                            var expression = parseExpression();
+                            // TODO: add better error output
+                            if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                                tokenCursor++;
+                                return AssignmentNode.builder()
+                                        .identifier(identifier)
+                                        .index(indexExpression)
+                                        .value(expression)
+                                        .build();
+                            }
+                        }
+                    }
                 }
             }
             // Rules:
@@ -537,6 +583,7 @@ public class Parser {
     //  NUMBER
     //  IDENTIFIER
     //  IDENTIFIER LEFT_BRACE expression_list RIGHT_BRACE
+    //  IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET
     private ASTNode parseAtom() {
         var token = getCurrentToken();
         switch (token.getType()) {
@@ -565,6 +612,19 @@ public class Parser {
                         return FunctionCallNode.builder()
                                 .functionIdentifier(token.getValue())
                                 .arguments(arguments)
+                                .build();
+                    }
+                    return null; // TODO: throw error instead?
+                } else if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACKET)) {
+                    tokenCursor++;
+                    // Resolving an array value
+                    var indexExpression = parseExpression();
+                    if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACKET)) {
+                        tokenCursor++;
+                        return TermNode.builder()
+                                .value(token.getValue())
+                                .index(indexExpression)
+                                .type(TermNode.TermType.DYNAMIC)
                                 .build();
                     }
                     return null; // TODO: throw error instead?

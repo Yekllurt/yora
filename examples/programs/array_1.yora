@@ -1,0 +1,18 @@
+void main()
+    int[5] a;
+    println(a);
+    a[0] = 6;
+    println(a);
+    int i = 0;
+    while(i < 5)
+        a[i] = i;
+        i = i + 1;
+    end;
+    println(a);
+    i = 0;
+    while(i < 5)
+        a[i] = randl(0, 10);
+        i = i + 1;
+    end;
+    println(a);
+end;

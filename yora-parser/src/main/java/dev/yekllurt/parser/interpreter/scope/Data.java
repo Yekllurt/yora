@@ -14,6 +14,18 @@ public record Data(DataType dataType, Object data) {
         return DataType.FLOAT.equals(dataType);
     }
 
+    public boolean isStringArray() {
+        return DataType.STRING_ARRAY.equals(dataType);
+    }
+
+    public boolean isLongArray() {
+        return DataType.INT_ARRAY.equals(dataType);
+    }
+
+    public boolean isDoubleArray() {
+        return DataType.FLOAT_ARRAY.equals(dataType);
+    }
+
     public Long toLong() {
         if (!DataType.INT.equals(dataType)) {
             throw new InvalidOperationError(String.format("Can't convert data from the type %s into an int", dataType));
@@ -47,11 +59,25 @@ public record Data(DataType dataType, Object data) {
         return (Boolean) data;
     }
 
-    public Object[] toArray() {
-        if (!ParserUtility.isArray(dataType)) {
-            throw new InvalidOperationError(String.format("Can't convert data from the type %s into an array", dataType));
+    public String[] toStringArray() {
+        if (!DataType.STRING_ARRAY.equals(dataType)) {
+            throw new InvalidOperationError(String.format("Can't convert data from the type %s into a string array", dataType));
         }
-        return (Object[]) data;
+        return (String[]) data;
+    }
+
+    public Long[] toLongArray() {
+        if (!DataType.INT_ARRAY.equals(dataType)) {
+            throw new InvalidOperationError(String.format("Can't convert data from the type %s into an int array", dataType));
+        }
+        return (Long[]) data;
+    }
+
+    public Double[] toDoubleArray() {
+        if (!DataType.FLOAT_ARRAY.equals(dataType)) {
+            throw new InvalidOperationError(String.format("Can't convert data from the type %s into a float array", dataType));
+        }
+        return (Double[]) data;
     }
 
     public String toString() {

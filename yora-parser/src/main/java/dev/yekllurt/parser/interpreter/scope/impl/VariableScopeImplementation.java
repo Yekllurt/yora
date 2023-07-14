@@ -67,29 +67,26 @@ public class VariableScopeImplementation implements VariableScope {
     }
 
     @Override
-    public Object lookupVariable(String name) {
+    public Data lookup(String name) {
         if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
             throw new ScopeError(String.format("Can't lookup the variable '%s' as there is no active soft scope available.", name));
         }
         for (var scope : variableScope.peek()) {
             if (scope.containsKey(name)) {
-                return scope.get(name).data();
+                return scope.get(name);
             }
         }
         throw new ScopeError(String.format("Can't find the variable '%s' in the current scope or any parent soft scope.", name));
     }
 
     @Override
+    public Object lookupVariable(String name) {
+        return lookup(name).data();
+    }
+
+    @Override
     public DataType lookupVariableType(String name) {
-        if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
-            throw new ScopeError(String.format("Can't lookup the variable '%s' as there is no active soft scope available.", name));
-        }
-        for (var scope : variableScope.peek()) {
-            if (scope.containsKey(name)) {
-                return scope.get(name).dataType();
-            }
-        }
-        throw new ScopeError(String.format("Can't find the variable '%s' in the current soft scope or any parent scope.", name));
+        return lookup(name).dataType();
     }
 
     @Override

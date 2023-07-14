@@ -2,6 +2,7 @@ package dev.yekllurt.parser.utility;
 
 import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.throwable.ParseException;
+import dev.yekllurt.parser.interpreter.throwable.ExecutionError;
 
 /**
  * A helper class containing functions that are used by the parser and interpreter
@@ -164,7 +165,7 @@ public class ParserUtility {
         if (isStringArray(value)) {
             return DataType.STRING_ARRAY;
         }
-        return null;
+        throw new ExecutionError(String.format("Unable to get the data type for the value '%s'", value));
     }
 
 }

@@ -27,7 +27,13 @@ public class PrintlnNativeFunction implements NativeFunction {
             throw new UnsupportedOperationException("Can't output null to the console");
         }
         var data = parameters.get(0);
-        System.out.println(ParserUtility.isArray(data.dataType()) ? Arrays.toString(data.toArray()) : data.data());
+        if (ParserUtility.isArray(data.dataType())) {
+            if (data.isStringArray()) System.out.println(Arrays.toString(data.toStringArray()));
+            else if (data.isLongArray()) System.out.println(Arrays.toString(data.toLongArray()));
+            else if (data.isDoubleArray()) System.out.println(Arrays.toString(data.toDoubleArray()));
+        } else {
+            System.out.println(data.data());
+        }
         return Optional.empty();
     }
 

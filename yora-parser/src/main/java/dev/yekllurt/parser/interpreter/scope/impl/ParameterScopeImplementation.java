@@ -29,19 +29,21 @@ public class ParameterScopeImplementation implements ParameterScope {
     }
 
     @Override
-    public Object lookupParameter(String name) {
+    public Data lookup(String name) {
         if (!existsParameter(name)) {
             throw new ScopeError(String.format("Can't find the parameter '%s' in the current scope.", name));
         }
-        return parameters.get(name).data();
+        return parameters.get(name);
+    }
+
+    @Override
+    public Object lookupParameter(String name) {
+        return lookup(name).data();
     }
 
     @Override
     public DataType lookupParameterType(String name) {
-        if (!existsParameter(name)) {
-            throw new ScopeError(String.format("Can't find the parameter '%s' in the current scope.", name));
-        }
-        return parameters.get(name).dataType();
+        return lookup(name).dataType();
     }
 
     @Override

@@ -21,6 +21,8 @@ public interface VariableScope extends Scope {
      */
     void updateVariable(String name, Object value);
 
+    Data lookup(String name);
+
     /**
      * Lookup a variable in the current scope
      *
