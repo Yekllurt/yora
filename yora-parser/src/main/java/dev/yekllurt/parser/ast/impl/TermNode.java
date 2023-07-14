@@ -44,22 +44,22 @@ public class TermNode implements ASTNode {
                 var nativeVariableValue = nativeVariable.getValue();
                 var nativeVariableDataType = ParserUtility.getReturnType(nativeVariableValue);
                 returnScope.assignReturnValue(nativeVariableDataType, nativeVariableValue);
-            } else if (variableScope.existsVariable(identifier)) {
-                if (ParserUtility.isArray(variableScope.lookupVariableType(identifier))) {
+            } else if (variableScope.existsData(identifier)) {
+                if (variableScope.lookup(identifier).isArray()) {
                     if (Objects.isNull(index)) {
-                        returnScope.assignReturnValue(variableScope.lookupVariableType(identifier), variableScope.lookupVariable(identifier));
+                        returnScope.assignReturnValue(variableScope.lookupDataType(identifier), variableScope.lookupData(identifier));
                     } else {
                         var returnScopeIndex = new ReturnScopeImplementation();
                         index.evaluate(functionScope, variableScope, parameterScope, returnScopeIndex);
                         updateReturnScope(returnScopeIndex.lookupReturnValue(), variableScope.lookup(identifier), returnScope);
                     }
                 } else {
-                    returnScope.assignReturnValue(variableScope.lookupVariableType(identifier), variableScope.lookupVariable(identifier));
+                    returnScope.assignReturnValue(variableScope.lookupDataType(identifier), variableScope.lookupData(identifier));
                 }
-            } else if (parameterScope.existsParameter(identifier)) {
-                if (ParserUtility.isArray(parameterScope.lookupParameterType(identifier))) {
+            } else if (parameterScope.existsData(identifier)) {
+                if (parameterScope.lookup(identifier).isArray()) {
                     if (Objects.isNull(index)) {
-                        returnScope.assignReturnValue(parameterScope.lookupParameterType(identifier), parameterScope.lookupParameter(identifier));
+                        returnScope.assignReturnValue(parameterScope.lookupDataType(identifier), parameterScope.lookupData(identifier));
 
                     } else {
                         var returnScopeIndex = new ReturnScopeImplementation();
@@ -67,7 +67,7 @@ public class TermNode implements ASTNode {
                         updateReturnScope(returnScopeIndex.lookupReturnValue(), parameterScope.lookup(identifier), returnScope);
                     }
                 } else {
-                    returnScope.assignReturnValue(parameterScope.lookupParameterType(identifier), parameterScope.lookupParameter(identifier));
+                    returnScope.assignReturnValue(parameterScope.lookupDataType(identifier), parameterScope.lookupData(identifier));
                 }
             } else {
                 throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));

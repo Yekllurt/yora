@@ -59,7 +59,7 @@ public class FunctionCallNode implements ASTNode {
                 }
 
                 // TODO: check if the return value is actually a valid value
-                childParameterScope.assignParameter(parameterNode.getIdentifier(), parameterNode.getType(), childReturnScope.lookupReturnValue());
+                childParameterScope.assignData(parameterNode.getIdentifier(), parameterNode.getType(), childReturnScope.lookupReturnValue());
             }
 
             variableScope.beginHardScope();

@@ -41,27 +41,27 @@ public class VariableScopeImplementation implements VariableScope {
     }
 
     @Override
-    public void assignVariable(String name, DataType type, Object value) {
+    public void assignData(String name, DataType type, Object value) {
         if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
             throw new ScopeError("Can't assign the variable '%s' as there is not active soft scope available.".formatted(name));
         }
-        if (existsVariable(name)) {
+        if (existsData(name)) {
             throw new ScopeError(String.format("Can't assign the variable '%s' as it already exists in the current soft scope.", name));
         }
         variableScope.peek().peek().put(name, new Data(type, value));
     }
 
     @Override
-    public void updateVariable(String name, Object value) {
+    public void updateData(String name, Object value) {
         if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
             throw new ScopeError("Can't update the variable '%s' as there is no active soft scope available.".formatted(name));
         }
-        if (!existsVariable(name)) {
+        if (!existsData(name)) {
             throw new ScopeError(String.format("Can't update the variable '%s' as it doesn't exist in the current soft scope.", name));
         }
         for (var scope : variableScope.peek()) {
             if (scope.containsKey(name)) {
-                scope.put(name, new Data(lookupVariableType(name), value));
+                scope.put(name, new Data(lookupDataType(name), value));
             }
         }
     }
@@ -80,17 +80,17 @@ public class VariableScopeImplementation implements VariableScope {
     }
 
     @Override
-    public Object lookupVariable(String name) {
+    public Object lookupData(String name) {
         return lookup(name).data();
     }
 
     @Override
-    public DataType lookupVariableType(String name) {
+    public DataType lookupDataType(String name) {
         return lookup(name).dataType();
     }
 
     @Override
-    public boolean existsVariable(String name) {
+    public boolean existsData(String name) {
         if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
             throw new ScopeError(String.format("Can't check if the variable '%s' exists as there is no active soft scope available.", name));
         }
