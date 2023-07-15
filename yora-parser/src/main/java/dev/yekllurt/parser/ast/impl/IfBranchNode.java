@@ -19,8 +19,10 @@ import java.util.Objects;
 public class IfBranchNode implements ASTNode {
 
     private final ConditionNode condition;
-    private final SequencedCollection<ASTNode> statements;
-    private final ASTNode returnStatement;
+    private final SequencedCollection<ASTNode> statementsThen;
+    private final ASTNode returnStatementThen;
+    private final SequencedCollection<ASTNode> statementsElse;
+    private final ASTNode returnStatementElse;
 
     @Override
     public void evaluate(FunctionScope functionScope, VariableScope variableScope,
@@ -36,22 +38,30 @@ public class IfBranchNode implements ASTNode {
         var conditionEvaluation = returnScopeCondition.lookup().toBoolean();
 
         if (conditionEvaluation) {
-            variableScope.beginSoftScope();
-
-            // Statement evaluation
-            for (var statement : statements) {
-                statement.evaluate(functionScope, variableScope, parameterScope, null);
-            }
-
-            // Return statement evaluation
-            if (Objects.nonNull(returnStatement)) {
-                var childReturnScope = new ReturnScopeImplementation();
-                returnStatement.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
-                returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
-            }
-
-            variableScope.endSoftScope();
+            executeBranch(functionScope, variableScope, parameterScope, returnScope, statementsThen, returnStatementThen);
+        } else {
+            executeBranch(functionScope, variableScope, parameterScope, returnScope, statementsElse, returnStatementElse);
         }
+    }
+
+    private void executeBranch(FunctionScope functionScope, VariableScope variableScope,
+                               ParameterScope parameterScope, ReturnScope returnScope,
+                               SequencedCollection<ASTNode> statements, ASTNode returnStatement) {
+        variableScope.beginSoftScope();
+
+        // Statement evaluation
+        for (var statement : statements) {
+            statement.evaluate(functionScope, variableScope, parameterScope, null);
+        }
+
+        // Return statement evaluation
+        if (Objects.nonNull(returnStatement)) {
+            var childReturnScope = new ReturnScopeImplementation();
+            returnStatement.evaluate(functionScope, variableScope, parameterScope, childReturnScope);
+            returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
+        }
+
+        variableScope.endSoftScope();
     }
 
 }

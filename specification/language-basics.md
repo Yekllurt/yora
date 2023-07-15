@@ -115,8 +115,6 @@ else:
 end;
 ```
 
-Note: Not yet supported
-
 ### The while Statement
 
 The while statement continually executes a block of statements while a particular condition is true.

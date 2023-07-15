@@ -27,6 +27,10 @@ statement
     expression SEMICOLON
     IF LEFT_BRACE condition RIGHT_BRACE statement_list END SEMICOLON
     IF LEFT_BRACE condition RIGHT_BRACE statement_list return END SEMICOLON
+    IF LEFT_BRACE condition RIGHT_BRACE statement_list ELSE statement_list END SEMICOLON
+    IF LEFT_BRACE condition RIGHT_BRACE statement_list ELSE statement_list return END SEMICOLON
+    IF LEFT_BRACE condition RIGHT_BRACE statement_list return ELSE statement_list END SEMICOLON
+    IF LEFT_BRACE condition RIGHT_BRACE statement_list return ELSE statement_list return END SEMICOLON
     WHILE LEFT_BRACE condition RIGHT_BRACE statement_list END SEMICOLON
     WHILE LEFT_BRACE condition RIGHT_BRACE statement_list return END SEMICOLON
 

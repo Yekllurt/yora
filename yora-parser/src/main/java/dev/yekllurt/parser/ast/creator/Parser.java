@@ -313,6 +313,10 @@ public class Parser {
         // Rules:
         //  IF LEFT_BRACE condition RIGHT_BRACE statement_list END SEMICOLON
         //  IF LEFT_BRACE condition RIGHT_BRACE statement_list return END SEMICOLON
+        //  IF LEFT_BRACE condition RIGHT_BRACE statement_list ELSE statement_list END SEMICOLON
+        //  IF LEFT_BRACE condition RIGHT_BRACE statement_list ELSE statement_list return END SEMICOLON
+        //  IF LEFT_BRACE condition RIGHT_BRACE statement_list return ELSE statement_list END SEMICOLON
+        //  IF LEFT_BRACE condition RIGHT_BRACE statement_list return ELSE statement_list return END SEMICOLON
         else if (isNextToken(TokenType.KEYWORD_IF)) {
             tokenCursor++;
             if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
@@ -320,16 +324,25 @@ public class Parser {
                 var conditions = parseCondition();
                 if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                     tokenCursor++;
-                    var statements = parseStatementList();
-                    var returnStatement = parseReturnStatement();
+                    var statementsThen = parseStatementList();
+                    var returnStatementThen = parseReturnStatement();
+                    SequencedCollection<ASTNode> statementsElse = null;
+                    ReturnNode returnStatementElse = null;
+                    if (isNextToken(TokenType.KEYWORD_ELSE)) {
+                        tokenCursor++;
+                        statementsElse = parseStatementList();
+                        returnStatementElse = parseReturnStatement();
+                    }
                     if (isNextToken(TokenType.KEYWORD_END)) {
                         tokenCursor++;
                         if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                             tokenCursor++;
                             return IfBranchNode.builder()
                                     .condition(conditions)
-                                    .statements(statements)
-                                    .returnStatement(returnStatement)
+                                    .statementsThen(statementsThen)
+                                    .returnStatementThen(returnStatementThen)
+                                    .statementsElse(statementsElse)
+                                    .returnStatementElse(returnStatementElse)
                                     .build();
                         }
                     }

@@ -12,6 +12,7 @@ KEYWORD         "void"      0   VOID
 KEYWORD         "end"       0   END
 KEYWORD         "return"    0   RETURN
 KEYWORD         "if"        0   IF
+KEYWORD         "else"      0   ELSE
 KEYWORD         "while"     0   WHILE
 KEYWORD         "true"      0   TRUE
 KEYWORD         "false"     0   FALSE

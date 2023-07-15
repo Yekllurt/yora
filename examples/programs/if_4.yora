@@ -1,0 +1,8 @@
+void main()
+    str text = "foo";
+    if(text == "foo")
+        println("bar");
+    else
+        println("This is not foo-bar");
+    end;
+end;

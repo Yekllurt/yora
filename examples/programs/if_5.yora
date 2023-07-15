@@ -1,0 +1,14 @@
+void main()
+    str text = "foo";
+    str result = foo(text);
+    println(result);
+end;
+
+str foo(str input)
+    if(input == "foo")
+        return "bar";
+    else
+        return "This is not foo-bar";
+    end;
+    return "error";
+end;

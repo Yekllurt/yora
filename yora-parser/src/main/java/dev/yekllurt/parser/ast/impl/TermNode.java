@@ -3,10 +3,7 @@ package dev.yekllurt.parser.ast.impl;
 import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.interpreter.nativ.variable.NativeVariableDirectory;
-import dev.yekllurt.parser.interpreter.scope.FunctionScope;
-import dev.yekllurt.parser.interpreter.scope.ParameterScope;
-import dev.yekllurt.parser.interpreter.scope.ReturnScope;
-import dev.yekllurt.parser.interpreter.scope.VariableScope;
+import dev.yekllurt.parser.interpreter.scope.*;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
 import dev.yekllurt.parser.interpreter.throwable.ExecutionError;
 import dev.yekllurt.parser.interpreter.throwable.InvalidOperationError;
@@ -45,30 +42,9 @@ public class TermNode implements ASTNode {
                 var nativeVariableDataType = ParserUtility.getReturnType(nativeVariableValue);
                 returnScope.assignReturnValue(nativeVariableDataType, nativeVariableValue);
             } else if (variableScope.existsData(identifier)) {
-                if (variableScope.lookup(identifier).isArray()) {
-                    if (Objects.isNull(index)) {
-                        returnScope.assignReturnValue(variableScope.lookupDataType(identifier), variableScope.lookupData(identifier));
-                    } else {
-                        var returnScopeIndex = new ReturnScopeImplementation();
-                        index.evaluate(functionScope, variableScope, parameterScope, returnScopeIndex);
-                        updateReturnScope(returnScopeIndex.lookupReturnValue(), variableScope.lookup(identifier), returnScope);
-                    }
-                } else {
-                    returnScope.assignReturnValue(variableScope.lookupDataType(identifier), variableScope.lookupData(identifier));
-                }
+                performLookup(functionScope, variableScope, parameterScope, returnScope, variableScope, identifier);
             } else if (parameterScope.existsData(identifier)) {
-                if (parameterScope.lookup(identifier).isArray()) {
-                    if (Objects.isNull(index)) {
-                        returnScope.assignReturnValue(parameterScope.lookupDataType(identifier), parameterScope.lookupData(identifier));
-
-                    } else {
-                        var returnScopeIndex = new ReturnScopeImplementation();
-                        index.evaluate(functionScope, variableScope, parameterScope, returnScopeIndex);
-                        updateReturnScope(returnScopeIndex.lookupReturnValue(), parameterScope.lookup(identifier), returnScope);
-                    }
-                } else {
-                    returnScope.assignReturnValue(parameterScope.lookupDataType(identifier), parameterScope.lookupData(identifier));
-                }
+                performLookup(functionScope, variableScope, parameterScope, returnScope, parameterScope, identifier);
             } else {
                 throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));
             }
@@ -83,6 +59,22 @@ public class TermNode implements ASTNode {
                 case STRING_ARRAY -> returnScope.assignReturnValue(DataType.STRING_ARRAY, value);
                 default -> throw new ExecutionError(String.format("Unable to resolve the term '%s'", value));
             }
+        }
+    }
+
+    private void performLookup(FunctionScope functionScope, VariableScope variableScope,
+                               ParameterScope parameterScope, ReturnScope returnScope,
+                               DataScope lookupScope, String identifier) {
+        if (lookupScope.lookup(identifier).isArray()) {
+            if (Objects.isNull(index)) {
+                returnScope.assignReturnValue(lookupScope.lookupDataType(identifier), lookupScope.lookupData(identifier));
+            } else {
+                var returnScopeIndex = new ReturnScopeImplementation();
+                index.evaluate(functionScope, variableScope, parameterScope, returnScopeIndex);
+                updateReturnScope(returnScopeIndex.lookupReturnValue(), lookupScope.lookup(identifier), returnScope);
+            }
+        } else {
+            returnScope.assignReturnValue(lookupScope.lookupDataType(identifier), lookupScope.lookupData(identifier));
         }
     }
 
