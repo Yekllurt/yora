@@ -35,8 +35,7 @@ public class FunctionCallNode implements ASTNode {
                 argument.evaluate(functionScope, variableScope, parameterScope, returnScopeExpression);
                 argumentsToPass.add(returnScopeExpression.lookup());
             }
-            function.execute(argumentsToPass)
-                    .ifPresent(result -> returnScope.assignReturnValue(ParserUtility.getReturnType(result), result));
+            function.execute(argumentsToPass).ifPresent(result -> returnScope.assignReturnValue(result.dataType(), result.data()));
         } else {
             var functionNode = functionScope.lookupFunction(functionIdentifier);
 

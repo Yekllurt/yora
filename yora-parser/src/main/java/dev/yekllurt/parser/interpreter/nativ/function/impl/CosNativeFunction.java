@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.interpreter.nativ.function.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
 import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.interpreter.scope.Data;
@@ -12,7 +13,7 @@ import java.util.Optional;
 public class CosNativeFunction implements NativeFunction {
 
     @Override
-    public Optional<Object> execute(List<Data> parameters) {
+    public Optional<Data> execute(List<Data> parameters) {
         ExceptionUtility.throwIf(Objects.isNull(parameters) || parameters.size() != 1,
                 new IllegalArgumentException(String.format("The native function %s has exactly one parameter",
                         getName())));
@@ -21,7 +22,7 @@ public class CosNativeFunction implements NativeFunction {
                         getName(), parameters.get(0))))
         ;
 
-        return Optional.of(Math.cos(parameters.get(0).toDouble()));
+        return Optional.of(new Data(DataType.FLOAT, Math.cos(parameters.get(0).toDouble())));
     }
 
     @Override

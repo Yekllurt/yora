@@ -13,7 +13,7 @@ public interface NativeFunction {
     /**
      * The implementation of the function
      */
-    Optional<Object> execute(List<Data> parameters);
+    Optional<Data> execute(List<Data> parameters);
 
     /**
      * The function name
