@@ -37,7 +37,7 @@ public class TermNode implements ASTNode {
         }
 
         // This must be before the STRING check as an identifier is also a STRING
-        if (ParserUtility.isIdentifier(value)) {
+        if (TermType.DYNAMIC.equals(type) && ParserUtility.isIdentifier(value)) {
             String identifier = (String) value;
             if (NativeVariableDirectory.isNativeVariable(identifier)) {
                 var nativeVariable = NativeVariableDirectory.getNativeVariable(identifier);
