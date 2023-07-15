@@ -11,6 +11,7 @@ public class NativeFunctionDirectory {
 
     static {
         NATIVE_FUNCTION_MAP.put("println", new PrintlnNativeFunction());
+        NATIVE_FUNCTION_MAP.put("readln", new ReadlnNativeFunction());
         NATIVE_FUNCTION_MAP.put("sqrt", new SqrtNativeFunction());
         NATIVE_FUNCTION_MAP.put("cos", new CosNativeFunction());
         NATIVE_FUNCTION_MAP.put("sin", new SinNativeFunction());

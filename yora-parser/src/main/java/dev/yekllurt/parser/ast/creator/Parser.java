@@ -148,7 +148,7 @@ public class Parser {
             while (isNextToken(STATEMENT_START_TYPES)) {
                 statemenet = parseStatement();
                 if (Objects.isNull(statemenet)) {
-                    throw new GrammarException("Failed to parse a statement");
+                    throw new GrammarException(String.format("Failed to parse a statement. Current token: %s", tokenCursor));
                 }
                 statementList.add(statemenet);
             }

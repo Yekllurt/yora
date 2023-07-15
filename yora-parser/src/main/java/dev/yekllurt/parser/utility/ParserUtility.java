@@ -95,10 +95,16 @@ public class ParserUtility {
         }
         if (value instanceof String str) {
             try {
+                Float.valueOf(str);
+                return true;
+            } catch (NumberFormatException e) {
+                // Intentionally do nothing
+            }
+            try {
                 Double.valueOf(str);
                 return true;
             } catch (NumberFormatException e) {
-                return false;
+                // Intentionally do nothing
             }
         }
         return false;

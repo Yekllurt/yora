@@ -156,15 +156,28 @@ function may not have the same name as a native function.
 
 ### I/O Functions
 
-#### print
+#### println
 
-Function: `print(<value>)` <br>
+Function: `println(<value>)` <br>
 Description: The print function prints a given argument to the console <br>
 Parameters:
 
 * `value`
     * Datatype: any datatype
     * Description: the datatype that is to be printed to the console
+
+#### readln
+
+Function: `readln(<type>, <error-message>)` <br>
+Description: Reads a value from the console <br>
+Parameters:
+
+* `type`
+    * Datatype: string
+    * Description: the datatype that is to be read to the console
+* `error-message`
+    * Datatype: string
+    * Description: the message that is printed to the console when the input value is invalid
 
 ### Mathematical Functions
 

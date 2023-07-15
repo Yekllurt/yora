@@ -1,0 +1,9 @@
+void main()
+    println("Welcome to the BMI calculator");
+    println("Please insert your height in m");
+    float height = readln("float", "your height must be an int");
+    println("Please insert your weight in kg");
+    float weight = readln("float", "your weight must be an int");
+    float bmi = weight / height^2;
+    println("You BMI: " + bmi);
+end;

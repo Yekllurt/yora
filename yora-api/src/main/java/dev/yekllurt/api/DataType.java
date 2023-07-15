@@ -6,17 +6,17 @@ public enum DataType {
 
     INT("INT"),
     FLOAT("FLOAT"),
-    BOOLEAN("BOOLEAN"),
-    STRING("STRING"),
+    BOOLEAN("BOOL"),
+    STRING("STR"),
     INT_ARRAY("INT_ARRAY"),
     FLOAT_ARRAY("FLOAT_ARRAY"),
-    BOOLEAN_ARRAY("BOOLEAN_ARRAY"),
-    STRING_ARRAY("STRING_ARRAY");
+    BOOLEAN_ARRAY("BOOL_ARRAY"),
+    STRING_ARRAY("STR_ARRAY");
 
-    private final String name;
+    private final String friendlyName;
 
-    DataType(String name) {
-        this.name = name;
+    DataType(String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 
     public static DataType fromString(String dataType, boolean isArray) {
@@ -24,7 +24,7 @@ public enum DataType {
             dataType = dataType + "_ARRAY";
         }
         for (var value : values()) {
-            if (value.getName().equals(dataType)) {
+            if (value.getFriendlyName().equals(dataType)) {
                 return value;
             }
         }
@@ -51,8 +51,8 @@ public enum DataType {
         }
     }
 
-    public String getName() {
-        return name;
+    public String getFriendlyName() {
+        return friendlyName;
     }
 
 }

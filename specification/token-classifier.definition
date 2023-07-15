@@ -6,7 +6,8 @@ STRING              \".*?\"
 
 KEYWORD         "int"       0   INT
 KEYWORD         "float"     0   FLOAT
-KEYWORD         "boolean"   0   BOOLEAN
+KEYWORD         "str"       0   STR
+KEYWORD         "bool"      0   BOOL
 KEYWORD         "void"      0   VOID
 KEYWORD         "end"       0   END
 KEYWORD         "return"    0   RETURN
