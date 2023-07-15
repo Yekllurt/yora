@@ -1,0 +1,15 @@
+void main()
+    bool[5] array;
+    println(array);
+    array[0] = true;
+    if ("foo" == "foo")
+        array[1] = true;
+    end;
+    if(array[0] == true && array[1] == false || "foo" == "bar")
+        array[2] = true;
+    end;
+    if(array[0] == true && (array[1] == true || "foo" == "bar"))
+        array[3] = true;
+    end;
+    println(array);
+end;

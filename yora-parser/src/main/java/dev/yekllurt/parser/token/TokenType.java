@@ -31,6 +31,8 @@ public class TokenType {
     public static final String PUNCTUATION_GREATER_THAN = "GREATER_THAN";
     public static final String PUNCTUATION_LESS_THAN = "LESS_THAN";
     public static final String PUNCTUATION_PERCENT = "PERCENT";
+    public static final String PUNCTUATION_AND = "AND";
+    public static final String PUNCTUATION_OR = "OR";
 
     public static final String IDENTIFIER = "IDENTIFIER";
     public static final String DECIMAL_NUMBER = "NUMBER";

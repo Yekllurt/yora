@@ -40,6 +40,18 @@ statement_list
     statement_list statement
 
 condition
+    or_condition
+
+or_condition
+    and_condition
+    and_condition OR OR and_condition
+
+and_condition
+    simple_condition
+    simple_condition AND AND simple_condition
+
+simple_condition
+    LEFT_BRACE condition RIGHT_BRACE
     expression comparison_operator expression
 
 comparison_operator

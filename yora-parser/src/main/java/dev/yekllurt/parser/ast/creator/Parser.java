@@ -202,7 +202,7 @@ public class Parser {
                 tokenCursor++;
                 if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                     tokenCursor++;
-                    var expression = parseExpression();
+                    var expression = parseExpression(); // TODO: add support here for expression or condition
                     // TODO: add better error output
                     if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                         tokenCursor++;
@@ -257,7 +257,7 @@ public class Parser {
             // Rule: IDENTIFIER EQUAL expression SEMICOLON
             if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                 tokenCursor++;
-                var expression = parseExpression();
+                var expression = parseExpression(); // TODO: add support here for expression or condition
                 // TODO: add better error output
                 if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                     tokenCursor++;
@@ -278,7 +278,7 @@ public class Parser {
                         tokenCursor++;
                         if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                             tokenCursor++;
-                            var expression = parseExpression();
+                            var expression = parseExpression(); // TODO: add support here for expression or condition
                             // TODO: add better error output
                             if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                                 tokenCursor++;
@@ -299,7 +299,7 @@ public class Parser {
                         tokenCursor++;
                         if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                             tokenCursor++;
-                            var expression = parseExpression();
+                            var expression = parseExpression(); // TODO: add support here for expression or condition
                             // TODO: add better error output
                             if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                                 tokenCursor++;
@@ -349,7 +349,7 @@ public class Parser {
                     tokenCursor++;
                     var statementsThen = parseStatementList();
                     var returnStatementThen = parseReturnStatement();
-                    SequencedCollection<ASTNode> statementsElse = null;
+                    var statementsElse = new SequencedCollection<ASTNode>();
                     ReturnNode returnStatementElse = null;
                     if (isNextToken(TokenType.KEYWORD_ELSE)) {
                         tokenCursor++;
@@ -424,62 +424,113 @@ public class Parser {
     }
 
     private ConditionNode parseCondition() {
-        var left = parseExpression();
-        if (isNextToken(TokenType.PUNCTUATION_EQUAL) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
-            tokenCursor += 2;   // Adding two as we are checking two values (==)
-            var right = parseExpression();
-            return ConditionNode.builder()
+        return parseOrCondition();
+    }
+
+    // Rules:
+    //  and_condition
+    //  and_condition OR OR and_condition
+    private ConditionNode parseOrCondition() {
+        var left = parseAndCondition();
+        while (isParseNotCompleted() && isNextToken(TokenType.PUNCTUATION_OR) && isNextNextToken(TokenType.PUNCTUATION_OR)) {
+            tokenCursor += 2;   // Adding two as we are checking two values (||)
+            var right = parseAndCondition();
+            return LogicConditionNode.builder()
                     .left(left)
                     .right(right)
-                    .operator(ConditionOperator.EQUAL)
+                    .operator(ConditionOperator.OR)
                     .build();
         }
-        if (isNextToken(TokenType.PUNCTUATION_EXCLAMATION_MARK) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
-            tokenCursor += 2;   // Adding two as we are checking two values (!=)
-            var right = parseExpression();
-            return ConditionNode.builder()
+        return left;
+    }
+
+    // Rules:
+    //  simple_condition
+    //  simple_condition AND AND simple_condition
+    private ConditionNode parseAndCondition() {
+        var left = parseSimpleCondition();
+        while (isParseNotCompleted() && isNextToken(TokenType.PUNCTUATION_AND) && isNextNextToken(TokenType.PUNCTUATION_AND)) {
+            tokenCursor += 2;   // Adding two as we are checking two values (&&)
+            var right = parseSimpleCondition();
+            return LogicConditionNode.builder()
                     .left(left)
                     .right(right)
-                    .operator(ConditionOperator.NOT_EQUAL)
+                    .operator(ConditionOperator.AND)
                     .build();
         }
-        if (isNextToken(TokenType.PUNCTUATION_GREATER_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
-            tokenCursor += 2;   // Adding two as we are checking two values (>=)
-            var right = parseExpression();
-            return ConditionNode.builder()
-                    .left(left)
-                    .right(right)
-                    .operator(ConditionOperator.GREATER_THAN_EQUAL)
-                    .build();
-        }
-        if (isNextToken(TokenType.PUNCTUATION_GREATER_THAN)) {
+        return left;
+    }
+
+    // Rule:
+    //  LEFT_BRACE condition RIGHT_BRACE
+    //  expression comparison_operator expression
+    private ConditionNode parseSimpleCondition() {
+        if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
             tokenCursor++;
-            var right = parseExpression();
-            return ConditionNode.builder()
-                    .left(left)
-                    .right(right)
-                    .operator(ConditionOperator.GREATER_THAN)
-                    .build();
+            var condition = parseCondition();
+            if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                tokenCursor++;
+                return condition;
+            }
+            throw new GrammarException("Failed parsing a condition within braces as it started with a '(' followed by a condition but hasn't been closed by a ')'");
+        } else {
+            var left = parseExpression();
+            if (isNextToken(TokenType.PUNCTUATION_EQUAL) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+                tokenCursor += 2;   // Adding two as we are checking two values (==)
+                var right = parseExpression();
+                return ComparisonConditionNode.builder()
+                        .left(left)
+                        .right(right)
+                        .operator(ConditionOperator.EQUAL)
+                        .build();
+            }
+            if (isNextToken(TokenType.PUNCTUATION_EXCLAMATION_MARK) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+                tokenCursor += 2;   // Adding two as we are checking two values (!=)
+                var right = parseExpression();
+                return ComparisonConditionNode.builder()
+                        .left(left)
+                        .right(right)
+                        .operator(ConditionOperator.NOT_EQUAL)
+                        .build();
+            }
+            if (isNextToken(TokenType.PUNCTUATION_GREATER_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+                tokenCursor += 2;   // Adding two as we are checking two values (>=)
+                var right = parseExpression();
+                return ComparisonConditionNode.builder()
+                        .left(left)
+                        .right(right)
+                        .operator(ConditionOperator.GREATER_THAN_EQUAL)
+                        .build();
+            }
+            if (isNextToken(TokenType.PUNCTUATION_GREATER_THAN)) {
+                tokenCursor++;
+                var right = parseExpression();
+                return ComparisonConditionNode.builder()
+                        .left(left)
+                        .right(right)
+                        .operator(ConditionOperator.GREATER_THAN)
+                        .build();
+            }
+            if (isNextToken(TokenType.PUNCTUATION_LESS_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
+                tokenCursor += 2;   // Adding two as we are checking two values (<=)
+                var right = parseExpression();
+                return ComparisonConditionNode.builder()
+                        .left(left)
+                        .right(right)
+                        .operator(ConditionOperator.LESS_THAN_EQUAL)
+                        .build();
+            }
+            if (isNextToken(TokenType.PUNCTUATION_LESS_THAN)) {
+                tokenCursor++;
+                var right = parseExpression();
+                return ComparisonConditionNode.builder()
+                        .left(left)
+                        .right(right)
+                        .operator(ConditionOperator.LESS_THAN)
+                        .build();
+            }
+            throw new GrammarException(String.format("Failed parsing a condition du to an unsupported token type %s", getCurrentTokenType()));
         }
-        if (isNextToken(TokenType.PUNCTUATION_LESS_THAN) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
-            tokenCursor += 2;   // Adding two as we are checking two values (<=)
-            var right = parseExpression();
-            return ConditionNode.builder()
-                    .left(left)
-                    .right(right)
-                    .operator(ConditionOperator.LESS_THAN_EQUAL)
-                    .build();
-        }
-        if (isNextToken(TokenType.PUNCTUATION_LESS_THAN)) {
-            tokenCursor++;
-            var right = parseExpression();
-            return ConditionNode.builder()
-                    .left(left)
-                    .right(right)
-                    .operator(ConditionOperator.LESS_THAN)
-                    .build();
-        }
-        throw new GrammarException(String.format("Failed parsing a condition du to an unsupported token type %s", getCurrentTokenType()));
     }
 
     // Rules:

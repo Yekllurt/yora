@@ -95,6 +95,10 @@ public class TermNode implements ASTNode {
             var temp = data.toDoubleArray();
             assertNotOutOfBounds(temp.length, indexInt);
             returnScope.assignReturnValue(DataType.FLOAT, temp[indexInt]);
+        } else if (DataType.BOOLEAN_ARRAY.equals(data.dataType())) {
+            var temp = data.toBooleanArray();
+            assertNotOutOfBounds(temp.length, indexInt);
+            returnScope.assignReturnValue(DataType.BOOLEAN, temp[indexInt]);
         } else {
             throw new InvalidOperationError(String.format("Failed updating the array of data type '%s' as it is not supported", data.dataType()));
         }
