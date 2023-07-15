@@ -174,7 +174,7 @@ Parameters:
 
 * `type`
     * Datatype: string
-    * Description: the datatype that is to be read to the console, supported data types: int, float, str
+    * Description: the datatype that is to be read from the console, supported data types: int, float, str
 * `error-message`
     * Datatype: string
     * Description: the message that is printed to the console when the input value is invalid
