@@ -69,7 +69,10 @@ public class FunctionCallNode implements ASTNode {
             variableScope.endSoftScope();
             variableScope.endHardScope();
 
-            returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
+            // Only methods that do not have void as return type return a value
+            if (Objects.nonNull(childReturnScope.lookup())) {
+                returnScope.assignReturnValue(childReturnScope.lookupReturnValueType(), childReturnScope.lookupReturnValue());
+            }
         }
 
     }
