@@ -46,6 +46,7 @@ public class ComparisonConditionNode implements ConditionNode {
         }
     }
 
+    // TODO: overhaul the perform methods so that they use the data functions
     private void performEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
         if (ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) && ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
             var leftReturnValue = returnScopeLeft.lookup().toDouble();
@@ -75,7 +76,7 @@ public class ComparisonConditionNode implements ConditionNode {
     }
 
     private void performGreaterThan(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
+        if (!returnScopeLeft.lookup().isNumber() || !returnScopeRight.lookup().isNumber()) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the > operator however both must be numbers",
                     returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
@@ -84,7 +85,7 @@ public class ComparisonConditionNode implements ConditionNode {
     }
 
     private void performGreaterThanEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
+        if (!returnScopeLeft.lookup().isNumber() || !returnScopeRight.lookup().isNumber()) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the >= operator however both must be numbers",
                     returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
@@ -93,7 +94,7 @@ public class ComparisonConditionNode implements ConditionNode {
     }
 
     private void performLessThan(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
+        if (!returnScopeLeft.lookup().isNumber() || !returnScopeRight.lookup().isNumber()) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the < operator however both must be numbers",
                     returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
@@ -102,7 +103,7 @@ public class ComparisonConditionNode implements ConditionNode {
     }
 
     private void performLessThanEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!ParserUtility.isNumber(returnScopeLeft.lookupReturnValueType()) || !ParserUtility.isNumber(returnScopeRight.lookupReturnValueType())) {
+        if (!returnScopeLeft.lookup().isNumber() || !returnScopeRight.lookup().isNumber()) {
             throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the <= operator however both must be numbers",
                     returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
         }
