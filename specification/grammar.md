@@ -11,6 +11,7 @@ function
 
 parameter
     variable_type IDENTIFIER
+    variable_type LEFT_BRACKET RIGHT_BRACKET IDENTIFIER
     
 parameter_list
     parameter
@@ -52,14 +53,18 @@ comparison_operator
 variable_type
     INT
     FLOAT
+    STR
     BOOLEAN
-    CHAR
     
 return_type
     INT
     FLOAT
     BOOLEAN
-    CHAR
+    STR
+    INT LEFT_BRACKET RIGHT_BRACKET
+    FLOAT LEFT_BRACKET RIGHT_BRACKET
+    BOOLEAN LEFT_BRACKET RIGHT_BRACKET
+    STR LEFT_BRACKET RIGHT_BRACKET
     VOID
 
 return_expression

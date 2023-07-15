@@ -54,9 +54,11 @@ public class TermNode implements ASTNode {
                 case INT -> returnScope.assignReturnValue(DataType.INT, ParserUtility.parseLong(value));
                 case FLOAT -> returnScope.assignReturnValue(DataType.FLOAT, ParserUtility.parseDouble((String) value));
                 case STRING -> returnScope.assignReturnValue(DataType.STRING, String.valueOf(value));
+                case BOOLEAN -> returnScope.assignReturnValue(DataType.BOOLEAN, value);
                 case INT_ARRAY -> returnScope.assignReturnValue(DataType.INT_ARRAY, value);
                 case FLOAT_ARRAY -> returnScope.assignReturnValue(DataType.FLOAT_ARRAY, value);
                 case STRING_ARRAY -> returnScope.assignReturnValue(DataType.STRING_ARRAY, value);
+                case BOOLEAN_ARRAY -> returnScope.assignReturnValue(DataType.BOOLEAN_ARRAY, value);
                 default -> throw new ExecutionError(String.format("Unable to resolve the term '%s'", value));
             }
         }

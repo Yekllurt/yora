@@ -35,7 +35,7 @@
 |----------|--------------------------------------------------------------------------|-------------------|
 | int      | The int data type is a 64-bit two's complement integer                   |                   |
 | float    | The float data type is a double-precision 64-vit IEEE 754 floating point |                   |
-| boolean  | The boolean data type has two possible values: true and false            | Not yet supported |
+| bool     | The boolean data type has two possible values: true and false            | Not yet supported |
 | string   | The string data type is a list of characters                             |                   |
 
 ### Arrays

@@ -13,6 +13,10 @@ public class ParserUtility {
         // Intentional as a helper class should not be instantiated by other classes
     }
 
+    public static boolean isBoolean(Object value) {
+        return value instanceof Boolean;
+    }
+
     public static boolean isString(Object value) {
         if (value instanceof String str) {
             return str.matches(".*?");
@@ -148,8 +152,12 @@ public class ParserUtility {
         return value instanceof double[] || value instanceof Double[];
     }
 
+    public static boolean isBooleanArray(Object value) {
+        return value instanceof boolean[] || value instanceof Boolean[];
+    }
+
     public static boolean isArray(DataType dataType) {
-        return DataType.STRING_ARRAY == dataType || DataType.INT_ARRAY == dataType || DataType.FLOAT_ARRAY == dataType;
+        return DataType.STRING_ARRAY == dataType || DataType.INT_ARRAY == dataType || DataType.FLOAT_ARRAY == dataType || DataType.BOOLEAN_ARRAY == dataType;
     }
 
     public static DataType getReturnType(Object value) {
@@ -162,6 +170,9 @@ public class ParserUtility {
         if (isString(value)) {
             return DataType.STRING;
         }
+        if (isBoolean(value)) {
+            return DataType.BOOLEAN;
+        }
         if (isLongArray(value)) {
             return DataType.INT_ARRAY;
         }
@@ -170,6 +181,9 @@ public class ParserUtility {
         }
         if (isStringArray(value)) {
             return DataType.STRING_ARRAY;
+        }
+        if (isBooleanArray(value)) {
+            return DataType.BOOLEAN_ARRAY;
         }
         throw new ExecutionError(String.format("Unable to get the data type for the value '%s'", value));
     }

@@ -21,6 +21,10 @@ public record Data(DataType dataType, Object data) {
         return isLong() || isDouble();
     }
 
+    public boolean isBoolean() {
+        return DataType.BOOLEAN.equals(dataType);
+    }
+
     public boolean isStringArray() {
         return DataType.STRING_ARRAY.equals(dataType);
     }
@@ -33,8 +37,12 @@ public record Data(DataType dataType, Object data) {
         return DataType.FLOAT_ARRAY.equals(dataType);
     }
 
+    public boolean isBooleanArray() {
+        return DataType.BOOLEAN_ARRAY.equals(dataType);
+    }
+
     public boolean isArray() {
-        return isStringArray() || isLongArray() || isDoubleArray();
+        return isStringArray() || isLongArray() || isDoubleArray() || isBooleanArray();
     }
 
     public Long toLong() {
@@ -63,11 +71,11 @@ public record Data(DataType dataType, Object data) {
         return (Double) data;
     }
 
-    public Boolean toBoolean() {
+    public boolean toBoolean() {
         if (!DataType.BOOLEAN.equals(dataType)) {
             throw new InvalidOperationError(String.format("Can't convert data from the type %s into an int", dataType));
         }
-        return (Boolean) data;
+        return (boolean) data;
     }
 
     public String[] toStringArray() {
@@ -89,6 +97,13 @@ public record Data(DataType dataType, Object data) {
             throw new InvalidOperationError(String.format("Can't convert data from the type %s into a float array", dataType));
         }
         return (Double[]) data;
+    }
+
+    public boolean[] toBooleanArray() {
+        if (!DataType.BOOLEAN_ARRAY.equals(dataType)) {
+            throw new InvalidOperationError(String.format("Can't convert data from the type %s into a float array", dataType));
+        }
+        return (boolean[]) data;
     }
 
     public String toString() {

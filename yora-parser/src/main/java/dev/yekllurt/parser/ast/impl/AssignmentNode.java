@@ -41,10 +41,13 @@ public class AssignmentNode implements ASTNode {
         var variable = scopeToUpdate.lookup(identifier);
         // TODO: perform data type checks like in the variable declaration node
         if (variable.isArray()) {
-            assertIndexNotNull();
-            var returnScopeIndex = new ReturnScopeImplementation();
-            index.evaluate(functionScope, variableScope, parameterScope, returnScopeIndex);
-            updateArray(scopeToUpdate, returnScopeIndex.lookupReturnValue(), childReturnScope.lookupReturnValue());
+            if (Objects.isNull(index)) {
+                scopeToUpdate.updateData(identifier, childReturnScope.lookupReturnValue());
+            } else {
+                var returnScopeIndex = new ReturnScopeImplementation();
+                index.evaluate(functionScope, variableScope, parameterScope, returnScopeIndex);
+                updateArray(scopeToUpdate, returnScopeIndex.lookupReturnValue(), childReturnScope.lookupReturnValue());
+            }
         } else {
             scopeToUpdate.updateData(identifier, childReturnScope.lookupReturnValue());
         }
@@ -68,6 +71,11 @@ public class AssignmentNode implements ASTNode {
             var temp = data.toDoubleArray();
             assertNotOutOfBounds(temp.length, indexInt);
             temp[indexInt] = (Double) updateValue;
+            scope.updateData(identifier, temp);
+        } else if (DataType.BOOLEAN_ARRAY.equals(data.dataType())) {
+            var temp = data.toBooleanArray();
+            assertNotOutOfBounds(temp.length, indexInt);
+            temp[indexInt] = (boolean) updateValue;
             scope.updateData(identifier, temp);
         } else {
             throw new InvalidOperationError(String.format("Failed updating the array of data type '%s' as it is not supported", data.dataType()));

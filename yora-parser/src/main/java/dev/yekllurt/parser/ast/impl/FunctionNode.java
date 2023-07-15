@@ -1,5 +1,6 @@
 package dev.yekllurt.parser.ast.impl;
 
+import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.api.collection.SequencedCollection;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
@@ -17,7 +18,7 @@ import java.util.Objects;
 public class FunctionNode implements ASTNode {
 
     private final String identifier;
-    private final String returnType;
+    private final DataType returnType;
 
     private final SequencedCollection<ParameterNode> parameters;
     private final SequencedCollection<ASTNode> statements;

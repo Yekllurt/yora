@@ -62,8 +62,17 @@ public class Parser {
 
     private FunctionNode parseFunction() {
         if (isNextToken(RETURN_TYPES)) {
-            var returnType = getCurrentTokenType();
+            var returnTypeStr = getCurrentTokenType();
             tokenCursor++;
+            boolean isArray = false;
+            if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACKET)) {
+                tokenCursor++;
+                if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACKET)) {
+                    tokenCursor++;
+                    isArray = true;
+                }
+            }
+            var returnType = DataType.fromString(returnTypeStr, isArray);
             if (isNextToken(TokenType.IDENTIFIER)) {
                 var identifier = getCurrentTokenValue();
                 tokenCursor++;
@@ -82,9 +91,9 @@ public class Parser {
                             statements = parseStatementList();
                         }
                         var returnExpression = parseReturnStatement();
-                        ExceptionUtility.throwIf(RETURN_TYPES_WITH_VALUES.contains(returnType) && Objects.isNull(returnExpression),
+                        ExceptionUtility.throwIf(RETURN_TYPES_WITH_VALUES.contains(returnTypeStr) && Objects.isNull(returnExpression),
                                 new ParseException(String.format("Unable to parse the function '%s' as it expects to return a value of type '%s' however it does not return anything", identifier, returnType)));
-                        ExceptionUtility.throwIf(RETURN_TYPES_WITHOUT_VALUES.contains(returnType) && Objects.nonNull(returnExpression),
+                        ExceptionUtility.throwIf(RETURN_TYPES_WITHOUT_VALUES.contains(returnTypeStr) && Objects.nonNull(returnExpression),
                                 new ParseException(String.format("Unable to parse the function '%s' as it expects to not return a value however it does return a value", identifier)));
                         if (isNextToken(TokenType.KEYWORD_END)) {
                             tokenCursor++;
@@ -124,6 +133,7 @@ public class Parser {
 
     // Rule:
     //  variable_type IDENTIFIER
+    //  variable_type LEFT_BRACKET RIGHT_BRACKET IDENTIFIER
     private ParameterNode parseParameter() {
         if (isNextToken(VARIABLE_TYPES)) {
             var parameterType = getCurrentTokenType();
@@ -135,6 +145,19 @@ public class Parser {
                         .type(DataType.fromString(parameterType, false))
                         .identifier(identifier)
                         .build();
+            } else if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACKET)) {
+                tokenCursor++;
+                if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACKET)) {
+                    tokenCursor++;
+                    if (isNextToken(TokenType.IDENTIFIER)) {
+                        var identifier = getCurrentTokenValue();
+                        tokenCursor++;
+                        return ParameterNode.builder()
+                                .type(DataType.fromString(parameterType, true))
+                                .identifier(identifier)
+                                .build();
+                    }
+                }
             }
         }
         return null;
@@ -618,6 +641,14 @@ public class Parser {
             case TokenType.DECIMAL_NUMBER, TokenType.STRING -> {
                 tokenCursor++;
                 return TermNode.builder().value(token.getValue()).type(TermNode.TermType.LITERAL).build();
+            }
+            case TokenType.KEYWORD_TRUE -> {
+                tokenCursor++;
+                return TermNode.builder().value(true).type(TermNode.TermType.LITERAL).build();
+            }
+            case TokenType.KEYWORD_FALSE -> {
+                tokenCursor++;
+                return TermNode.builder().value(false).type(TermNode.TermType.LITERAL).build();
             }
             case TokenType.PUNCTUATION_LEFT_BRACE -> {
                 tokenCursor++;

@@ -35,9 +35,17 @@ public class VariableDeclarationNode implements ASTNode {
                 throw new ExecutionError(String.format("Can't declare the variable '%s' of data type '%s' with data of the data type '%s'", identifier, data.dataType(), type));
             } else if (data.isDouble() && DataType.FLOAT.equals(type)) {
                 variableScope.assignData(identifier, type, data.data());
+            } else {
+                throw new ExecutionError(String.format("Can't declare the variable '%s' of data type '%s' with data of the data type '%s'", identifier, type, data.dataType()));
             }
         } else if (data.isString()) {
             if (DataType.STRING.equals(type)) {
+                variableScope.assignData(identifier, type, data.data());
+            } else {
+                throw new ExecutionError(String.format("Can't declare the variable '%s' of data type '%s' with data of the data type '%s'", identifier, type, data.dataType()));
+            }
+        } else if (data.isBoolean()) {
+            if (DataType.BOOLEAN.equals(type)) {
                 variableScope.assignData(identifier, type, data.data());
             } else {
                 throw new ExecutionError(String.format("Can't declare the variable '%s' of data type '%s' with data of the data type '%s'", identifier, type, data.dataType()));
@@ -48,6 +56,8 @@ public class VariableDeclarationNode implements ASTNode {
             } else if (data.isLongArray() && DataType.INT_ARRAY.equals(type)) {
                 variableScope.assignData(identifier, type, data.data());
             } else if (data.isDoubleArray() && DataType.FLOAT_ARRAY.equals(type)) {
+                variableScope.assignData(identifier, type, data.data());
+            } else if (data.isBooleanArray() && DataType.BOOLEAN_ARRAY.equals(type)) {
                 variableScope.assignData(identifier, type, data.data());
             } else {
                 throw new ExecutionError(String.format("Can't declare the variable '%s' of data type '%s' with data of the data type '%s'", identifier, type, data.dataType()));

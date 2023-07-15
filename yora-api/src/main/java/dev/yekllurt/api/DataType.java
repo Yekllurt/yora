@@ -35,16 +35,23 @@ public enum DataType {
         switch (dataType) {
             case INT_ARRAY -> {
                 var arr = new Long[size];
-                Arrays.fill(arr, 0L);
+                Arrays.fill(arr, 0L);   // Default value of 0
                 return arr;
             }
             case FLOAT_ARRAY -> {
                 var arr = new Double[size];
-                Arrays.fill(arr, 0D);
+                Arrays.fill(arr, 0D);   // Default value of 0
                 return arr;
             }
             case STRING_ARRAY -> {
-                return new String[size]; // TODO: should the array have empty strings as default value instead of null?
+                var arr = new String[size];
+                Arrays.fill(arr, "");   // Default value of ""
+                return arr;
+            }
+            case BOOLEAN_ARRAY -> {
+                var arr = new boolean[size];
+                Arrays.fill(arr, false);    // Default value of false
+                return arr;
             }
             default ->
                     throw new UnsupportedOperationException(String.format("The datatype %s can't be converted into an array", size));

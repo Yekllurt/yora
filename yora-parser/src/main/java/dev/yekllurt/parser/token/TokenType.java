@@ -12,6 +12,8 @@ public class TokenType {
     public static final String KEYWORD_IF = "IF";
     public static final String KEYWORD_ELSE = "ELSE";
     public static final String KEYWORD_WHILE = "WHILE";
+    public static final String KEYWORD_TRUE = "TRUE";
+    public static final String KEYWORD_FALSE = "FALSE";
 
     public static final String PUNCTUATION_LEFT_BRACE = "LEFT_BRACE";
     public static final String PUNCTUATION_RIGHT_BRACE = "RIGHT_BRACE";

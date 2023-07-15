@@ -31,6 +31,7 @@ public class PrintlnNativeFunction implements NativeFunction {
             if (data.isStringArray()) System.out.println(Arrays.toString(data.toStringArray()));
             else if (data.isLongArray()) System.out.println(Arrays.toString(data.toLongArray()));
             else if (data.isDoubleArray()) System.out.println(Arrays.toString(data.toDoubleArray()));
+            else if (data.isBooleanArray()) System.out.println(Arrays.toString(data.toBooleanArray()));
         } else {
             System.out.println(data.data());
         }
