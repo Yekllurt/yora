@@ -3,139 +3,260 @@
 ## Table of Contents
 
 1. [Program Structure](#program-structure)
-2. [Variables](#variables)
-    1. [Basic Data Types](#basic-data-types)
-    2. [Arrays](#arrays)
-3. [Operators](#operators)
-    1. [Simple Assignment Operators](#simple-assignment-operator)
-    2. [Arithmetic Operators](#arithmetic-operators)
-    3. [Unary Operators](#unary-operators)
-    4. [Equality and Relational Operators](#equality-and-relational-operators)
-    5. [Conditional Operators](#conditional-operators)
-4. [Control flow statements](#control-flow-statements)
-    1. [The if-then Statement](#the-if-then-statement)
-    2. [The if-then-else Statement](#the-if-then-else-statement)
-    3. [The while Statement](#the-while-statement)
-5. [Functions](#functions)
-6. [Native Functions](#native-functions)
-    1. [I/O Functions](#io-functions)
-    2. [Mathematical Functions](#mathematical-functions)
-7. [Native Variables](#native-variables)
-    1. [Constants](#constants)
-    2. [System Variables](#system-variables)
-8. [Source](#source)
+2. [Types, Values and Variables](#types-values-and-variables)
+    1. [The Kinds of Types and Values](#the-kinds-of-types-and-values)
+    2. [Primitive Types and Values](#primitive-types-and-values)
+        1. [Integer Types, Values and Operations](#integer-types-values-and-operations)
+        2. [Floating-Point Types, Values and Operations](#floating-point-types-values-and-operations)
+        3. [`bool` Types, Values and Operations](#bool-types-values-and-operations)
+    3. [Reference Types and Values](#reference-types-and-values)
+    4. [Variables](#variables)
+        1. [Initial Values of Variables](#initial-values-of-variables)
+        2. [Native Variables](#native-variables)
+            1. [Constants](#constants)
+            2. [System Variables](#system-variables)
+3. [Statements](#statements)
+    1. [Completion of Statments](#completion-of-statements)
+    2. [The `if` Statement](#the-if-statement)
+        1. [The `if-then` Statement](#the-if-then-statement)
+        2. [The `if-then-else` Statement](#the-if-then-else-statement)
+    3. [The `while` Statement](#the-while-statement)
+4. [Names](#names)
+    1. [Declaration](#declaration)
+    2. [Names and Identifiers](#names-and-identifiers)
+    3. [Scope of a Declaration](#scope-of-a-declaration)
+5. [Methods](#methods)
+    1. [Invoking](#invoking)
+    2. [Native Functions](#native-functions)
+        1. [I/O Functions](#io-functions)
+        2. [Mathematical Functions](#mathematical-functions)
+6. [Source](#source)
 
 ## Program Structure
 
-## Variables
+## Types, Values and Variables
 
-### Basic Data Types
+The Yora programming language is a statically an strongly typed language.
 
-| Datatype | Description                                                              | Note              |
-|----------|--------------------------------------------------------------------------|-------------------|
-| int      | The int data type is a 64-bit two's complement integer                   |                   |
-| float    | The float data type is a double-precision 64-vit IEEE 754 floating point |                   |
-| bool     | The boolean data type has two possible values: true and false            | Not yet supported |
-| str      | The string data type is a list of characters                             |                   |
+### The Kinds of Types and Values
 
-### Arrays
+The Yora programming language has primitive types as well as reference types.
 
-An arrays is a container that holds a fixed number of values of a single data type.
+### Primitive Types and Values
 
-## Operators
+The primitive types are the `bool` type and numeric types. Where the numeric types are `int` and `float`. The `int`
+values are 64-bit signed two's complemented integers and the `float` values are 64-bit IEEE 754 binary 64 floating-point
+numbers. <br>
+Primitive values do not share their state with other primitive values.
 
-### Simple Assignment Operator
+#### Integer Types, Values and Operations
 
-| Operator | Description                |
-|----------|----------------------------|
-| =        | Simple Assignment operator |
+The value of the integer type is in the following range:
 
-### Arithmetic Operators
+- For `int`, from -9223372036854775808 to 9223372036854775807 (inclusive)
 
-| Operator | Description             |
-|----------|-------------------------|
-| +        | Additive operator       |
-| -        | Subtraction operator    |
-| *        | Multiplication operator |
-| /        | Division operator       |
-| ^        | Power operator          |
+The integer values operators:
 
-### Unary Operators
+- The comparison operators which result in a value of type `bool`:
+    - The numerical comparison operators: `<`, `<=`, `>` and `>=`
+    - The numerical equality operators: `==` and `!=`
+- The numerical operators which result in a value of type `int`:
+    - The power operator: `^`
+    - The unary plus and minus operators: `+` and `-`
+    - The multiplicative operators: `*`, `/`, `%`
+    - The additive operators: `+` and `-`
+- The string concatenation operator `+`
 
-| Operator | Description                                    |
-|----------|------------------------------------------------|
-| +        | Unary plus operator; indicates positive values |
-| -        | Unary minus operator; negates an expression    |
+An integer operator can terminate the program for the following reasons:
 
-### Equality and Relational Operators
+- The multiplicative operators `/` or `%` have as right-hand operand a `0`
 
-| Operator | Description              |
-|----------|--------------------------|
-| ==       | Equal to                 |
-| !=       | Not equal to             |
-| &#62;    | Greater than             |
-| &#62;=   | Greater than or equal to |
-| <        | Less than                |
-| <=       | Less than or equal to    |
+#### Floating-Point Types, Values and Operations
 
-### Conditional Operators
+The value of the floating-point type is in the following range:
 
-| Operator     | Description     | Note              |
-|--------------|-----------------|-------------------|
-| &&           | Conditional-AND | Not yet supported |
-| &#124;&#124; | Conditional-OR  | Not yet supported |
+- TODO
 
-## Control Flow Statements
+The floating-point values operators:
 
-### The if-then Statement
+- The comparison operators which result in a value of type `bool`:
+    - The numerical comparison operators: `<`, `<=`, `>` and `>=`
+    - The numerical equality operators: `==` and `!=`
+- The numerical operators which result in a value of type `float`:
+    - The power operator: `^`
+    - The unary plus and minus operators: `+` and `-`
+    - The multiplicative operators: `*`, `/`, `%`
+    - The additive operators: `+` and `-`
+- The string concatenation operator `+`
 
-The if-then statement is a basic control flow statement that tells your program to execute a certain section of code
-only if a particular expression evaluates to true. <br>
-Example:
+A floating-point operator can terminate the program for the following reasons:
+
+- The multiplicative operators `/` or `%` have as right-hand operand a `0`
+
+#### `bool` Types, Values and Operations
+
+The `bool` type represents a logical state with the value `true` or `false`.
+
+The `bool` operators are:
+
+- The relational operators `==` and `!=`
+- The conditional-and and conditional-or operators `&&` and `||`
+- The string concatenation operator `+`
+
+Boolean expressions determine the control flow of the `if` and `while` statement. Furthermore, only `bool` expressions
+can be used in control flow statements.
+
+### Reference Types and Values
+
+The reference types are `str` and `array`.
+
+TODO
+
+### Variables
+
+A variable is a storage location with an associated type that is either a primitive type or reference type. A variable
+value can only be changed by an assignment.
+
+A variable of a primitive type always holds a primitive value of that exact primitive type. <br>
+A variable of type `str` holds a reference to an immutable string. <br>
+A variable of type array holds a reference to and array. <br>
+
+#### Initial Values of Variables
+
+Every variable in a program must have a value before its value is used. For the types `int`, `float`, `bool` and `str`
+it is the assigned value by the program. For the types `int[]`, `float[]`, `bool[]` and `str[]` it
+is `0`, `0`, `false`, `""` respectively.
+
+#### Native Variables
+
+Note: The name is case-sensitive and only native variables are allowed to be all uppercase
+
+##### Constants
+
+A native constant is a pre-defined immutable variable holding a commonly used value.
+
+| Name | Value        |
+|------|--------------|
+| PI   | 3.1415926535 |
+| E    | 2.7182818284 |
+
+##### System Variables
+
+A system variable that holds a (dynamic) variable.
+
+| Name          | Description                                                        |
+|---------------|--------------------------------------------------------------------|
+| OSARCH        | The operating system architecture on which the program is executed |
+| OSNAME        | The operating system name on which the program is executed         |
+| JAVAVERSION   | The java version                                                   |
+| JAVAVMVERSION | The java vm version                                                |
+| JAVAVMVENDOR  | The java vm vendor                                                 |
+
+## Statements
+
+### Completion of Statements
+
+TODO return
+
+### The `if` Statement
+
+The `if` statement allows conditional execution of a statement or a conditional choice of two statements.
+
+#### The `if-then` Statement
 
 ```
-if(<condition>)
+if(<expression>)
     <statements>
-    <return-statement>
 end;
 ```
 
-### The if-then-else Statement
+The `if-then` statement is executed by first evaluating the expression that must evaluate to a `bool` type.
 
-The if-then-else statement is similar to the if-then statement a basic control flow statement with the difference that
-if the given condition is false, it can execute an alternativ set of statements.
+Based on the expression result, one of the following actions is performed:
+
+- If the value is `true`, then the contained statement(s) is/are executed
+- If the value is `false`, then no further action is taken
+
+#### The `if-then-else` Statement
 
 ```
-if(<condition>)
+if(<expression>)
     <statements>
-    <return-statement>
-else:
-    <statements>
-    <return-statement>
-end;
-```
-
-### The while Statement
-
-The while statement continually executes a block of statements while a particular condition is true.
-
-```
-while(<condition>)
+else
     <statements>
 end;
 ```
 
-## Functions
+The `if-then-else` statement is executed by first evaluating the expression that must evaluate to a `bool` type.
 
-### Definition
+Based on the expression result, one of the following actions is performed:
+
+- If the value is `true`, then the first contained statement(s) is/are executed
+- If the value is `false`, then the second contained statement(s) is/are executed
+
+### The `while` Statement
+
+```
+while(<expression>)
+    <statements>
+end;
+```
+
+The `while` statement executes an expression that must evaluate to a `bool` type and the contained statement(s) if the
+expression is `true` until the expression is `false`.
+
+## Names
+
+Names are used to refer to entities declared in the program.
+
+A declared entity is a method, parameter of a method or local variable.
+
+Every declaration that introduces has a scope which determines the part of the program from which the declared entity
+can be accessed.
+
+### Declaration
+
+A declaration introduces an entity into a program and includes an identifier that can be used in a name to refer to this
+entity.
+
+A declared entity is one of the following:
+
+- A method
+- A parameter of a method
+- A local variable
+
+### Names and Identifiers
+
+A name is used to refer to an entity declared in a program and is a single identifier. An identifier is characterized by
+the following `[a-zA-Z]+` structure, note that uppercase identifiers are reserved for the Yora programming language.
+
+### Scope of a Declaration
+
+The scope of a declaration is the region of the program within which the entity can be referred to using a name.
+
+The scope of a member is the entire program.
+
+The scope of a method parameter is the entire declaration of the method.
+
+The scope of a local variable are the following statements in its block as well as its sub blocks in a method
+declaration.
+
+## Methods
 
 A function declares executable code that can be invoked from anywhere within the code (Note: recursion is not
-supported), passing a fixed number of values as arguments and having a well-defined return type (maybe void).
+officially supported), passing a fixed number of values as arguments and having a well-defined return type (maybe void).
+
+<b>Parameter Structure</b><br>
+Structure:`varaible-type identifier`<br>
+Valid variable types: `int`, `float`, `bool`, `str`, `int[]`, `float[]`, `bool[]`, `str[]`<br>
+Multiple parameters can be chained by dividend by dividing them with a `,`.
+
+<b>Return types</b>: `int`, `float`, `bool`, `str`, `int[]`, `float[]`, `bool[]`, `str[]`, `void` where the return
+type `void` signals that the function does not return any data.
 
 ```
 <return-type> <identifier>(<parameters>)
     <statements>
-    <return-statement>
 end;
 ```
 
@@ -147,14 +268,14 @@ This is also valid for [native functions](#native-functions).
 <identifier>(<parameters>);
 ```
 
-## Native Functions
+### Native Functions
 
 Native functions are provided by the programming language and can not be overwritten by the user. Furthermore, a user
 function may not have the same name as a native function.
 
-### I/O Functions
+#### I/O Functions
 
-#### println
+##### println
 
 Function: `println(<value>)` <br>
 Description: The print function prints a given argument to the console <br>
@@ -164,7 +285,7 @@ Parameters:
     * Datatype: any datatype
     * Description: the datatype that is to be printed to the console
 
-#### readln
+##### readln
 
 Function: `readln(<type>, <error-message>)` <br>
 Description: Reads a value from the console <br>
@@ -177,9 +298,9 @@ Parameters:
     * Datatype: str
     * Description: the message that is printed to the console when the input value is invalid
 
-### Mathematical Functions
+#### Mathematical Functions
 
-#### cos
+##### cos
 
 Function: `cos(<value>)` <br>
 Description: Calculates the cosine value of a value <br>
@@ -189,7 +310,7 @@ Parameters:
     * Datatype: int or float
     * Description: the int or float from which the sin value should be calculated
 
-#### sin
+##### sin
 
 Function: `sin(<value>)` <br>
 Description: Calculates the sine value of n value <br>
@@ -199,7 +320,7 @@ Parameters:
     * Datatype: int or float
     * Description: the int or float from which the sin value should be calculated
 
-#### sqrt
+##### sqrt
 
 Function: `sqrt(<value>)` <br>
 Description: Calculates the sqrt value <br>
@@ -209,7 +330,7 @@ Parameters:
     * Datatype: int
     * Description: the int from which a sqrt should be calculated
 
-#### randl
+##### randl
 
 Function: `randl(<min>, <max>)` <br>
 Description: Calculates a random int within the given bounds <br>
@@ -222,33 +343,8 @@ Parameters:
     * Datatype: int
     * Description: the upper bound (inclusive)
 
-## Native Variables
-
-Note: The name is case-sensitive and only native variables are allowed to be all uppercase
-
-### Constants
-
-A native constant is a pre-defined immutable variable holding a commonly used value.
-
-| Name | Value        |
-|------|--------------|
-| PI   | 3.1415926535 |
-| E    | 2.7182818284 |
-
-### System Variables
-
-A system variable that holds a (dynamic) variable.
-
-| Name          | Description                                                        |
-|---------------|--------------------------------------------------------------------|
-| OSARCH        | The operating system architecture on which the program is executed |
-| OSNAME        | The operating system name on which the program is executed         |
-| JAVAVERSION   | The java version                                                   |
-| JAVAVMVERSION | The java vm version                                                |
-| JAVAVMVENDOR  | The java vm vendor                                                 |
-
 ## Source
 
 Inspiration for this format is drawn by the Java
 documentation (https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html) and java
-specification (https://docs.oracle.com/javase/specs/jls/se12/html/index.html)
+specification (https://docs.oracle.com/javase/specs/jls/se12/html/index.html).
