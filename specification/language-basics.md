@@ -36,7 +36,7 @@
 | int      | The int data type is a 64-bit two's complement integer                   |                   |
 | float    | The float data type is a double-precision 64-vit IEEE 754 floating point |                   |
 | bool     | The boolean data type has two possible values: true and false            | Not yet supported |
-| string   | The string data type is a list of characters                             |                   |
+| str      | The string data type is a list of characters                             |                   |
 
 ### Arrays
 
@@ -171,10 +171,10 @@ Description: Reads a value from the console <br>
 Parameters:
 
 * `type`
-    * Datatype: string
+    * Datatype: str
     * Description: the datatype that is to be read from the console, supported data types: int, float, str
 * `error-message`
-    * Datatype: string
+    * Datatype: str
     * Description: the message that is printed to the console when the input value is invalid
 
 ### Mathematical Functions
