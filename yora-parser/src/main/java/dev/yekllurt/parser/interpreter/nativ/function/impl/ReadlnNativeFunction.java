@@ -11,10 +11,10 @@ import java.util.*;
 public class ReadlnNativeFunction implements NativeFunction {
 
     /**
-     * Prints the parameters to the console
+     * Reads data from the console
      *
-     * @param parameters The array of objects to print
-     * @return null after print
+     * @param parameters An array containing the data type to be read as well as an error message
+     * @return the value read from the console
      */
     @Override
     public Optional<Data> execute(List<Data> parameters) {

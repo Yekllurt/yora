@@ -209,7 +209,7 @@ expression is `true` until the expression is `false`.
 
 Names are used to refer to entities declared in the program.
 
-A declared entity is a method, parameter of a method or local variable.
+A declared entity is a method, argument of a method or local variable.
 
 Every declaration that introduces has a scope which determines the part of the program from which the declared entity
 can be accessed.
@@ -222,7 +222,7 @@ entity.
 A declared entity is one of the following:
 
 - A method
-- A parameter of a method
+- An argument of a method
 - A local variable
 
 ### Names and Identifiers
@@ -236,7 +236,7 @@ The scope of a declaration is the region of the program within which the entity 
 
 The scope of a member is the entire program.
 
-The scope of a method parameter is the entire declaration of the method.
+The scope of a method argument is the entire declaration of the method.
 
 The scope of a local variable are the following statements in its block as well as its sub blocks in a method
 declaration.
@@ -246,16 +246,16 @@ declaration.
 A function declares executable code that can be invoked from anywhere within the code (Note: recursion is not
 officially supported), passing a fixed number of values as arguments and having a well-defined return type (maybe void).
 
-<b>Parameter Structure</b><br>
+<b>argument Structure</b><br>
 Structure:`varaible-type identifier`<br>
 Valid variable types: `int`, `float`, `bool`, `str`, `int[]`, `float[]`, `bool[]`, `str[]`<br>
-Multiple parameters can be chained by dividend by dividing them with a `,`.
+Multiple arguments can be chained by dividend by dividing them with a `,`.
 
 <b>Return types</b>: `int`, `float`, `bool`, `str`, `int[]`, `float[]`, `bool[]`, `str[]`, `void` where the return
 type `void` signals that the function does not return any data.
 
 ```
-<return-type> <identifier>(<parameters>)
+<return-type> <identifier>(<arguments>)
     <statements>
 end;
 ```
@@ -265,7 +265,7 @@ end;
 This is also valid for [native functions](#native-functions).
 
 ```
-<identifier>(<parameters>);
+<identifier>(<arguments>);
 ```
 
 ### Native Functions
@@ -279,7 +279,7 @@ function may not have the same name as a native function.
 
 Function: `println(<value>)` <br>
 Description: The print function prints a given argument to the console <br>
-Parameters:
+Arguments:
 
 * `value`
     * Datatype: any datatype
@@ -289,7 +289,7 @@ Parameters:
 
 Function: `readln(<type>, <error-message>)` <br>
 Description: Reads a value from the console <br>
-Parameters:
+Arguments:
 
 * `type`
     * Datatype: str
@@ -304,7 +304,7 @@ Parameters:
 
 Function: `cos(<value>)` <br>
 Description: Calculates the cosine value of a value <br>
-Parameters:
+Arguments:
 
 * `value`
     * Datatype: int or float
@@ -314,7 +314,7 @@ Parameters:
 
 Function: `sin(<value>)` <br>
 Description: Calculates the sine value of n value <br>
-Parameters:
+Arguments:
 
 * `value`
     * Datatype: int or float
@@ -324,7 +324,7 @@ Parameters:
 
 Function: `sqrt(<value>)` <br>
 Description: Calculates the sqrt value <br>
-Parameters:
+Arguments:
 
 * `value`
     * Datatype: int
@@ -334,7 +334,7 @@ Parameters:
 
 Function: `randl(<min>, <max>)` <br>
 Description: Calculates a random int within the given bounds <br>
-Parameters:
+Arguments:
 
 * `min`
     * Datatype: int

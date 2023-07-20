@@ -6,16 +6,16 @@ program
 function
     return_type IDENTIFIER LEFT_BRACE RIGHT_BRACE return_expression END SEMICOLON
     return_type IDENTIFIER LEFT_BRACE RIGHT_BRACE statement_list return_expression END SEMICOLON
-    return_type IDENTIFIER LEFT_BRACE parameter_list RIGHT_BRACE return_expression END SEMICOLON
-    return_type IDENTIFIER LEFT_BRACE parameter_list RIGHT_BRACE statement_list return_expression END SEMICOLON
+    return_type IDENTIFIER LEFT_BRACE argument_list RIGHT_BRACE return_expression END SEMICOLON
+    return_type IDENTIFIER LEFT_BRACE argument_list RIGHT_BRACE statement_list return_expression END SEMICOLON
 
-parameter
+argument
     variable_type IDENTIFIER
     variable_type LEFT_BRACKET RIGHT_BRACKET IDENTIFIER
     
-parameter_list
-    parameter
-    parameter_list COMMA parameter
+argument_list
+    argument
+    argument_list COMMA argument
 
 statement
     variable_type IDENTIFIER EQUAL expression SEMICOLON
@@ -83,18 +83,18 @@ return_expression
     RETURN expression SEMICOLON
 
 expression
-    add_substract_expression
+    additive_expression
 
 expression_list
     expression
     expression_list COMMA expression 
 
-add_substract_expression
-    multiply_divide_expression
-    multiply_divide_expression PLUS multiply_divide_expression
-    multiply_divide_expression MINUS multiply_divide_expression
+additive_expression
+    multiplicative_expression
+    multiplicative_expression PLUS multiplicative_expression
+    multiplicative_expression MINUS multiplicative_expression
 
-multiply_divide_expression
+multiplicative_expression
     power_expression
     power_expression STAR power_expression
     power_expression DIVIDE power_expression

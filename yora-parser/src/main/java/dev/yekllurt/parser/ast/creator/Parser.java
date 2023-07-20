@@ -555,20 +555,20 @@ public class Parser {
     }
 
     private ASTNode parseExpression() {
-        return parseAddSubtractExpression();
+        return parseAdditiveExpression();
     }
 
     // Rules:
-    //  multiply_divide_expression
-    //  multiply_divide_expression PLUS multiply_divide_expression
-    //  multiply_divide_expression MINUS multiply_divide_expression
-    private ASTNode parseAddSubtractExpression() {
-        var expression = parseMultiplyDivideExpression();
+    //  multiplicative_expression
+    //  multiplicative_expression PLUS multiplicative_expression
+    //  multiplicative_expression MINUS multiplicative_expression
+    private ASTNode parseAdditiveExpression() {
+        var expression = parseMultiplicativeExpression();
         while (isParseNotCompleted() && EXPR_PRIORITY_3.contains(getCurrentTokenType())) {
-            // Rule: multiply_divide_expression PLUS multiply_divide_expression
+            // Rule: multiplicative_expression PLUS multiplicative_expression
             if (isNextToken(TokenType.PUNCTUATION_PLUS)) {
                 tokenCursor++;
-                var right = parseMultiplyDivideExpression();
+                var right = parseMultiplicativeExpression();
                 expression = BinaryExpressionNode.builder()
                         .left(expression)
                         .right(right)
@@ -576,10 +576,10 @@ public class Parser {
                         .build();
                 continue;
             }
-            // Rule: multiply_divide_expression MINUS multiply_divide_expression
+            // Rule: multiplicative_expression MINUS multiplicative_expression
             if (isNextToken(TokenType.PUNCTUATION_MINUS)) {
                 tokenCursor++;
-                var right = parseMultiplyDivideExpression();
+                var right = parseMultiplicativeExpression();
                 expression = BinaryExpressionNode.builder()
                         .left(expression)
                         .right(right)
@@ -588,7 +588,7 @@ public class Parser {
                 continue;
             }
         }
-        // Rule: multiply_divide_expression
+        // Rule: multiplicative_expression
         return expression;
     }
 
@@ -597,7 +597,7 @@ public class Parser {
     //  power_expression STAR power_expression
     //  power_expression DIVIDE power_expression
     //  power_expression PERCENT power_expression
-    private ASTNode parseMultiplyDivideExpression() {
+    private ASTNode parseMultiplicativeExpression() {
         var expression = parsePowerExpression();
         while (isParseNotCompleted() && EXPR_PRIORITY_2.contains(getCurrentTokenType())) {
             // Rule: power_expression STAR power_expression
