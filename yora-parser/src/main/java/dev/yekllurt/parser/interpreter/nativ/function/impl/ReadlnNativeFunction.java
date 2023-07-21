@@ -18,17 +18,17 @@ public class ReadlnNativeFunction implements NativeFunction {
      */
     @Override
     public Optional<Data> execute(List<Data> parameters) {
-        ExceptionUtility.throwIf(Objects.isNull(parameters) || parameters.size() != 2,
+        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters) || parameters.size() != 2,
                 new IllegalArgumentException(String.format("The native function %s has exactly two parameters",
                         getName())));
-        ExceptionUtility.throwIf(Objects.isNull(parameters.get(0)),
+        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters.get(0)),
                 new UnsupportedOperationException("Can't read an undefined data type from the console"));
-        ExceptionUtility.throwIf(Objects.isNull(parameters.get(1)),
+        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters.get(1)),
                 new UnsupportedOperationException("Can't read data from the console if not error message is present"));
 
         var dataTypeStr = parameters.get(0).toString().toUpperCase();
         var dataType = DataType.fromString(dataTypeStr, false);
-        ExceptionUtility.throwIf(Objects.isNull(dataType),
+        ExceptionUtility.throwExceptionIf(Objects.isNull(dataType),
                 new IllegalArgumentException("The data type %s is not supported as console input"));
         var errorMessage = parameters.get(1).toString();
 

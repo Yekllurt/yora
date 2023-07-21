@@ -14,10 +14,10 @@ public class SinNativeFunction implements NativeFunction {
 
     @Override
     public Optional<Data> execute(List<Data> parameters) {
-        ExceptionUtility.throwIf(Objects.isNull(parameters) || parameters.size() != 1,
+        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters) || parameters.size() != 1,
                 new IllegalArgumentException(String.format("The native function %s has exactly one parameter",
                         getName())));
-        ExceptionUtility.throwIf(Objects.isNull(parameters.get(0)) || !ParserUtility.isNumber(parameters.get(0).dataType()),
+        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters.get(0)) || !ParserUtility.isNumber(parameters.get(0).dataType()),
                 new IllegalArgumentException(String.format("The native function %s only accepts int or floats as parameters. Provided: %s",
                         getName(), parameters.get(0))));
 

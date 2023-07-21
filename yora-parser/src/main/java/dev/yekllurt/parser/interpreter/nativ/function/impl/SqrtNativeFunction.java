@@ -13,10 +13,10 @@ public class SqrtNativeFunction implements NativeFunction {
 
     @Override
     public Optional<Data> execute(List<Data> parameters) {
-        ExceptionUtility.throwIf(Objects.isNull(parameters) || parameters.size() != 1,
+        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters) || parameters.size() != 1,
                 new IllegalArgumentException(String.format("The native function %s has exactly one parameter",
                         getName())));
-        ExceptionUtility.throwIf(Objects.isNull(parameters.get(0)) || !parameters.get(0).isLong(),
+        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters.get(0)) || !parameters.get(0).isLong(),
                 new IllegalArgumentException(String.format("The native function %s only accepts int as parameter. Provided: %s",
                         getName(), parameters.get(0))));
 

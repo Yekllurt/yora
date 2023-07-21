@@ -1,18 +1,17 @@
 package dev.yekllurt.parser.ast.creator;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.api.collection.SequencedCollection;
+import dev.yekllurt.api.errors.SemanticError;
+import dev.yekllurt.api.errors.SyntaxError;
+import dev.yekllurt.api.utility.ExceptionUtility;
+import dev.yekllurt.api.utility.IdentifierValidatorUtility;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
 import dev.yekllurt.parser.ast.Configuration;
 import dev.yekllurt.parser.ast.impl.*;
-import dev.yekllurt.parser.ast.throwable.GrammarException;
-import dev.yekllurt.parser.ast.throwable.ParseException;
-import dev.yekllurt.parser.ast.throwable.ParserException;
-import dev.yekllurt.parser.ast.throwable.UnsupportedTokenTypeException;
-import dev.yekllurt.api.collection.SequencedCollection;
 import dev.yekllurt.parser.token.Token;
 import dev.yekllurt.parser.token.TokenType;
-import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.utility.ParserUtility;
 
 import java.util.Objects;
@@ -20,14 +19,6 @@ import java.util.Set;
 
 public class Parser {
 
-    private static final Set<String> EXPR_PRIORITY_3 = Set.of(TokenType.PUNCTUATION_PLUS, TokenType.PUNCTUATION_MINUS);
-    private static final Set<String> EXPR_PRIORITY_2 = Set.of(TokenType.PUNCTUATION_STAR, TokenType.PUNCTUATION_DIVIDE, TokenType.PUNCTUATION_PERCENT);
-    private static final Set<String> EXPR_PRIORITY_1 = Set.of(TokenType.PUNCTUATION_CARET);
-
-    private static final Set<String> VARIABLE_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING);
-    private static final Set<String> RETURN_TYPES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING, TokenType.KEYWORD_VOID);
-    private static final Set<String> RETURN_TYPES_WITH_VALUES = Set.of(TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING);
-    private static final Set<String> RETURN_TYPES_WITHOUT_VALUES = Set.of(TokenType.KEYWORD_VOID);
     private static final Set<String> STATEMENT_START_TYPES = Set.of(TokenType.IDENTIFIER, TokenType.KEYWORD_INT, TokenType.KEYWORD_FLOAT, TokenType.KEYWORD_BOOLEAN, TokenType.KEYWORD_STRING, TokenType.KEYWORD_IF, TokenType.KEYWORD_WHILE);
 
     private final SequencedCollection<Token> tokens;
@@ -39,8 +30,8 @@ public class Parser {
 
     public ProgramNode parse() {
         var program = parseProgram();
-        ExceptionUtility.throwIf(isParseNotCompleted(),
-                new ParserException(String.format("Didn't use all available tokens. Only used %s out of %s tokens", tokenCursor, tokens.size())));
+        ExceptionUtility.throwExceptionIf(isParseNotCompleted(),
+                SyntaxError.INVALID_PROGRAM, tokenCursor, tokens.size());
         return program;
     }
 
@@ -52,16 +43,16 @@ public class Parser {
 
     private SequencedCollection<FunctionNode> parseFunctionList() {
         var functionList = new SequencedCollection<FunctionNode>();
-        var function = parseFunction();
+        var function = parseMethod();
         while (Objects.nonNull(function)) {
             functionList.add(function);
-            function = parseFunction();
+            function = parseMethod();
         }
         return functionList;
     }
 
-    private FunctionNode parseFunction() {
-        if (isNextToken(RETURN_TYPES)) {
+    private FunctionNode parseMethod() {
+        if (isNextToken(TokenType.METHOD_RETURN_TYPES)) {
             var returnTypeStr = getCurrentTokenType();
             tokenCursor++;
             boolean isArray = false;
@@ -70,6 +61,9 @@ public class Parser {
                 if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACKET)) {
                     tokenCursor++;
                     isArray = true;
+                } else {
+                    ExceptionUtility.throwException(SyntaxError.INVALID_METHOD_EXPECTED_ACTUAL,
+                            tokenCursor, TokenType.PUNCTUATION_RIGHT_BRACKET, getCurrentTokenType());
                 }
             }
             var returnType = DataType.fromString(returnTypeStr, isArray);
@@ -79,10 +73,11 @@ public class Parser {
                 if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
                     tokenCursor++;
                     var parameters = new SequencedCollection<ParameterNode>();
-                    if (isNextToken(VARIABLE_TYPES)) {
-                        parameters = parseParameterList();
-                        ExceptionUtility.throwIf(parameters.size() > Configuration.MAX_FUNCTION_PARAMETERS,
-                                new ParseException(String.format("Unable to parse the function '%s' as its function header expects %s parameters however only %s are allowed", identifier, parameters.size(), Configuration.MAX_FUNCTION_PARAMETERS)));
+                    if (isNextToken(TokenType.VARIABLE_TYPES)) {
+                        parameters = parseArgumentList();
+                        ExceptionUtility.throwExceptionIf(parameters.size() > Configuration.MAX_METHOD_PARAMETERS,
+                                SemanticError.INVALID_METHOD_DEFINITION_TOO_MANY_PARAMETERS,
+                                identifier, parameters.size(), Configuration.MAX_METHOD_PARAMETERS);
                     }
                     if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                         tokenCursor++;
@@ -91,10 +86,14 @@ public class Parser {
                             statements = parseStatementList();
                         }
                         var returnExpression = parseReturnStatement();
-                        ExceptionUtility.throwIf(RETURN_TYPES_WITH_VALUES.contains(returnTypeStr) && Objects.isNull(returnExpression),
-                                new ParseException(String.format("Unable to parse the function '%s' as it expects to return a value of type '%s' however it does not return anything", identifier, returnType)));
-                        ExceptionUtility.throwIf(RETURN_TYPES_WITHOUT_VALUES.contains(returnTypeStr) && Objects.nonNull(returnExpression),
-                                new ParseException(String.format("Unable to parse the function '%s' as it expects to not return a value however it does return a value", identifier)));
+
+                        ExceptionUtility.throwExceptionIf(TokenType.TYPES_WITH_VALUES.contains(returnTypeStr) && Objects.isNull(returnExpression),
+                                SemanticError.INVALID_METHOD_EXPECTED_RETURN_STATEMENT,
+                                identifier);
+                        ExceptionUtility.throwExceptionIf(TokenType.TYPES_WITHOUT_VALUES.contains(returnTypeStr) && Objects.nonNull(returnExpression),
+                                SemanticError.INVALID_METHOD_EXPECTED_NO_RETURN_STATEMENT,
+                                identifier);
+
                         if (isNextToken(TokenType.KEYWORD_END)) {
                             tokenCursor++;
                             if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
@@ -107,24 +106,35 @@ public class Parser {
                                         .returnStatement(returnExpression)
                                         .build();
                             }
+                            ExceptionUtility.throwException(SyntaxError.INVALID_METHOD_EXPECTED_ACTUAL,
+                                    tokenCursor, TokenType.PUNCTUATION_SEMICOLON, getCurrentTokenType());
                         }
+                        ExceptionUtility.throwException(SyntaxError.INVALID_METHOD_EXPECTED_ACTUAL,
+                                tokenCursor, TokenType.KEYWORD_END, getCurrentTokenType());
                     }
+                    ExceptionUtility.throwException(SyntaxError.INVALID_METHOD_EXPECTED_ACTUAL,
+                            tokenCursor, TokenType.PUNCTUATION_RIGHT_BRACE, getCurrentTokenType());
                 }
+                ExceptionUtility.throwException(SyntaxError.INVALID_METHOD_EXPECTED_ACTUAL,
+                        tokenCursor, TokenType.PUNCTUATION_LEFT_BRACE, getCurrentTokenType());
             }
+            ExceptionUtility.throwException(SyntaxError.INVALID_METHOD_NO_IDENTIFIER,
+                    tokenCursor);
         }
         return null;
     }
 
-    private SequencedCollection<ParameterNode> parseParameterList() {
+    private SequencedCollection<ParameterNode> parseArgumentList() {
         var parameterList = new SequencedCollection<ParameterNode>();
-        var parameter = parseParameter();
+        var parameter = parseArgument();
         if (Objects.nonNull(parameter)) {
             parameterList.add(parameter);
             while (isNextToken(TokenType.PUNCTUATION_COMMA)) {
                 tokenCursor++;
-                parameter = parseParameter();
-                ExceptionUtility.throwIf(Objects.isNull(parameter),
-                        new ParseException(String.format("Unable to parse a parameter list at token %s due to a parameter being expected after a ',' however non was provided", tokenCursor)));
+                parameter = parseArgument();
+                ExceptionUtility.throwExceptionIf(Objects.isNull(parameter),
+                        SyntaxError.INVALID_METHOD_ARGUMENT_LIST_MISSING_ARGUMENT_AFTER_COMMA,
+                        tokenCursor);
                 parameterList.add(parameter);
             }
         }
@@ -134,8 +144,8 @@ public class Parser {
     // Rule:
     //  variable_type IDENTIFIER
     //  variable_type LEFT_BRACKET RIGHT_BRACKET IDENTIFIER
-    private ParameterNode parseParameter() {
-        if (isNextToken(VARIABLE_TYPES)) {
+    private ParameterNode parseArgument() {
+        if (isNextToken(TokenType.VARIABLE_TYPES)) {
             var parameterType = getCurrentTokenType();
             tokenCursor++;
             if (isNextToken(TokenType.IDENTIFIER)) {
@@ -157,8 +167,14 @@ public class Parser {
                                 .identifier(identifier)
                                 .build();
                     }
+                    ExceptionUtility.throwException(SyntaxError.INVALID_ARGUMENT_NO_IDENTIFIER,
+                            tokenCursor);
                 }
+                ExceptionUtility.throwException(SyntaxError.INVALID_ARGUMENT_EXPECTED_ACTUAL,
+                        tokenCursor, TokenType.PUNCTUATION_RIGHT_BRACKET, getCurrentTokenType());
             }
+            ExceptionUtility.throwException(SyntaxError.INVALID_ARGUMENT_EXPECTED_ONE_OF_ACTUAL,
+                    tokenCursor, TokenType.IDENTIFIER + ", " + TokenType.PUNCTUATION_LEFT_BRACKET, getCurrentTokenType(), getCurrentTokenValue());
         }
         return null;
     }
@@ -171,7 +187,8 @@ public class Parser {
             while (isNextToken(STATEMENT_START_TYPES)) {
                 statemenet = parseStatement();
                 if (Objects.isNull(statemenet)) {
-                    throw new GrammarException(String.format("Failed to parse a statement. Current token: %s", tokenCursor));
+                    ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_NULL,
+                            tokenCursor);
                 }
                 statementList.add(statemenet);
             }
@@ -188,31 +205,37 @@ public class Parser {
         // Rules:
         //  variable_type IDENTIFIER EQUAL expression SEMICOLON
         //  variable_type LEFT_BRACKET NUMBER RIGHT_BRACKET IDENTIFIER SEMICOLON
-        if (isNextToken(VARIABLE_TYPES)) {
+        if (isNextToken(TokenType.VARIABLE_TYPES)) {
             var variableType = getCurrentTokenType();
             tokenCursor++;
             // Rule: variable_type IDENTIFIER EQUAL expression SEMICOLON
             if (isNextToken(TokenType.IDENTIFIER)) {
                 var identifier = getCurrentTokenValue();
-                if (!isValidUserVariableIdentifier(identifier)) {
-                    if (isSystemVariableIdentifier(identifier)) {
-                        throw new ParseException("A program can't define a variable with an identifier following the system variable identifier naming guidelines");
-                    }
-                }
+
+                IdentifierValidatorUtility.performValidationIsValidUserVariableWhenDeclaring(tokenCursor, identifier);
+
                 tokenCursor++;
                 if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                     tokenCursor++;
-                    var expression = parseExpression(); // TODO: add support here for expression or condition
-                    // TODO: add better error output
-                    if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
-                        tokenCursor++;
-                        return VariableDeclarationNode.builder()
-                                .type(DataType.fromString(variableType, false))
-                                .identifier(identifier)
-                                .value(expression)
-                                .build();
+                    var expression = parseExpression();
+                    if (Objects.nonNull(expression)) {
+                        if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                            tokenCursor++;
+                            return VariableDeclarationNode.builder()
+                                    .type(DataType.fromString(variableType, false))
+                                    .identifier(identifier)
+                                    .value(expression)
+                                    .build();
+                        }
+                        ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                                tokenCursor, TokenType.PUNCTUATION_SEMICOLON, getCurrentTokenType());
                     }
+                    ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_EXPRESSION_BUT_FOUND_NONE,
+                            tokenCursor);
                 }
+                ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                        tokenCursor, TokenType.PUNCTUATION_EQUAL, getCurrentTokenType());
+
                 // Rule: variable_type LEFT_BRACKET NUMBER RIGHT_BRACKET IDENTIFIER SEMICOLON
             } else if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACKET)) {
                 tokenCursor++;
@@ -223,11 +246,9 @@ public class Parser {
                         tokenCursor++;
                         if (isNextToken(TokenType.IDENTIFIER)) {
                             var identifier = getCurrentTokenValue();
-                            if (!isValidUserVariableIdentifier(identifier)) {
-                                if (isSystemVariableIdentifier(identifier)) {
-                                    throw new ParseException("A program can't define a variable with an identifier following the system variable identifier naming guidelines");
-                                }
-                            }
+
+                            IdentifierValidatorUtility.performValidationIsValidUserVariableWhenDeclaring(tokenCursor, identifier);
+
                             tokenCursor++;
                             if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
                                 tokenCursor++;
@@ -241,31 +262,42 @@ public class Parser {
                                                 .build())
                                         .build();
                             }
+                            ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                                    tokenCursor, TokenType.PUNCTUATION_SEMICOLON, getCurrentTokenType());
                         }
+                        ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_ATTEMPTING_TO_DECLARE_VARIABLE_BUT_FOUND_NO_IDENTIFIER,
+                                tokenCursor, getCurrentTokenType());
                     }
+                    ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                            tokenCursor, TokenType.PUNCTUATION_RIGHT_BRACKET, getCurrentTokenType());
                 }
-
+                ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_ATTEMPTING_TO_DECLARE_ARRAY_BUT_FOUND_NO_SIZE,
+                        tokenCursor, getCurrentTokenType());
             }
+            // TODO: throw error?
         } else if (isNextToken(TokenType.IDENTIFIER)) {
             var identifier = getCurrentTokenValue();
-            if (!isValidUserVariableIdentifier(identifier)) {
-                if (isSystemVariableIdentifier(identifier)) {
-                    throw new ParseException("A program can't override a system variable");
-                }
-            }
+
+            IdentifierValidatorUtility.performValidationIsValidUserVariableWhenAssigning(tokenCursor, identifier);
+
             tokenCursor++;
             // Rule: IDENTIFIER EQUAL expression SEMICOLON
             if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                 tokenCursor++;
-                var expression = parseExpression(); // TODO: add support here for expression or condition
-                // TODO: add better error output
-                if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
-                    tokenCursor++;
-                    return AssignmentNode.builder()
-                            .identifier(identifier)
-                            .value(expression)
-                            .build();
+                var expression = parseExpression();
+                if (Objects.nonNull(expression)) {
+                    if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                        tokenCursor++;
+                        return AssignmentNode.builder()
+                                .identifier(identifier)
+                                .value(expression)
+                                .build();
+                    }
+                    ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                            tokenCursor, TokenType.PUNCTUATION_SEMICOLON, getCurrentTokenType());
                 }
+                ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_EXPRESSION_BUT_FOUND_NONE,
+                        tokenCursor);
             }
             // Rule:
             //  IDENTIFIER LEFT_BRACKET NUMBER RIGHT_BRACKET EQUAL expression SEMICOLON
@@ -278,20 +310,27 @@ public class Parser {
                         tokenCursor++;
                         if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                             tokenCursor++;
-                            var expression = parseExpression(); // TODO: add support here for expression or condition
-                            // TODO: add better error output
-                            if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
-                                tokenCursor++;
-                                return AssignmentNode.builder()
-                                        .identifier(identifier)
-                                        .index(TermNode.builder()
-                                                .value(index)
-                                                .type(TermNode.TermType.LITERAL)
-                                                .build())
-                                        .value(expression)
-                                        .build();
+                            var expression = parseExpression();
+                            if (Objects.nonNull(expression)) {
+                                if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                                    tokenCursor++;
+                                    return AssignmentNode.builder()
+                                            .identifier(identifier)
+                                            .index(TermNode.builder()
+                                                    .value(index)
+                                                    .type(TermNode.TermType.LITERAL)
+                                                    .build())
+                                            .value(expression)
+                                            .build();
+                                }
+                                ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                                        tokenCursor, TokenType.PUNCTUATION_SEMICOLON, getCurrentTokenType());
                             }
+                            ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_EXPRESSION_BUT_FOUND_NONE,
+                                    tokenCursor);
                         }
+                        ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                                tokenCursor, TokenType.PUNCTUATION_EQUAL, getCurrentTokenType());
                     }
                 } else {
                     var indexExpression = parseExpression();
@@ -299,18 +338,27 @@ public class Parser {
                         tokenCursor++;
                         if (isNextToken(TokenType.PUNCTUATION_EQUAL)) {
                             tokenCursor++;
-                            var expression = parseExpression(); // TODO: add support here for expression or condition
-                            // TODO: add better error output
-                            if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
-                                tokenCursor++;
-                                return AssignmentNode.builder()
-                                        .identifier(identifier)
-                                        .index(indexExpression)
-                                        .value(expression)
-                                        .build();
+                            var expression = parseExpression();
+                            if (Objects.nonNull(expression)) {
+                                if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                                    tokenCursor++;
+                                    return AssignmentNode.builder()
+                                            .identifier(identifier)
+                                            .index(indexExpression)
+                                            .value(expression)
+                                            .build();
+                                }
+                                ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                                        tokenCursor, TokenType.PUNCTUATION_SEMICOLON, getCurrentTokenType());
                             }
+                            ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_EXPRESSION_BUT_FOUND_NONE,
+                                    tokenCursor);
                         }
+                        ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                                tokenCursor, TokenType.PUNCTUATION_EQUAL, getCurrentTokenType());
                     }
+                    ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                            tokenCursor, TokenType.PUNCTUATION_RIGHT_BRACKET, getCurrentTokenType());
                 }
             }
             // Rules:
@@ -320,18 +368,25 @@ public class Parser {
                 tokenCursor++;
                 // It is a function call
                 var arguments = parseExpressionList();
-                // TODO: add better error output
-                if (Objects.nonNull(arguments) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
-                    tokenCursor++;
-                    if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                if (Objects.nonNull(arguments)) {
+                    if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                         tokenCursor++;
-                        return FunctionCallNode.builder()
-                                .functionIdentifier(identifier)
-                                .arguments(arguments)
-                                .build();
+                        if (isNextToken(TokenType.PUNCTUATION_SEMICOLON)) {
+                            tokenCursor++;
+                            return FunctionCallNode.builder()
+                                    .functionIdentifier(identifier)
+                                    .arguments(arguments)
+                                    .build();
+                        }
+                        ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                                tokenCursor, TokenType.PUNCTUATION_SEMICOLON, getCurrentTokenType());
                     }
+                    ExceptionUtility.throwException(SyntaxError.INVALID_STATEMENT_EXPECTED_ACTUAL,
+                            tokenCursor, TokenType.PUNCTUATION_RIGHT_BRACE, getCurrentTokenType());
                 }
+                // TODO: throw error
             }
+            // TODO: throw error?
         }
         // Rules:
         //  IF LEFT_BRACE condition RIGHT_BRACE statement_list END SEMICOLON
@@ -432,7 +487,7 @@ public class Parser {
     //  and_condition OR OR and_condition
     private ConditionNode parseOrCondition() {
         var left = parseAndCondition();
-        while (isParseNotCompleted() && isNextToken(TokenType.PUNCTUATION_OR) && isNextNextToken(TokenType.PUNCTUATION_OR)) {
+        if (isParseNotCompleted() && isNextToken(TokenType.PUNCTUATION_OR) && isNextNextToken(TokenType.PUNCTUATION_OR)) {
             tokenCursor += 2;   // Adding two as we are checking two values (||)
             var right = parseAndCondition();
             return LogicConditionNode.builder()
@@ -449,7 +504,7 @@ public class Parser {
     //  simple_condition AND AND simple_condition
     private ConditionNode parseAndCondition() {
         var left = parseSimpleCondition();
-        while (isParseNotCompleted() && isNextToken(TokenType.PUNCTUATION_AND) && isNextNextToken(TokenType.PUNCTUATION_AND)) {
+        if (isParseNotCompleted() && isNextToken(TokenType.PUNCTUATION_AND) && isNextNextToken(TokenType.PUNCTUATION_AND)) {
             tokenCursor += 2;   // Adding two as we are checking two values (&&)
             var right = parseSimpleCondition();
             return LogicConditionNode.builder()
@@ -468,11 +523,18 @@ public class Parser {
         if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
             tokenCursor++;
             var condition = parseCondition();
+
+            ExceptionUtility.throwExceptionIf(Objects.isNull(condition),
+                    SyntaxError.INVALID_CONDITION_NULL,
+                    tokenCursor);
+
             if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                 tokenCursor++;
                 return condition;
             }
-            throw new GrammarException("Failed parsing a condition within braces as it started with a '(' followed by a condition but hasn't been closed by a ')'");
+            ExceptionUtility.throwException(SyntaxError.INVALID_CONDITION_EXPECTED_ACTUAL,
+                    tokenCursor, TokenType.PUNCTUATION_RIGHT_BRACE, getCurrentTokenType());
+            return null;
         } else {
             var left = parseExpression();
             if (isNextToken(TokenType.PUNCTUATION_EQUAL) && isNextNextToken(TokenType.PUNCTUATION_EQUAL)) {
@@ -529,7 +591,9 @@ public class Parser {
                         .operator(ConditionOperator.LESS_THAN)
                         .build();
             }
-            throw new GrammarException(String.format("Failed parsing a condition du to an unsupported token type %s", getCurrentTokenType()));
+            ExceptionUtility.throwException(SyntaxError.INVALID_CONDITION_UNSUPPORTED_OPERATOR,
+                    tokenCursor, getCurrentTokenType());
+            return null;
         }
     }
 
@@ -545,8 +609,9 @@ public class Parser {
             if (isNextToken(TokenType.PUNCTUATION_COMMA)) {
                 tokenCursor++;
                 expression = parseExpression();
-                ExceptionUtility.throwIf(Objects.isNull(expression),
-                        new ParseException(String.format("Unable to parse an expression list at token %s due to an expression being expected after a ',' however non was provided", tokenCursor)));
+                ExceptionUtility.throwExceptionIf(Objects.isNull(expression),
+                        SyntaxError.INVALID_EXPRESSION_LIST_MISSING_EXPRESSION_AFTER_COMMA,
+                        tokenCursor);
             }
         }
         return ExpressionListNode.builder()
@@ -564,7 +629,7 @@ public class Parser {
     //  multiplicative_expression MINUS multiplicative_expression
     private ASTNode parseAdditiveExpression() {
         var expression = parseMultiplicativeExpression();
-        while (isParseNotCompleted() && EXPR_PRIORITY_3.contains(getCurrentTokenType())) {
+        while (isParseNotCompleted() && TokenType.ADDITIVE_TYPES.contains(getCurrentTokenType())) {
             // Rule: multiplicative_expression PLUS multiplicative_expression
             if (isNextToken(TokenType.PUNCTUATION_PLUS)) {
                 tokenCursor++;
@@ -574,10 +639,9 @@ public class Parser {
                         .right(right)
                         .operator(TokenType.PUNCTUATION_PLUS)
                         .build();
-                continue;
             }
             // Rule: multiplicative_expression MINUS multiplicative_expression
-            if (isNextToken(TokenType.PUNCTUATION_MINUS)) {
+            else if (isNextToken(TokenType.PUNCTUATION_MINUS)) {
                 tokenCursor++;
                 var right = parseMultiplicativeExpression();
                 expression = BinaryExpressionNode.builder()
@@ -585,7 +649,6 @@ public class Parser {
                         .right(right)
                         .operator(TokenType.PUNCTUATION_MINUS)
                         .build();
-                continue;
             }
         }
         // Rule: multiplicative_expression
@@ -599,7 +662,7 @@ public class Parser {
     //  power_expression PERCENT power_expression
     private ASTNode parseMultiplicativeExpression() {
         var expression = parsePowerExpression();
-        while (isParseNotCompleted() && EXPR_PRIORITY_2.contains(getCurrentTokenType())) {
+        while (isParseNotCompleted() && TokenType.MULTIPLICATIVE_TYPES.contains(getCurrentTokenType())) {
             // Rule: power_expression STAR power_expression
             if (isNextToken(TokenType.PUNCTUATION_STAR)) {
                 tokenCursor++;
@@ -609,10 +672,9 @@ public class Parser {
                         .right(right)
                         .operator(TokenType.PUNCTUATION_STAR)
                         .build();
-                continue;
             }
             // Rule: power_expression DIVIDE power_expression
-            if (isNextToken(TokenType.PUNCTUATION_DIVIDE)) {
+            else if (isNextToken(TokenType.PUNCTUATION_DIVIDE)) {
                 tokenCursor++;
                 var right = parsePowerExpression();
                 expression = BinaryExpressionNode.builder()
@@ -620,10 +682,9 @@ public class Parser {
                         .right(right)
                         .operator(TokenType.PUNCTUATION_DIVIDE)
                         .build();
-                continue;
             }
             // Rule: power_expression PERCENT power_expression
-            if (isNextToken(TokenType.PUNCTUATION_PERCENT)) {
+            else if (isNextToken(TokenType.PUNCTUATION_PERCENT)) {
                 tokenCursor++;
                 var right = parsePowerExpression();
                 expression = BinaryExpressionNode.builder()
@@ -631,7 +692,6 @@ public class Parser {
                         .right(right)
                         .operator(TokenType.PUNCTUATION_PERCENT)
                         .build();
-                continue;
             }
         }
         // Rule: power_expression
@@ -680,9 +740,11 @@ public class Parser {
         return atom;
     }
 
-
     // Rules:
     //  NUMBER
+    //  STRING
+    //  TRUE
+    //  FALSE
     //  IDENTIFIER
     //  IDENTIFIER LEFT_BRACE expression_list RIGHT_BRACE
     //  IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET
@@ -691,6 +753,7 @@ public class Parser {
         switch (token.getType()) {
             case TokenType.DECIMAL_NUMBER, TokenType.STRING -> {
                 tokenCursor++;
+                // TODO: maybe perform analysis to check if it actually is a number or string
                 return TermNode.builder().value(token.getValue()).type(TermNode.TermType.LITERAL).build();
             }
             case TokenType.KEYWORD_TRUE -> {
@@ -704,15 +767,23 @@ public class Parser {
             case TokenType.PUNCTUATION_LEFT_BRACE -> {
                 tokenCursor++;
                 var expression = parseExpression();
-                // TODO: add better error output
-                if (Objects.nonNull(expression) && isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
-                    tokenCursor++;
-                    return expression;
+                if (Objects.nonNull(expression)) {
+                    if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
+                        tokenCursor++;
+                        return expression;
+                    } else {
+                        ExceptionUtility.throwException(SyntaxError.INVALID_ATOM_EXPECTED_ACTUAL,
+                                tokenCursor, TokenType.PUNCTUATION_RIGHT_BRACE, getCurrentTokenType());
+                        return null;
+                    }
+                } else {
+                    ExceptionUtility.throwException(SyntaxError.INVALID_ATOM_NO_EXPRESSION);
+                    return null;
                 }
-                return null;
             }
             case TokenType.IDENTIFIER -> {
                 tokenCursor++;
+                var identifier = token.getValue();
                 if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
                     tokenCursor++;
                     // It is a function call
@@ -720,32 +791,43 @@ public class Parser {
                     if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                         tokenCursor++;
                         return FunctionCallNode.builder()
-                                .functionIdentifier(token.getValue())
+                                .functionIdentifier(identifier)
                                 .arguments(arguments)
                                 .build();
+                    } else {
+                        ExceptionUtility.throwException(SyntaxError.INVALID_METHOD_CALL,
+                                tokenCursor, identifier);
+                        return null;
                     }
-                    return null; // TODO: throw error instead?
                 } else if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACKET)) {
                     tokenCursor++;
                     // Resolving an array value
                     var indexExpression = parseExpression();
+                    if (Objects.isNull(indexExpression)) {
+                        ExceptionUtility.throwException(SyntaxError.INVALID_ARRAY_INDEX_EXPRESSION,
+                                tokenCursor);
+                        return null;
+                    }
                     if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACKET)) {
                         tokenCursor++;
                         return TermNode.builder()
-                                .value(token.getValue())
+                                .value(identifier)
                                 .index(indexExpression)
                                 .type(TermNode.TermType.DYNAMIC)
                                 .build();
                     }
-                    return null; // TODO: throw error instead?
+                    ExceptionUtility.throwException(SyntaxError.INVALID_ARRAY_READ_VALUE_CALL,
+                            tokenCursor);
+                    return null;
                 } else {
                     // It is a variable
-                    return TermNode.builder().value(token.getValue()).type(TermNode.TermType.DYNAMIC).build();
+                    return TermNode.builder().value(identifier).type(TermNode.TermType.DYNAMIC).build();
                 }
             }
-            default ->
-                    throw new UnsupportedTokenTypeException(String.format("Unable to parse an atom at token %s due to an unsupported token type '%s' being provided", tokenCursor, getCurrentTokenType()));
-
+            default -> {
+                ExceptionUtility.throwException(SyntaxError.INVALID_ATOM_UNSUPPORTED_TOKEN_TYPE, tokenCursor, getCurrentTokenType());
+                return null;
+            }
         }
     }
 
@@ -782,24 +864,6 @@ public class Parser {
 
     private boolean isNextNextToken(String type) {
         return tokenCursor + 1 < tokens.size() && tokens.get(tokenCursor + 1).getType().equals(type);
-    }
-
-    private boolean isValidUserVariableIdentifier(String identifier) {
-        if (Objects.isNull(identifier)) {
-            return false;
-        }
-        if (isSystemVariableIdentifier(identifier)) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isSystemVariableIdentifier(String identifier) {
-        // Only system variables are allowed to be all upper case
-        if (identifier.equals(identifier.toUpperCase())) {
-            return true;
-        }
-        return false;
     }
 
 }

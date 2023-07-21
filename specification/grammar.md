@@ -107,8 +107,10 @@ power_expression
     atom CARET power_expression
 
 atom
-    STRING
     NUMBER
+    STRING
+    TRUE
+    FALSE
     LEFT_BRACE expression RIGHT_BRACE
     IDENTIFIER
     IDENTIFIER LEFT_BRACKET expression RIGHT_BRACKET

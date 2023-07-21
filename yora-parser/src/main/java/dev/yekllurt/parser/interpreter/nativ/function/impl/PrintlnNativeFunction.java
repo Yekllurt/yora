@@ -20,7 +20,7 @@ public class PrintlnNativeFunction implements NativeFunction {
      */
     @Override
     public Optional<Data> execute(List<Data> parameters) {
-        ExceptionUtility.throwIf(Objects.isNull(parameters) || parameters.size() != 1,
+        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters) || parameters.size() != 1,
                 new IllegalArgumentException(String.format("The native function %s has exactly one parameter",
                         getName())));
         if (Objects.isNull(parameters.get(0))) {
