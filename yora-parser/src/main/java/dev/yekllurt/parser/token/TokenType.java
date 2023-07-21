@@ -61,7 +61,7 @@ public class TokenType {
     public static final String STRING = "STRING";
 
     private TokenType() {
-        // Intentional as a helper class should not be instantiated by other classes
+        // Intentional: other classes should not instantiate a helper class
     }
 
 }

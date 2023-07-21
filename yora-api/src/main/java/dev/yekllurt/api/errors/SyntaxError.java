@@ -110,7 +110,7 @@ public class SyntaxError {
             "");
 
     private SyntaxError() {
-        // Intentional as a helper class should not be instantiated by other classes
+        // Intentional: other classes should not instantiate a helper class
     }
 
 }

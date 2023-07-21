@@ -3,7 +3,7 @@ package dev.yekllurt.api.utility;
 public class SystemUtility {
 
     private SystemUtility() {
-        // Intentional as a helper class should not be instantiated by other classes
+        // Intentional: other classes should not instantiate a helper class
     }
 
     public static int getMajorJavaVersion() {

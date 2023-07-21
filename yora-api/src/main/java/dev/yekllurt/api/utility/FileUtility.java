@@ -8,7 +8,7 @@ import java.nio.file.Path;
 public class FileUtility {
 
     private FileUtility() {
-        // Intentional as a helper class should not be instantiated by other classes
+        // Intentional: other classes should not instantiate a helper class
     }
 
     public static String readFile(File file) {

@@ -19,7 +19,7 @@ public class NativeFunctionDirectory {
     }
 
     private NativeFunctionDirectory() {
-        // Intentional as this class should not be instantiated by other classes
+        // Intentional: other classes should not instantiate this class
     }
 
     public static NativeFunction getNativeFunction(String identifier) {

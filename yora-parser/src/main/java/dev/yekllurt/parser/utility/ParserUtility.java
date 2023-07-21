@@ -10,7 +10,7 @@ import dev.yekllurt.parser.interpreter.throwable.ExecutionError;
 public class ParserUtility {
 
     private ParserUtility() {
-        // Intentional as a helper class should not be instantiated by other classes
+        // Intentional: other classes should not instantiate a helper class
     }
 
     public static boolean isBoolean(Object value) {

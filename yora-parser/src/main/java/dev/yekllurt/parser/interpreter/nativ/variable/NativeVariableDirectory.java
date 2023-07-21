@@ -20,7 +20,7 @@ public class NativeVariableDirectory {
     }
 
     private NativeVariableDirectory() {
-        // Intentional as this class should not be instantiated by other classes
+        // Intentional: other classes should not instantiate a helper class
     }
 
     public static NativeVariable getNativeVariable(String identifier) {
