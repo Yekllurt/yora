@@ -1,6 +1,7 @@
 package dev.yekllurt.lexer.token;
 
-import dev.yekllurt.lexer.throwable.LexerException;
+import dev.yekllurt.api.errors.LexicalError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,7 +36,8 @@ public class TokenClassifierDefinitionLoader {
                     case FILE_SECTION_PATTERN_DEFINITION -> performPatternDefinitionOperation(line, patternDefinitions);
                     case FILE_SECTION_TOKEN_DEFINITION ->
                             performTokenDefinitionOperation(line, patternDefinitions, tokenDefinitions);
-                    default -> throw new LexerException("Unknown lexer file section");
+                    default ->
+                            ExceptionUtility.throwException(LexicalError.UNKNOWN_TOKEN_CLASSIFIER_FILE_SECTION, file.getName());
                 }
             }
             return tokenDefinitions;
@@ -64,9 +66,12 @@ public class TokenClassifierDefinitionLoader {
                 pattern = "(" + shortenedPattern + ")";
             }
         } else if (getFirstChar(pattern) == '{' && getLastChar(pattern) == '}') {
-            pattern = patternDefinitions.get(pattern.substring(1, pattern.length() - 1));
+            var referencedPattern = patternDefinitions.get(pattern.substring(1, pattern.length() - 1));
+            ExceptionUtility.throwExceptionIf(Objects.isNull(referencedPattern), LexicalError.REFERENCING_UNKNOWN_PATTERN_DEFINITION,
+                    pattern);
+            pattern = referencedPattern;
         } else {
-            throw new LexerException(String.format("Unknown pattern definitions '%s' for a token definition", pattern));
+            ExceptionUtility.throwException(LexicalError.UNKNOWN_PATTERN_DEFINITION, pattern);
         }
 
         tokenClassifierDefinitions.add(TokenClassifierDefinition.builder()

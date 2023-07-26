@@ -1,8 +1,9 @@
 package dev.yekllurt.lexer;
 
 import dev.yekllurt.api.collection.SequencedCollection;
+import dev.yekllurt.api.errors.LexicalError;
 import dev.yekllurt.api.token.Token;
-import dev.yekllurt.lexer.throwable.LexerException;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.lexer.token.TokenScanDefinition;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public class TokenScanner {
             }
 
             if (!tokenMatch) {
-                throw new LexerException(String.format("Invalid character '%s' at position %s", input.charAt(currentPosition), currentPosition));
+                ExceptionUtility.throwException(LexicalError.INVALID_CHARACTER, input.charAt(currentPosition), currentPosition);
             }
 
         }

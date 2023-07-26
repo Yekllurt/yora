@@ -1,8 +1,9 @@
 package dev.yekllurt.lexer;
 
 import dev.yekllurt.api.collection.SequencedCollection;
+import dev.yekllurt.api.errors.LexicalError;
 import dev.yekllurt.api.token.Token;
-import dev.yekllurt.lexer.throwable.LexerException;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.lexer.token.TokenClassifierDefinition;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class TokenClassifier {
             }
 
             if (!tokenMatch) {
-                throw new LexerException(String.format("Invalid token '%s'", type));
+                ExceptionUtility.throwException(LexicalError.INVALID_TOKEN, type);
             }
 
         }
