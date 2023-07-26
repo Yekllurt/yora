@@ -2,32 +2,33 @@ package dev.yekllurt.parser.interpreter.nativ.function.impl;
 
 import dev.yekllurt.api.DataType;
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
-import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.interpreter.scope.Data;
-import dev.yekllurt.parser.utility.ParserUtility;
+import dev.yekllurt.parser.token.TokenType;
+import lombok.NonNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-public class CosNativeFunction implements NativeFunction {
+public class CosNativeFunction extends NativeFunction {
 
     @Override
-    public Optional<Data> execute(List<Data> parameters) {
-        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters) || parameters.size() != 1,
-                new IllegalArgumentException(String.format("The native function %s has exactly one parameter",
-                        getName())));
-        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters.get(0)) || !ParserUtility.isNumber(parameters.get(0).dataType()),
-                new IllegalArgumentException(String.format("The native function %s only accepts int or floats as parameters. Provided: %s",
-                        getName(), parameters.get(0))))
-        ;
+    public Optional<Data> execute(@NonNull List<Data> parameters) {
+        validateArgumentCountMatch(parameters.size());
 
-        return Optional.of(new Data(DataType.FLOAT, Math.cos(parameters.get(0).toDouble())));
+        var argument0 = parameters.get(0);
+        validateArgumentDataType(0, argument0, Data::isNumber, TokenType.DECIMAL_NUMBER);
+
+        return Optional.of(new Data(DataType.FLOAT, Math.cos(argument0.toDouble())));
     }
 
     @Override
     public String getName() {
         return "cos";
+    }
+
+    @Override
+    public int getExpectedArgumentCount() {
+        return 1;
     }
 
 }

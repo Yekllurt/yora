@@ -1,4 +1,4 @@
-package dev.yekllurt.api.throwable;
+package dev.yekllurt.api.throwable.compilation;
 
 /**
  * An exception that is thrown when a semantic error occurs such as a type mismatch or undeclared variables

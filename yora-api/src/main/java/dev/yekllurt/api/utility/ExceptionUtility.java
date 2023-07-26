@@ -1,7 +1,7 @@
 package dev.yekllurt.api.utility;
 
 import dev.yekllurt.api.errors.Error;
-import dev.yekllurt.api.throwable.CompilationException;
+import dev.yekllurt.api.throwable.compilation.CompilationException;
 
 import java.lang.reflect.InvocationTargetException;
 

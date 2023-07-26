@@ -1,31 +1,34 @@
 package dev.yekllurt.parser.interpreter.nativ.function.impl;
 
 import dev.yekllurt.api.DataType;
-import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
 import dev.yekllurt.parser.interpreter.scope.Data;
+import dev.yekllurt.parser.token.TokenType;
+import lombok.NonNull;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-public class SqrtNativeFunction implements NativeFunction {
+public class SqrtNativeFunction extends NativeFunction {
 
     @Override
-    public Optional<Data> execute(List<Data> parameters) {
-        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters) || parameters.size() != 1,
-                new IllegalArgumentException(String.format("The native function %s has exactly one parameter",
-                        getName())));
-        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters.get(0)) || !parameters.get(0).isLong(),
-                new IllegalArgumentException(String.format("The native function %s only accepts int as parameter. Provided: %s",
-                        getName(), parameters.get(0))));
+    public Optional<Data> execute(@NonNull List<Data> parameters) {
+        validateArgumentCountMatch(parameters.size());
 
-        return Optional.of(new Data(DataType.FLOAT, Math.sqrt(Double.parseDouble(String.valueOf(parameters.get(0))))));
+        var argument0 = parameters.get(0);
+        validateArgumentDataType(0, argument0, Data::isNumber, TokenType.DECIMAL_NUMBER);
+
+        return Optional.of(new Data(DataType.FLOAT, Math.sqrt(argument0.toDouble())));
     }
 
     @Override
     public String getName() {
         return "sqrt";
+    }
+
+    @Override
+    public int getExpectedArgumentCount() {
+        return 1;
     }
 
 }

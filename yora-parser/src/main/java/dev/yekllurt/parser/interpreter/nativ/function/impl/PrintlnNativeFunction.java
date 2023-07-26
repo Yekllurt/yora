@@ -1,16 +1,14 @@
 package dev.yekllurt.parser.interpreter.nativ.function.impl;
 
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
-import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.interpreter.scope.Data;
-import dev.yekllurt.parser.utility.ParserUtility;
+import lombok.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
-public class PrintlnNativeFunction implements NativeFunction {
+public class PrintlnNativeFunction extends NativeFunction {
 
     /**
      * Prints the parameters to the console
@@ -19,21 +17,19 @@ public class PrintlnNativeFunction implements NativeFunction {
      * @return null after print
      */
     @Override
-    public Optional<Data> execute(List<Data> parameters) {
-        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters) || parameters.size() != 1,
-                new IllegalArgumentException(String.format("The native function %s has exactly one parameter",
-                        getName())));
-        if (Objects.isNull(parameters.get(0))) {
-            throw new UnsupportedOperationException("Can't output null to the console");
-        }
-        var data = parameters.get(0);
-        if (ParserUtility.isArray(data.dataType())) {
-            if (data.isStringArray()) System.out.println(Arrays.toString(data.toStringArray()));
-            else if (data.isLongArray()) System.out.println(Arrays.toString(data.toLongArray()));
-            else if (data.isDoubleArray()) System.out.println(Arrays.toString(data.toDoubleArray()));
-            else if (data.isBooleanArray()) System.out.println(Arrays.toString(data.toBooleanArray()));
+    public Optional<Data> execute(@NonNull List<Data> parameters) {
+        validateArgumentCountMatch(parameters.size());
+
+        var argument0 = parameters.get(0);
+        validateArgumentNonNull(argument0, 0);
+
+        if (argument0.isArray()) {
+            if (argument0.isStringArray()) System.out.println(Arrays.toString(argument0.toStringArray()));
+            else if (argument0.isLongArray()) System.out.println(Arrays.toString(argument0.toLongArray()));
+            else if (argument0.isDoubleArray()) System.out.println(Arrays.toString(argument0.toDoubleArray()));
+            else if (argument0.isBooleanArray()) System.out.println(Arrays.toString(argument0.toBooleanArray()));
         } else {
-            System.out.println(data.data());
+            System.out.println(argument0.data());
         }
         return Optional.empty();
     }
@@ -41,6 +37,11 @@ public class PrintlnNativeFunction implements NativeFunction {
     @Override
     public String getName() {
         return "print";
+    }
+
+    @Override
+    public int getExpectedArgumentCount() {
+        return 1;
     }
 
 }

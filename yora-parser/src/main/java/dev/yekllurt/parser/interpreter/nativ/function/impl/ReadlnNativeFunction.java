@@ -1,14 +1,17 @@
 package dev.yekllurt.parser.interpreter.nativ.function.impl;
 
 import dev.yekllurt.api.DataType;
-import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.interpreter.nativ.function.NativeFunction;
 import dev.yekllurt.parser.interpreter.scope.Data;
 import dev.yekllurt.parser.utility.ParserUtility;
+import lombok.NonNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Scanner;
 
-public class ReadlnNativeFunction implements NativeFunction {
+public class ReadlnNativeFunction extends NativeFunction {
 
     /**
      * Reads data from the console
@@ -17,20 +20,19 @@ public class ReadlnNativeFunction implements NativeFunction {
      * @return the value read from the console
      */
     @Override
-    public Optional<Data> execute(List<Data> parameters) {
-        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters) || parameters.size() != 2,
-                new IllegalArgumentException(String.format("The native function %s has exactly two parameters",
-                        getName())));
-        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters.get(0)),
-                new UnsupportedOperationException("Can't read an undefined data type from the console"));
-        ExceptionUtility.throwExceptionIf(Objects.isNull(parameters.get(1)),
-                new UnsupportedOperationException("Can't read data from the console if not error message is present"));
+    public Optional<Data> execute(@NonNull List<Data> parameters) {
+        validateArgumentCountMatch(parameters.size());
 
-        var dataTypeStr = parameters.get(0).toString().toUpperCase();
+        var argument0 = parameters.get(0);
+        validateArgumentNonNull(argument0, 0);
+        var argument1 = parameters.get(1);
+        validateArgumentNonNull(argument1, 1);
+
+        var dataTypeStr = argument0.toString().toUpperCase();
         var dataType = DataType.fromString(dataTypeStr, false);
-        ExceptionUtility.throwExceptionIf(Objects.isNull(dataType),
-                new IllegalArgumentException("The data type %s is not supported as console input"));
-        var errorMessage = parameters.get(1).toString();
+        validateArgumentNonNull(dataType, "The data type %s is not supported as console input".formatted(dataTypeStr));
+
+        var errorMessage = argument1.toString();
 
         boolean success = false;
         String userInput = null;
@@ -47,7 +49,7 @@ public class ReadlnNativeFunction implements NativeFunction {
             }
             success = true;
         }
-        Object result = null;
+        Object result;
         switch (userInputDataType) {
             case INT -> result = ParserUtility.parseLong(userInput);
             case FLOAT -> result = ParserUtility.parseDouble(userInput);
@@ -61,6 +63,11 @@ public class ReadlnNativeFunction implements NativeFunction {
     @Override
     public String getName() {
         return "print";
+    }
+
+    @Override
+    public int getExpectedArgumentCount() {
+        return 2;
     }
 
     private String readConsoleLine() {
