@@ -1,8 +1,9 @@
 package dev.yekllurt.parser.interpreter.scope.impl;
 
+import dev.yekllurt.api.errors.ScopeError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.ast.impl.FunctionNode;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
-import dev.yekllurt.parser.interpreter.throwable.ScopeError;
 
 import java.util.*;
 
@@ -12,17 +13,19 @@ public class FunctionScopeImplementation implements FunctionScope {
 
     @Override
     public void beginSoftScope() {
-        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek())) {
-            throw new ScopeError("Can't create a soft scope as no hard scope is active.");
-        }
+        ExceptionUtility.throwExceptionIf(functionScope.isEmpty() || Objects.isNull(functionScope.peek()),
+                ScopeError.CAN_NOT_BEGIN_SOFT_SCOPE,
+                getScopeName());
+
         functionScope.peek().push(new HashMap<>());
     }
 
     @Override
     public void endSoftScope() {
-        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty()) {
-            throw new ScopeError("Can't end a soft scope as no hard scope is active.");
-        }
+        ExceptionUtility.throwExceptionIf(functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_END_SOFT_SCOPE,
+                getScopeName());
+
         functionScope.peek().pop();
     }
 
@@ -33,40 +36,52 @@ public class FunctionScopeImplementation implements FunctionScope {
 
     @Override
     public void endHardScope() {
-        if (functionScope.isEmpty()) {
-            throw new ScopeError("Can't end a hard scope as no scope is active.");
-        }
+        ExceptionUtility.throwExceptionIf(functionScope.isEmpty(),
+                ScopeError.CAN_NOT_END_HARD_SCOPE,
+                getScopeName());
+
         functionScope.pop();
     }
 
     @Override
+    public String getScopeName() {
+        return "function";
+    }
+
+    @Override
     public void assignFunction(String name, FunctionNode function) {
-        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty()) {
-            throw new ScopeError("Can't assign the function '%s' as there is not active soft scope available.".formatted(name));
-        }
-        if (existsFunction(name)) {
-            throw new ScopeError(String.format("Can't assign the function '%s' as it already exists in the current soft scope.", name));
-        }
+        ExceptionUtility.throwExceptionIf(functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_ASSIGN_DATA_BECAUSE_NO_ACTIVE_SOFT_SCOPE,
+                getScopeName(), name);
+        ExceptionUtility.throwExceptionIf(existsFunction(name),
+                ScopeError.CAN_NOT_ASSIGN_DATA_BECAUSE_IT_ALREADY_EXISTS_IN_SCOPE,
+                getScopeName(), name);
+
         functionScope.peek().peek().put(name, function);
     }
 
     @Override
     public FunctionNode lookupFunction(String name) {
-        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty()) {
-            throw new ScopeError(String.format("Can't lookup the function '%s' as there is not active soft scope available.", name));
-        }
+        ExceptionUtility.throwExceptionIf(functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_LOOKUP_DATA_BECAUSE_NO_ACTIVE_SCOPE,
+                getScopeName(), name);
+
         for (var scope : functionScope.peek()) {
             if (scope.containsKey(name)) {
                 return scope.get(name);
             }
         }
-        throw new ScopeError(String.format("Can't find the function '%s' in the current scope or any parent scope.", name));
+
+        ExceptionUtility.throwException(ScopeError.CAN_NOT_FIND_DATA_IN_SCOPE,
+                getScopeName(), name);
+        return null;
     }
 
     private boolean existsFunction(String name) {
-        if (functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty()) {
-            throw new ScopeError(String.format("Can't check if the function '%s' exists as there is not active scope available.", name));
-        }
+        ExceptionUtility.throwExceptionIf(functionScope.isEmpty() || Objects.isNull(functionScope.peek()) || functionScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_CHECK_EXISTENCE_BECAUSE_NO_ACTIVE_SCOPE,
+                getScopeName(), name);
+
         for (var scope : functionScope.peek()) {
             if (scope.containsKey(name)) {
                 return true;

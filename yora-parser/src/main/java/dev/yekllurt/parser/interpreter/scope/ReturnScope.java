@@ -28,4 +28,8 @@ public interface ReturnScope {
      */
     DataType lookupReturnValueType();
 
+    default String getScopeName() {
+        return "return";
+    }
+
 }

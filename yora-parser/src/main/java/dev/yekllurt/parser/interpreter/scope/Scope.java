@@ -26,4 +26,9 @@ public interface Scope {
      */
     void endHardScope();
 
+    /**
+     * @return the scope name
+     */
+    String getScopeName();
+
 }

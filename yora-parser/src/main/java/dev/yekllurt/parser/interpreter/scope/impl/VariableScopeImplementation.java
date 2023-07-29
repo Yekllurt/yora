@@ -1,9 +1,10 @@
 package dev.yekllurt.parser.interpreter.scope.impl;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.api.errors.ScopeError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.interpreter.scope.Data;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
-import dev.yekllurt.parser.interpreter.throwable.ScopeError;
 
 import java.util.*;
 
@@ -13,17 +14,19 @@ public class VariableScopeImplementation implements VariableScope {
 
     @Override
     public void beginSoftScope() {
-        if (variableScope.isEmpty() || Objects.isNull(variableScope.peek())) {
-            throw new ScopeError("Can't create a soft scope as no hard scope is active.");
-        }
+        ExceptionUtility.throwExceptionIf(variableScope.isEmpty() || Objects.isNull(variableScope.peek()),
+                ScopeError.CAN_NOT_BEGIN_SOFT_SCOPE,
+                getScopeName());
+
         variableScope.peek().push(new HashMap<>());
     }
 
     @Override
     public void endSoftScope() {
-        if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
-            throw new ScopeError("Can't end a soft scope as no hard scope is active.");
-        }
+        ExceptionUtility.throwExceptionIf(variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_END_SOFT_SCOPE,
+                getScopeName());
+
         variableScope.peek().pop();
     }
 
@@ -34,31 +37,39 @@ public class VariableScopeImplementation implements VariableScope {
 
     @Override
     public void endHardScope() {
-        if (variableScope.isEmpty()) {
-            throw new ScopeError("Can't end a hard scope as no scope is active.");
-        }
+        ExceptionUtility.throwExceptionIf(variableScope.isEmpty(),
+                ScopeError.CAN_NOT_END_HARD_SCOPE,
+                getScopeName());
+
         variableScope.pop();
     }
 
     @Override
+    public String getScopeName() {
+        return "variable";
+    }
+
+    @Override
     public void assignData(String name, DataType type, Object value) {
-        if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
-            throw new ScopeError("Can't assign the variable '%s' as there is not active soft scope available.".formatted(name));
-        }
-        if (existsData(name)) {
-            throw new ScopeError(String.format("Can't assign the variable '%s' as it already exists in the current soft scope.", name));
-        }
+        ExceptionUtility.throwExceptionIf(variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_ASSIGN_DATA_BECAUSE_NO_ACTIVE_SOFT_SCOPE,
+                getScopeName(), name);
+        ExceptionUtility.throwExceptionIf(existsData(name),
+                ScopeError.CAN_NOT_ASSIGN_DATA_BECAUSE_IT_ALREADY_EXISTS_IN_SCOPE,
+                getScopeName(), name);
+
         variableScope.peek().peek().put(name, new Data(type, value));
     }
 
     @Override
     public void updateData(String name, Object value) {
-        if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
-            throw new ScopeError("Can't update the variable '%s' as there is no active soft scope available.".formatted(name));
-        }
-        if (!existsData(name)) {
-            throw new ScopeError(String.format("Can't update the variable '%s' as it doesn't exist in the current soft scope.", name));
-        }
+        ExceptionUtility.throwExceptionIf(variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_UPDATE_DATA_BECAUSE_NO_ACTIVE_SOFT_SCOPE,
+                getScopeName(), name);
+        ExceptionUtility.throwExceptionIf(!existsData(name),
+                ScopeError.CAN_NOT_UPDATE_DATA_BECAUSE_IT_DOES_NOT_EXISTS_IN_SCOPE,
+                getScopeName(), name);
+
         for (var scope : variableScope.peek()) {
             if (scope.containsKey(name)) {
                 scope.put(name, new Data(lookupDataType(name), value));
@@ -68,15 +79,18 @@ public class VariableScopeImplementation implements VariableScope {
 
     @Override
     public Data lookup(String name) {
-        if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
-            throw new ScopeError(String.format("Can't lookup the variable '%s' as there is no active soft scope available.", name));
-        }
+        ExceptionUtility.throwExceptionIf(variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_LOOKUP_DATA_BECAUSE_NO_ACTIVE_SCOPE,
+                getScopeName(), name);
+
         for (var scope : variableScope.peek()) {
             if (scope.containsKey(name)) {
                 return scope.get(name);
             }
         }
-        throw new ScopeError(String.format("Can't find the variable '%s' in the current scope or any parent soft scope.", name));
+        ExceptionUtility.throwException(ScopeError.CAN_NOT_FIND_DATA_IN_SCOPE,
+                getScopeName(), name);
+        return null;
     }
 
     @Override
@@ -91,9 +105,10 @@ public class VariableScopeImplementation implements VariableScope {
 
     @Override
     public boolean existsData(String name) {
-        if (variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty()) {
-            throw new ScopeError(String.format("Can't check if the variable '%s' exists as there is no active soft scope available.", name));
-        }
+        ExceptionUtility.throwExceptionIf(variableScope.isEmpty() || Objects.isNull(variableScope.peek()) || variableScope.peek().isEmpty(),
+                ScopeError.CAN_NOT_CHECK_EXISTENCE_BECAUSE_NO_ACTIVE_SCOPE,
+                getScopeName(), name);
+
         for (var scope : variableScope.peek()) {
             if (scope.containsKey(name)) {
                 return true;
