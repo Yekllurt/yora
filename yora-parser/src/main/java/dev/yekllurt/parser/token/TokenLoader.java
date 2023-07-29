@@ -4,19 +4,24 @@ import dev.yekllurt.parser.ast.throwable.ParseException;
 import dev.yekllurt.api.collection.SequencedCollection;
 import dev.yekllurt.parser.ast.throwable.ParserException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Objects;
 
 public class TokenLoader {
 
     public SequencedCollection<Token> load(File file) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try {
+            return load(new FileReader(file));
+        } catch (FileNotFoundException e) {
+            throw new ParserException(String.format("FileNotFoundException: %s", e.getMessage()));
+        }
+    }
+
+    public SequencedCollection<Token> load(Reader reader) {
+        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
             var tokens = new SequencedCollection<Token>();
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 if (isEmptyLine(line)) {
                     continue;
                 }

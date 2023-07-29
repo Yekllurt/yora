@@ -1,10 +1,12 @@
 package dev.yekllurt.parser;
 
+import dev.yekllurt.api.collection.SequencedCollection;
 import dev.yekllurt.parser.ast.creator.Parser;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.FunctionScopeImplementation;
 import dev.yekllurt.parser.interpreter.scope.impl.VariableScopeImplementation;
+import dev.yekllurt.parser.token.Token;
 import dev.yekllurt.parser.token.TokenLoader;
 import dev.yekllurt.api.utility.SystemUtility;
 
@@ -26,6 +28,10 @@ public class Interpreter {
         var programFile = args[0];
 
         var tokens = new TokenLoader().load(new File(programFile));
+        interpret(tokens);
+    }
+
+    public static void interpret(SequencedCollection<Token> tokens) {
         var parser = new Parser(tokens);
         var program = parser.parse();
         FunctionScope functionScope = new FunctionScopeImplementation();
