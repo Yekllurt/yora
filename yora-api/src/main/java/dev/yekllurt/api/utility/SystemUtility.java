@@ -1,5 +1,7 @@
 package dev.yekllurt.api.utility;
 
+import java.io.File;
+
 public class SystemUtility {
 
     private SystemUtility() {
@@ -17,6 +19,15 @@ public class SystemUtility {
             }
         }
         return Integer.parseInt(version);
+    }
+
+    public static boolean isRunningFromJar() {
+        // https://stackoverflow.com/a/32766003
+        return new File(SystemUtility.class.getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getPath())
+                .getName().contains(".jar");
     }
 
 }

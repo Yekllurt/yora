@@ -3,25 +3,22 @@ package dev.yekllurt.lexer.token;
 import dev.yekllurt.api.errors.LexicalError;
 import dev.yekllurt.api.utility.ExceptionUtility;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 
 public class TokenScanDefinitionLoader {
 
-    public List<TokenScanDefinition> load(File file) {
-        try (var reader = new BufferedReader(new FileReader(file))) {
+    public List<TokenScanDefinition> load(Reader reader, String sourceName) {
+        try (var bufferedReader = new BufferedReader(reader)) {
             var result = new LinkedList<TokenScanDefinition>();
             var lineCount = 0;
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 lineCount++;
                 var lineData = line.split("\s+", 3);
                 ExceptionUtility.throwExceptionIf(lineData.length != 3, LexicalError.INVALID_TOKEN_DEFINITION_LINE,
-                        lineCount, file.getName());
+                        lineCount, sourceName);
                 result.add(TokenScanDefinition.builder()
                         .name(lineData[0].trim())
                         .ignore(!lineData[1].trim().equals("0"))

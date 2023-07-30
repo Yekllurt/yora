@@ -3,10 +3,7 @@ package dev.yekllurt.lexer.token;
 import dev.yekllurt.api.errors.LexicalError;
 import dev.yekllurt.api.utility.ExceptionUtility;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class TokenClassifierDefinitionLoader {
@@ -15,15 +12,14 @@ public class TokenClassifierDefinitionLoader {
     private static final int FILE_SECTION_PATTERN_DEFINITION = 0;
     private static final int FILE_SECTION_TOKEN_DEFINITION = 1;
 
-    public List<TokenClassifierDefinition> load(File file) {
+    public List<TokenClassifierDefinition> load(Reader reader, String sourceName) {
         int fileSection = 0;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader bufferedReader = new BufferedReader(reader)) {
             var patternDefinitions = new HashMap<String, String>();
             var tokenDefinitions = new LinkedList<TokenClassifierDefinition>();
             String line;
 
-            while ((line = reader.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 if (line.trim().equals("")) {
                     continue;
                 }
@@ -37,7 +33,7 @@ public class TokenClassifierDefinitionLoader {
                     case FILE_SECTION_TOKEN_DEFINITION ->
                             performTokenDefinitionOperation(line, patternDefinitions, tokenDefinitions);
                     default ->
-                            ExceptionUtility.throwException(LexicalError.UNKNOWN_TOKEN_CLASSIFIER_FILE_SECTION, file.getName());
+                            ExceptionUtility.throwException(LexicalError.UNKNOWN_TOKEN_CLASSIFIER_FILE_SECTION, sourceName);
                 }
             }
             return tokenDefinitions;

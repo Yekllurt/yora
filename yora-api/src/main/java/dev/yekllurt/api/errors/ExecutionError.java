@@ -1,9 +1,7 @@
 package dev.yekllurt.api.errors;
 
-import dev.yekllurt.api.throwable.execution.ArgumentCountMismatchException;
+import dev.yekllurt.api.throwable.execution.*;
 import dev.yekllurt.api.throwable.execution.ArithmeticException;
-import dev.yekllurt.api.throwable.execution.ComparisonException;
-import dev.yekllurt.api.throwable.execution.InvalidTypeArgumentException;
 
 public class ExecutionError {
 
@@ -39,6 +37,13 @@ public class ExecutionError {
 
     public static final Error INVALID_COMPARISON_UNSUPPORTED_OPERATION = new Error(-1, ComparisonException.class,
             "The comparison operation '%s' is not supported");
+
+    // === Variables errors ===
+    public static final Error INVALID_VARIABLE_UNSUPPORTED_DATA_TYPE_ON_DECLARATION = new Error(-1, VariableException.class,
+            "Unable to declare the variable '%s' with the data type '%s' as it is not supported");
+
+    public static final Error INVALID_VARIABLE_DECLARATION_DATA_MISS_MATCH = new Error(-1, VariableException.class,
+            "Can not declare the variabel '%s' with the static type of '%s' using a value of data type '%s'");
 
     private ExecutionError() {
         // Intentional: other classes should not instantiate a helper class

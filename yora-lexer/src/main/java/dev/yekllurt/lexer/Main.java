@@ -2,13 +2,11 @@ package dev.yekllurt.lexer;
 
 import dev.yekllurt.api.throwable.compilation.LexicalException;
 import dev.yekllurt.api.utility.FileUtility;
+import dev.yekllurt.api.utility.SystemUtility;
 import dev.yekllurt.lexer.token.TokenClassifierDefinitionLoader;
 import dev.yekllurt.lexer.token.TokenScanDefinitionLoader;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class Main {
 
@@ -24,12 +22,22 @@ public class Main {
             var tokenOutputFile = args[1];
 
             // Perform token scan
-            var tokenScanDefinitionList = new TokenScanDefinitionLoader().load(new File("./specification/token-scan.definition"));
+            var tokenScanSpecificationFile = "/token-scan.definition";
+            var tokenScanSpecificationReader = new InputStreamReader(Main.class.getResourceAsStream("/specification" + tokenScanSpecificationFile));
+            if (!SystemUtility.isRunningFromJar()) {
+                tokenScanSpecificationReader = new FileReader("./specification" + tokenScanSpecificationFile);
+            }
+            var tokenScanDefinitionList = new TokenScanDefinitionLoader().load(tokenScanSpecificationReader, tokenScanSpecificationFile);
             var tokenScanner = new TokenScanner(FileUtility.readFile(new File(programFile)), tokenScanDefinitionList);
             var scannerTokens = tokenScanner.tokenize();
 
             // Perform token classifier
-            var tokenClassifierDefinitionList = new TokenClassifierDefinitionLoader().load(new File("./specification/token-classifier.definition"));
+            var tokenClassifierDefinitionFile = "/token-classifier.definition";
+            var tokenClassifierReader = new InputStreamReader(Main.class.getResourceAsStream("/specification" + tokenClassifierDefinitionFile));
+            if (!SystemUtility.isRunningFromJar()) {
+                tokenClassifierReader = new FileReader("./specification" + tokenClassifierDefinitionFile);
+            }
+            var tokenClassifierDefinitionList = new TokenClassifierDefinitionLoader().load(tokenClassifierReader, tokenClassifierDefinitionFile);
             var tokenClassifier = new TokenClassifier(scannerTokens, tokenClassifierDefinitionList);
             var classifierTokens = tokenClassifier.tokenize();
 
