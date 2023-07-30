@@ -1,6 +1,8 @@
 package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.api.errors.ExecutionError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.utility.ParserUtility;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
@@ -8,7 +10,6 @@ import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
-import dev.yekllurt.parser.interpreter.throwable.InvalidOperationError;
 import dev.yekllurt.parser.token.TokenType;
 import dev.yekllurt.api.tuples.Tuple;
 import lombok.Builder;
@@ -26,21 +27,23 @@ public class BinaryExpressionNode implements ASTNode {
     public void evaluate(FunctionScope functionScope, VariableScope variableScope,
                          ParameterScope parameterScope, ReturnScope returnScope) {
         switch (operator) {
-            case TokenType.PUNCTUATION_PLUS -> performPlus(functionScope, variableScope, parameterScope, returnScope);
-            case TokenType.PUNCTUATION_MINUS -> performMinus(functionScope, variableScope, parameterScope, returnScope);
-            case TokenType.PUNCTUATION_STAR -> performStar(functionScope, variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_PLUS -> performAdd(functionScope, variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_MINUS ->
+                    performSubtract(functionScope, variableScope, parameterScope, returnScope);
+            case TokenType.PUNCTUATION_STAR ->
+                    performMultiply(functionScope, variableScope, parameterScope, returnScope);
             case TokenType.PUNCTUATION_DIVIDE ->
                     performDivide(functionScope, variableScope, parameterScope, returnScope);
             case TokenType.PUNCTUATION_CARET -> performPower(functionScope, variableScope, parameterScope, returnScope);
             case TokenType.PUNCTUATION_PERCENT ->
-                    performPercent(functionScope, variableScope, parameterScope, returnScope);
-
-            default -> throw new InvalidOperationError(String.format("No operation '%s' exists", operator));
+                    performModulo(functionScope, variableScope, parameterScope, returnScope);
+            default ->
+                    ExceptionUtility.throwException(ExecutionError.INVALID_ARITHMETIC_UNSUPPORTED_OPERATION, operator);
         }
     }
 
-    private void performPlus(FunctionScope functionScope, VariableScope variableScope,
-                             ParameterScope parameterScope, ReturnScope returnScope) {
+    private void performAdd(FunctionScope functionScope, VariableScope variableScope,
+                            ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeData = getNodeData(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
             if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
@@ -53,8 +56,8 @@ public class BinaryExpressionNode implements ASTNode {
         }
     }
 
-    private void performMinus(FunctionScope functionScope, VariableScope variableScope,
-                              ParameterScope parameterScope, ReturnScope returnScope) {
+    private void performSubtract(FunctionScope functionScope, VariableScope variableScope,
+                                 ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeData = getNodeData(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
             if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
@@ -63,12 +66,13 @@ public class BinaryExpressionNode implements ASTNode {
                 returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() - nodeData.y().toLong());
             }
         } else {
-            throw new InvalidOperationError(String.format("Unable to subtract the values '%s' and '%s' with each other, both must be numbers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
+            ExceptionUtility.throwException(ExecutionError.INVALID_ARITHMETIC_OPERATION,
+                    "subtract", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName(), "numbers");
         }
     }
 
-    private void performStar(FunctionScope functionScope, VariableScope variableScope,
-                             ParameterScope parameterScope, ReturnScope returnScope) {
+    private void performMultiply(FunctionScope functionScope, VariableScope variableScope,
+                                 ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeData = getNodeData(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
             if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
@@ -77,7 +81,8 @@ public class BinaryExpressionNode implements ASTNode {
                 returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() * nodeData.y().toLong());
             }
         } else {
-            throw new InvalidOperationError(String.format("Unable to multiply the values '%s' and '%s' with each other, both must be numbers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
+            ExceptionUtility.throwException(ExecutionError.INVALID_ARITHMETIC_OPERATION,
+                    "multiply", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName(), "numbers");
         }
     }
 
@@ -85,16 +90,16 @@ public class BinaryExpressionNode implements ASTNode {
                                ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeData = getNodeData(functionScope, variableScope, parameterScope);
         if (ParserUtility.isNumber(nodeData.x().dataType()) && ParserUtility.isNumber(nodeData.y().dataType())) {
-            if (nodeData.y().toDouble() == 0) {
-                throw new InvalidOperationError("Can't divide by 0");
-            }
+            ExceptionUtility.throwExceptionIf(nodeData.y().toDouble() == 0,
+                    ExecutionError.INVALID_ARITHMETIC_CANT_DIVIDE_BY_ZERO);
             if (nodeData.x().isDouble() || nodeData.y().isDouble()) {
                 returnScope.assignReturnValue(DataType.FLOAT, nodeData.x().toDouble() / nodeData.y().toDouble());
             } else {
                 returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() / nodeData.y().toLong());
             }
         } else {
-            throw new InvalidOperationError(String.format("Unable to divide the values '%s' and '%s' with each other, both must be numbers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
+            ExceptionUtility.throwException(ExecutionError.INVALID_ARITHMETIC_OPERATION,
+                    "divide", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName(), "numbers");
         }
     }
 
@@ -108,17 +113,21 @@ public class BinaryExpressionNode implements ASTNode {
                 returnScope.assignReturnValue(DataType.INT, (long) Math.pow(nodeData.x().toLong(), nodeData.y().toLong()));
             }
         } else {
-            throw new InvalidOperationError(String.format("Unable to power the values '%s' and '%s' with each other, both must be numbers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
+            ExceptionUtility.throwException(ExecutionError.INVALID_ARITHMETIC_OPERATION,
+                    "power", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName(), "numbers");
         }
     }
 
-    private void performPercent(FunctionScope functionScope, VariableScope variableScope,
-                                ParameterScope parameterScope, ReturnScope returnScope) {
+    private void performModulo(FunctionScope functionScope, VariableScope variableScope,
+                               ParameterScope parameterScope, ReturnScope returnScope) {
         var nodeData = getNodeData(functionScope, variableScope, parameterScope);
+        ExceptionUtility.throwExceptionIf(nodeData.y().toDouble() == 0,
+                ExecutionError.INVALID_ARITHMETIC_CANT_DIVIDE_BY_ZERO);
         if (nodeData.x().isLong() && nodeData.y().isLong()) {
             returnScope.assignReturnValue(DataType.INT, nodeData.x().toLong() % nodeData.y().toLong());
         } else {
-            throw new InvalidOperationError(String.format("Unable to modulo the values '%s' and '%s' with each other, both must be integers", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName()));
+            ExceptionUtility.throwException(ExecutionError.INVALID_ARITHMETIC_OPERATION,
+                    "modulo", nodeData.x().getClass().getSimpleName(), nodeData.y().getClass().getSimpleName(), "integers");
         }
     }
 

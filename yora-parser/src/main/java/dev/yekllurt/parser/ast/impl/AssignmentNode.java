@@ -82,12 +82,6 @@ public class AssignmentNode implements ASTNode {
         }
     }
 
-    private void assertIndexNotNull() {
-        if (Objects.isNull(index)) {
-            throw new InvalidOperationError(String.format("Failed updating an index value for the variable '%s' as the index is not defined", identifier));
-        }
-    }
-
     private int parseIndex(Object index) {
         if (!ParserUtility.isLong(index)) {
             throw new InvalidOperationError(String.format("Failed parsing array index for the index %s", index));

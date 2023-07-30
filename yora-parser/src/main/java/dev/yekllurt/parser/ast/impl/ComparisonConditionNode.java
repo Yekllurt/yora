@@ -1,6 +1,8 @@
 package dev.yekllurt.parser.ast.impl;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.api.errors.ExecutionError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.parser.ast.ASTNode;
 import dev.yekllurt.parser.ast.ConditionOperator;
 import dev.yekllurt.parser.interpreter.scope.FunctionScope;
@@ -8,8 +10,6 @@ import dev.yekllurt.parser.interpreter.scope.ParameterScope;
 import dev.yekllurt.parser.interpreter.scope.ReturnScope;
 import dev.yekllurt.parser.interpreter.scope.VariableScope;
 import dev.yekllurt.parser.interpreter.scope.impl.ReturnScopeImplementation;
-import dev.yekllurt.parser.interpreter.throwable.ExecutionError;
-import dev.yekllurt.parser.interpreter.throwable.InvalidOperationError;
 import dev.yekllurt.parser.utility.ParserUtility;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +32,7 @@ public class ComparisonConditionNode implements ConditionNode {
         left.evaluate(functionScope, variableScope, parameterScope, returnScopeLeft);
         right.evaluate(functionScope, variableScope, parameterScope, returnScopeRight);
         if (Objects.isNull(returnScopeLeft.lookupReturnValue()) && Objects.isNull(returnScopeRight.lookupReturnValue())) {
-            throw new ExecutionError("Couldn't compare two values as they are both null and null values are not supported by the language");
+            ExceptionUtility.throwException(ExecutionError.INVALID_COMPARISON_BOTH_NULL);
         }
         switch (operator) {
             case EQUAL -> performEqual(returnScope, returnScopeLeft, returnScopeRight);
@@ -42,7 +42,7 @@ public class ComparisonConditionNode implements ConditionNode {
             case LESS_THAN -> performLessThan(returnScope, returnScopeLeft, returnScopeRight);
             case LESS_THAN_EQUAL -> performLessThanEqual(returnScope, returnScopeLeft, returnScopeRight);
             default ->
-                    throw new UnsupportedOperationException("The condition operator '%s' is not supported".formatted(operator));
+                    ExceptionUtility.throwException(ExecutionError.INVALID_COMPARISON_UNSUPPORTED_OPERATION, operator);
         }
     }
 
@@ -76,49 +76,36 @@ public class ComparisonConditionNode implements ConditionNode {
     }
 
     private void performGreaterThan(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!returnScopeLeft.lookup().isNumber() || !returnScopeRight.lookup().isNumber()) {
-            throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the > operator however both must be numbers",
-                    returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
-        }
-        var greaterThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup()) > 0;
+        var greaterThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup(), ">") > 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, greaterThan);
     }
 
     private void performGreaterThanEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!returnScopeLeft.lookup().isNumber() || !returnScopeRight.lookup().isNumber()) {
-            throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the >= operator however both must be numbers",
-                    returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
-        }
-        var greaterThanEqual = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup()) >= 0;
+        var greaterThanEqual = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup(), ">=") >= 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, greaterThanEqual);
     }
 
     private void performLessThan(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!returnScopeLeft.lookup().isNumber() || !returnScopeRight.lookup().isNumber()) {
-            throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the < operator however both must be numbers",
-                    returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
-        }
-        var lessThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup()) < 0;
+        var lessThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup(), "<") < 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, lessThan);
     }
 
     private void performLessThanEqual(ReturnScope returnScope, ReturnScope returnScopeLeft, ReturnScope returnScopeRight) {
-        if (!returnScopeLeft.lookup().isNumber() || !returnScopeRight.lookup().isNumber()) {
-            throw new InvalidOperationError(String.format("Attempting to compare two values of the type %s and %s using the <= operator however both must be numbers",
-                    returnScopeLeft.lookupReturnValueType(), returnScopeRight.lookupReturnValueType()));
-        }
-        var lessThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup()) <= 0;
+        var lessThan = compareTwoNumbers(returnScopeLeft.lookup(), returnScopeRight.lookup(), "<=") <= 0;
         returnScope.assignReturnValue(DataType.BOOLEAN, lessThan);
     }
 
-    private int compareTwoNumbers(dev.yekllurt.parser.interpreter.scope.Data number1, dev.yekllurt.parser.interpreter.scope.Data number2) {
+    private int compareTwoNumbers(dev.yekllurt.parser.interpreter.scope.Data number1, dev.yekllurt.parser.interpreter.scope.Data number2, String comparison) {
+        ExceptionUtility.throwExceptionIf(!number1.isNumber() || !number2.isNumber(),
+                ExecutionError.INVALID_COMPARISON_NO_NUMBER,
+                number1.dataType(), number2.dataType(), comparison);
         if (!number1.isDouble() || !number2.isDouble()) {
             return number1.toDouble().compareTo(number2.toDouble());
         }
         if (!number1.isLong() || !number2.isLong()) {
             return number1.toLong().compareTo(number2.toLong());
         }
-        throw new ExecutionError("Attempting two compare two non numbers with each other that are supposed to be numbers");
+        return 0;
     }
 
 }
