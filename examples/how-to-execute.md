@@ -9,7 +9,7 @@
     - Program arguments: "./examples/programs/hello_world.yora" "./temp/program.out"
 2. Create a new application under configurations (recommended name: (2) Interpreter) with the following configuration:
     - Module: yora-parser
-    - Main class: dev.yekllurt.parser.Interpreter
+    - Main class: dev.yekllurt.interpreter.Interpreter
     - Program arguments: "./temp/program.out"
 3. Create a new compound under configurations (recommend name: Process) and add the applications in the following
    order: (1) Lexer, (2) Interpreter
