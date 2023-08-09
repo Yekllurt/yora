@@ -1,6 +1,8 @@
 package dev.yekllurt.interpreter;
 
 import dev.yekllurt.api.collection.SequencedCollection;
+import dev.yekllurt.api.throwable.compilation.CompilationException;
+import dev.yekllurt.api.throwable.execution.ExecutionException;
 import dev.yekllurt.interpreter.ast.creator.Parser;
 import dev.yekllurt.interpreter.interpreter.scope.FunctionScope;
 import dev.yekllurt.interpreter.interpreter.scope.VariableScope;
@@ -27,8 +29,13 @@ public class Interpreter {
 
         var programFile = args[0];
 
-        var tokens = new TokenLoader().load(new File(programFile));
-        interpret(tokens);
+        try {
+            var tokens = new TokenLoader().load(new File(programFile));
+            interpret(tokens);
+        } catch (CompilationException | ExecutionException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
     }
 
     public static void interpret(SequencedCollection<Token> tokens) {
