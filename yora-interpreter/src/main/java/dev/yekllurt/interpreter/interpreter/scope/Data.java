@@ -1,7 +1,8 @@
 package dev.yekllurt.interpreter.interpreter.scope;
 
 import dev.yekllurt.api.DataType;
-import dev.yekllurt.interpreter.interpreter.throwable.InvalidOperationError;
+import dev.yekllurt.api.errors.ExecutionError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 
 public record Data(DataType dataType, Object data) {
 
@@ -46,63 +47,55 @@ public record Data(DataType dataType, Object data) {
     }
 
     public Long toLong() {
-        if (!DataType.INT.equals(dataType)) {
-            throw new InvalidOperationError(String.format("Can't convert data from the type %s into an int", dataType));
-        }
-        if (data instanceof Integer i) {
-            System.err.println("WARNING: using an integer in the code, this should not happen");
-            return i.longValue();
-        }
+        ExceptionUtility.throwExceptionIf(!DataType.INT.equals(dataType),
+                ExecutionError.INVALID_CONVERSION_TYPES,
+                dataType, "int");
         return (Long) data;
 
     }
 
     public Double toDouble() {
-        if (!(DataType.FLOAT.equals(dataType) || DataType.INT.equals(dataType))) {
-            throw new InvalidOperationError(String.format("Can't convert data from the type %s into a double", dataType));
-        }
+        ExceptionUtility.throwExceptionIf(!(DataType.FLOAT.equals(dataType) || DataType.INT.equals(dataType)),
+                ExecutionError.INVALID_CONVERSION_TYPES,
+                dataType, "float");
         if (DataType.INT.equals(dataType)) {
-            if (data instanceof Integer i) {
-                System.err.println("WARNING: using an integer in the code, this should not happen");
-                return i.doubleValue();
-            }
             return ((Long) data).doubleValue();
         }
         return (Double) data;
     }
 
     public boolean toBoolean() {
-        if (!DataType.BOOLEAN.equals(dataType)) {
-            throw new InvalidOperationError(String.format("Can't convert data from the type %s into an int", dataType));
-        }
+        ExceptionUtility.throwExceptionIf(!DataType.BOOLEAN.equals(dataType),
+                ExecutionError.INVALID_CONVERSION_TYPES,
+                dataType, "boolean");
         return (boolean) data;
     }
 
     public String[] toStringArray() {
-        if (!DataType.STRING_ARRAY.equals(dataType)) {
-            throw new InvalidOperationError(String.format("Can't convert data from the type %s into a string array", dataType));
-        }
+        ExceptionUtility.throwExceptionIf(!DataType.STRING_ARRAY.equals(dataType),
+                ExecutionError.INVALID_CONVERSION_TYPES,
+                dataType, "string array");
         return (String[]) data;
     }
 
     public Long[] toLongArray() {
-        if (!DataType.INT_ARRAY.equals(dataType)) {
-            throw new InvalidOperationError(String.format("Can't convert data from the type %s into an int array", dataType));
-        }
+        ExceptionUtility.throwExceptionIf(!DataType.INT_ARRAY.equals(dataType),
+                ExecutionError.INVALID_CONVERSION_TYPES,
+                dataType, "int array");
         return (Long[]) data;
     }
 
     public Double[] toDoubleArray() {
-        if (!DataType.FLOAT_ARRAY.equals(dataType)) {
-            throw new InvalidOperationError(String.format("Can't convert data from the type %s into a float array", dataType));
-        }
+        ExceptionUtility.throwExceptionIf(!DataType.FLOAT_ARRAY.equals(dataType),
+                ExecutionError.INVALID_CONVERSION_TYPES,
+                dataType, "float array");
         return (Double[]) data;
     }
 
     public boolean[] toBooleanArray() {
-        if (!DataType.BOOLEAN_ARRAY.equals(dataType)) {
-            throw new InvalidOperationError(String.format("Can't convert data from the type %s into a float array", dataType));
-        }
+        ExceptionUtility.throwExceptionIf(!DataType.BOOLEAN_ARRAY.equals(dataType),
+                ExecutionError.INVALID_CONVERSION_TYPES,
+                dataType, "boolean array");
         return (boolean[]) data;
     }
 

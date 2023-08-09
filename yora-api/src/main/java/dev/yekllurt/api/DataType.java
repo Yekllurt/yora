@@ -1,5 +1,8 @@
 package dev.yekllurt.api;
 
+import dev.yekllurt.api.errors.ExecutionError;
+import dev.yekllurt.api.utility.ExceptionUtility;
+
 import java.util.Arrays;
 
 public enum DataType {
@@ -53,9 +56,9 @@ public enum DataType {
                 Arrays.fill(arr, false);    // Default value of false
                 return arr;
             }
-            default ->
-                    throw new UnsupportedOperationException(String.format("The datatype %s can't be converted into an array", size));
+            default -> ExceptionUtility.throwException(ExecutionError.INVALID_CONVERSION_INTO_ARRAY, dataType);
         }
+        return null; // Should never reach this code part
     }
 
     public String getFriendlyName() {

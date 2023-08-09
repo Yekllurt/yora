@@ -1,13 +1,14 @@
 package dev.yekllurt.interpreter.ast.impl;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.api.errors.ExecutionError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.interpreter.ast.ConditionOperator;
 import dev.yekllurt.interpreter.interpreter.scope.FunctionScope;
 import dev.yekllurt.interpreter.interpreter.scope.ParameterScope;
 import dev.yekllurt.interpreter.interpreter.scope.ReturnScope;
 import dev.yekllurt.interpreter.interpreter.scope.VariableScope;
 import dev.yekllurt.interpreter.interpreter.scope.impl.ReturnScopeImplementation;
-import dev.yekllurt.interpreter.interpreter.throwable.ExecutionError;
 import lombok.Builder;
 import lombok.Data;
 
@@ -30,14 +31,13 @@ public class LogicConditionNode implements ConditionNode {
         var returnScopeRight = new ReturnScopeImplementation();
         left.evaluate(functionScope, variableScope, parameterScope, returnScopeLeft);
         right.evaluate(functionScope, variableScope, parameterScope, returnScopeRight);
-        if (Objects.isNull(returnScopeLeft.lookupReturnValue()) && Objects.isNull(returnScopeRight.lookupReturnValue())) {
-            throw new ExecutionError("Couldn't compare two values as they are both null and null values are not supported by the language");
-        }
+        ExceptionUtility.throwExceptionIf(Objects.isNull(returnScopeLeft.lookupReturnValue()) && Objects.isNull(returnScopeRight.lookupReturnValue()),
+                dev.yekllurt.api.errors.ExecutionError.INVALID_COMPARISON_BOTH_NULL);
         switch (operator) {
             case AND -> performAnd(returnScope, returnScopeLeft, returnScopeRight);
             case OR -> performOr(returnScope, returnScopeLeft, returnScopeRight);
             default ->
-                    throw new UnsupportedOperationException("The condition operator '%s' is not supported".formatted(operator));
+                    ExceptionUtility.throwException(ExecutionError.INVALID_COMPARISON_UNSUPPORTED_OPERATION, operator);
         }
     }
 

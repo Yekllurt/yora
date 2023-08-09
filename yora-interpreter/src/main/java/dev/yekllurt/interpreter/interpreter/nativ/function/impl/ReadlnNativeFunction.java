@@ -1,6 +1,8 @@
 package dev.yekllurt.interpreter.interpreter.nativ.function.impl;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.api.errors.ExecutionError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.interpreter.interpreter.nativ.function.NativeFunction;
 import dev.yekllurt.interpreter.interpreter.scope.Data;
 import dev.yekllurt.interpreter.utility.ParserUtility;
@@ -49,13 +51,13 @@ public class ReadlnNativeFunction extends NativeFunction {
             }
             success = true;
         }
-        Object result;
+        Object result = null;
         switch (userInputDataType) {
             case INT -> result = ParserUtility.parseLong(userInput);
             case FLOAT -> result = ParserUtility.parseDouble(userInput);
             case STRING -> result = userInput;
             default ->
-                    throw new UnsupportedOperationException(String.format("Can't read the data type %s from the console as it is not supported", userInputDataType));
+                    ExceptionUtility.throwException(ExecutionError.PARSE_EXCEPTION_READ_UNSUPPORTED_DATA_TYPE, userInputDataType);
         }
         return Optional.of(new Data(userInputDataType, result));
     }

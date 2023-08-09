@@ -19,8 +19,14 @@ public class ExecutionError {
             "The %s function requires a value of type %s but provided a value of type %s as argument as the %s argument");
 
     // === Arithmetic errors ===
+    public static final Error INVALID_ARITHMETIC_UNSUPPORTED_UNARY_OPERATION = new Error(-1, ArithmeticException.class,
+            "The unary arithmetic operation '%s' is not supported");
+
     public static final Error INVALID_ARITHMETIC_UNSUPPORTED_OPERATION = new Error(-1, ArithmeticException.class,
             "The arithmetic operation '%s' is not supported");
+
+    public static final Error INVALID_ARITHMETIC_UNSUPPORTED_UNARY_OPERATION_ON_DATATYPE = new Error(-1, ArithmeticException.class,
+            "The unary arithmetic operation '%s' is not supported on the data type %s");
 
     public static final Error INVALID_ARITHMETIC_CANT_DIVIDE_BY_ZERO = new Error(-1, ArithmeticException.class,
             "Can't divide by zero");
@@ -38,12 +44,23 @@ public class ExecutionError {
     public static final Error INVALID_COMPARISON_UNSUPPORTED_OPERATION = new Error(-1, ComparisonException.class,
             "The comparison operation '%s' is not supported");
 
+    // === Conversion errors ===
+    public static final Error INVALID_CONVERSION_TYPES = new Error(-1, ConversionException.class,
+            "Can't convert data from the type %s into an %s");
+
+    public static final Error INVALID_CONVERSION_INTO_ARRAY = new Error(-1, ConversionException.class,
+            "The datatype %s can't be converted into an array");
+
     // === Variables errors ===
     public static final Error INVALID_VARIABLE_UNSUPPORTED_DATA_TYPE_ON_DECLARATION = new Error(-1, VariableException.class,
             "Unable to declare the variable '%s' with the data type '%s' as it is not supported");
 
     public static final Error INVALID_VARIABLE_DECLARATION_DATA_MISS_MATCH = new Error(-1, VariableException.class,
             "Can not declare the variabel '%s' with the static type of '%s' using a value of data type '%s'");
+
+    // Can't read the data type %s from the console as it is not supported
+    public static final Error PARSE_EXCEPTION_READ_UNSUPPORTED_DATA_TYPE = new Error(-1, ParseException.class,
+            "Can't read the data type %s from the console as it is not supported");
 
     private ExecutionError() {
         // Intentional: other classes should not instantiate a helper class

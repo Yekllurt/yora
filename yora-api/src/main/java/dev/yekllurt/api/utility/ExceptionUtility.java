@@ -1,7 +1,6 @@
 package dev.yekllurt.api.utility;
 
 import dev.yekllurt.api.errors.Error;
-import dev.yekllurt.api.throwable.compilation.CompilationException;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -27,7 +26,7 @@ public class ExceptionUtility {
         }
     }
 
-    public static void throwExceptionIf(boolean condition, Error error, Object... messageVariables) throws CompilationException {
+    public static void throwExceptionIf(boolean condition, Error error, Object... messageVariables) {
         if (condition) {
             throwException(error, messageVariables);
         }
