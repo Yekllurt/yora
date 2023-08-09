@@ -1,14 +1,15 @@
 package dev.yekllurt.interpreter.ast.impl;
 
 import dev.yekllurt.api.DataType;
-import dev.yekllurt.interpreter.ast.ASTNode;
 import dev.yekllurt.api.collection.SequencedCollection;
+import dev.yekllurt.api.errors.ExecutionError;
+import dev.yekllurt.api.utility.ExceptionUtility;
+import dev.yekllurt.interpreter.ast.ASTNode;
 import dev.yekllurt.interpreter.interpreter.scope.FunctionScope;
 import dev.yekllurt.interpreter.interpreter.scope.ParameterScope;
 import dev.yekllurt.interpreter.interpreter.scope.ReturnScope;
 import dev.yekllurt.interpreter.interpreter.scope.VariableScope;
 import dev.yekllurt.interpreter.interpreter.scope.impl.ReturnScopeImplementation;
-import dev.yekllurt.interpreter.interpreter.throwable.ExecutionError;
 import lombok.Builder;
 import lombok.Data;
 
@@ -31,10 +32,9 @@ public class IfBranchNode implements ASTNode {
         // Condition evaluation
         var returnScopeCondition = new ReturnScopeImplementation();
         condition.evaluate(functionScope, variableScope, parameterScope, returnScopeCondition);
-        if (!DataType.BOOLEAN.equals(returnScopeCondition.lookupReturnValueType())) {
-            throw new ExecutionError(String.format("A condition returned the non-boolean value '%s'",
-                    returnScopeCondition.lookupReturnValueType()));
-        }
+        ExceptionUtility.throwExceptionIf(!DataType.BOOLEAN.equals(returnScopeCondition.lookupReturnValueType()),
+                ExecutionError.INVALID_TYPE_CONDITION_BOOLEAN_EXPECTED,
+                returnScopeCondition.lookupReturnValueType());
         var conditionEvaluation = returnScopeCondition.lookup().toBoolean();
 
         if (conditionEvaluation) {

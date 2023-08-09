@@ -38,6 +38,10 @@ public class ScopeError {
     public static final Error CAN_NOT_FIND_DATA_IN_SCOPE = new Error(-1, ScopeException.class,
             "Can't find the %s '%s' in the current scope or any parent soft scope.");
 
+    // === Scope other ===
+    public static final Error RETURN_SCOPE_IS_NULL = new Error(-1, ScopeException.class,
+            "Unable to return a value as the return scope is null");
+
     private ScopeError() {
         // Intentional: other classes should not instantiate a helper class
     }

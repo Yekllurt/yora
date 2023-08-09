@@ -1,11 +1,11 @@
 package dev.yekllurt.interpreter.ast.impl;
 
 import dev.yekllurt.api.DataType;
+import dev.yekllurt.api.errors.ExecutionError;
+import dev.yekllurt.api.utility.ExceptionUtility;
 import dev.yekllurt.interpreter.ast.ASTNode;
 import dev.yekllurt.interpreter.interpreter.scope.*;
 import dev.yekllurt.interpreter.interpreter.scope.impl.ReturnScopeImplementation;
-import dev.yekllurt.interpreter.interpreter.throwable.ExecutionError;
-import dev.yekllurt.interpreter.interpreter.throwable.InvalidOperationError;
 import dev.yekllurt.interpreter.utility.ParserUtility;
 import lombok.Builder;
 import lombok.Data;
@@ -31,7 +31,8 @@ public class AssignmentNode implements ASTNode {
         } else if (parameterScope.existsData(identifier)) {
             performVariableAssignment(functionScope, variableScope, parameterScope, parameterScope, childReturnScopeValue);
         } else {
-            throw new ExecutionError(String.format("Unable to resolve the variable '%s'", identifier));
+            ExceptionUtility.throwException(ExecutionError.INVALID_VARIABLE_EXISTS_IN_NO_SCOPE,
+                    identifier, "[variable, parameter]");
         }
     }
 
@@ -78,24 +79,25 @@ public class AssignmentNode implements ASTNode {
             temp[indexInt] = (boolean) updateValue;
             scope.updateData(identifier, temp);
         } else {
-            throw new InvalidOperationError(String.format("Failed updating the array of data type '%s' as it is not supported", data.dataType()));
+            ExceptionUtility.throwException(ExecutionError.INVALID_VARIABLE_UPDATE_INVALID_ARRAY_DATA_TYPE,
+                    data.dataType());
         }
     }
 
     private int parseIndex(Object index) {
-        if (!ParserUtility.isLong(index)) {
-            throw new InvalidOperationError(String.format("Failed parsing array index for the index %s", index));
-        }
-        if (ParserUtility.parseLong(index) != ParserUtility.parseLong(index).intValue()) {
-            throw new InvalidOperationError(String.format("Failed parsing array index %s as when using converting it from an int64 to int32 there is an information loss", index));
-        }
+        ExceptionUtility.throwExceptionIf(!ParserUtility.isLong(index),
+                ExecutionError.PARSE_EXCEPTION_INVALID_DATA_TYPE_FOR_ARRAY_INDEX,
+                index);
+        ExceptionUtility.throwExceptionIf(ParserUtility.parseLong(index) != ParserUtility.parseLong(index).intValue(),
+                ExecutionError.PARSE_EXCEPTION_INVALID_DATA_TYPE_FOR_ARRAY_INDEX_AS_NO_INT_32,
+                index);
         return ParserUtility.parseLong(index).intValue();
     }
 
     private void assertNotOutOfBounds(int arrayLength, int index) {
-        if (index >= arrayLength) {
-            throw new IndexOutOfBoundsException("Index %s is out of bounds for length %s".formatted(arrayLength, index));
-        }
+        ExceptionUtility.throwExceptionIf(index >= arrayLength,
+                ExecutionError.INVALID_VARIABLE_ACCESS_ARRAY_INDEX_OUT_OF_BOUNDS,
+                arrayLength, index);
     }
 
 }
