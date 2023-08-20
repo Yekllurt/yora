@@ -367,7 +367,9 @@ public class Parser {
             else if (isNextToken(TokenType.PUNCTUATION_LEFT_BRACE)) {
                 tokenCursor++;
                 // It is a function call
-                var arguments = parseExpressionList();
+                var arguments = isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)
+                        ? ExpressionListNode.builder().expressionList(new SequencedCollection<>()).build()
+                        : parseExpressionList();
                 if (Objects.nonNull(arguments)) {
                     if (isNextToken(TokenType.PUNCTUATION_RIGHT_BRACE)) {
                         tokenCursor++;
