@@ -3,36 +3,54 @@
 ## Table of Contents
 
 1. [Program Structure](#program-structure)
-2. [Types, Values and Variables](#types-values-and-variables)
+2. [Examples](#examples)
+3. [Types, Values and Variables](#types-values-and-variables)
     1. [The Kinds of Types and Values](#the-kinds-of-types-and-values)
     2. [Primitive Types and Values](#primitive-types-and-values)
         1. [Integer Types, Values and Operations](#integer-types-values-and-operations)
         2. [Floating-Point Types, Values and Operations](#floating-point-types-values-and-operations)
         3. [`bool` Types, Values and Operations](#bool-types-values-and-operations)
+        4. [`str` Types, Values and Operations](#str-types-values-and-operations)
     3. [Reference Types and Values](#reference-types-and-values)
+        1. [`array` Types Values and Operators](#array-types-values-and-operators)
     4. [Variables](#variables)
         1. [Initial Values of Variables](#initial-values-of-variables)
         2. [Native Variables](#native-variables)
             1. [Constants](#constants)
             2. [System Variables](#system-variables)
-3. [Statements](#statements)
-    1. [Completion of Statments](#completion-of-statements)
+4. [Statements](#statements)
+    1. [Completion of Statements](#completion-of-statements)
     2. [The `if` Statement](#the-if-statement)
         1. [The `if-then` Statement](#the-if-then-statement)
         2. [The `if-then-else` Statement](#the-if-then-else-statement)
     3. [The `while` Statement](#the-while-statement)
-4. [Names](#names)
+5. [Names](#names)
     1. [Declaration](#declaration)
     2. [Names and Identifiers](#names-and-identifiers)
     3. [Scope of a Declaration](#scope-of-a-declaration)
-5. [Methods](#methods)
+6. [Methods](#methods)
     1. [Invoking](#invoking)
     2. [Native Functions](#native-functions)
         1. [I/O Functions](#io-functions)
         2. [Mathematical Functions](#mathematical-functions)
-6. [Source](#source)
+7. [Source](#source)
 
 ## Program Structure
+
+Every program contains a method like the following that is called upon execution of the program.
+
+```
+void main()
+    // The program code    
+end;
+
+// Other program code
+```
+
+## Examples
+
+In the `examples/programs` directory as well as its subdirectories a list of example programs can be found demonstrating
+certain functionalities.
 
 ## Types, Values and Variables
 
@@ -44,7 +62,9 @@ The Yora programming language has primitive types as well as reference types.
 
 ### Primitive Types and Values
 
-The primitive types are the `bool` type and numeric types. Where the numeric types are `int` and `float`. The `int`
+The `primitive` types are the `bool` type, `str` type and `numeric` types. Where the `numeric` types are `int`
+and `float`.
+The `int`
 values are 64-bit signed two's complemented integers and the `float` values are 64-bit IEEE 754 binary 64 floating-point
 numbers. <br>
 Primitive values do not share their state with other primitive values.
@@ -63,7 +83,7 @@ The integer values operators:
 - The numerical operators which result in a value of type `int`:
     - The power operator: `^`
     - The unary plus and minus operators: `+` and `-`
-    - The multiplicative operators: `*`, `/`, `%`
+    - The multiplicative operators: `*`, `/` and `%`
     - The additive operators: `+` and `-`
 - The string concatenation operator `+`
 
@@ -72,10 +92,6 @@ An integer operator can terminate the program for the following reasons:
 - The multiplicative operators `/` or `%` have as right-hand operand a `0`
 
 #### Floating-Point Types, Values and Operations
-
-The value of the floating-point type is in the following range:
-
-- TODO
 
 The floating-point values operators:
 
@@ -106,11 +122,33 @@ The `bool` operators are:
 Boolean expressions determine the control flow of the `if` and `while` statement. Furthermore, only `bool` expressions
 can be used in control flow statements.
 
+#### `str` Types, Values and Operations
+
+The `str` type represents a character string in other words a text.
+
+The `str` operators are:
+
+- The relational operators `==` and `!=`
+- The string concatenation operator `+`
+
 ### Reference Types and Values
 
-The reference types are `str` and `array`.
+The reference types are `array`.
 
-TODO
+#### `array` Types Values and Operators
+
+The `array` type represents a container that holds a fixed number of single types. The length of the `array` as well as
+data type is established upon its creation. <br>
+Valid data types are the following:
+
+- `int` where `0` is the default value
+- `float` where `0` is the default value
+- `bool` where `false` is the default value
+- `str` where `""` (an empty string) is the default value
+
+Declaring an array: `data-type[size] variable-name;` <br>
+Accessing data: `variable-name[index]` Note that arrays start at index 0<br>
+Setting a value: `variable-name[index] = data;`
 
 ### Variables
 
